@@ -47,7 +47,6 @@
 		8E2227FC208BDAFB000018E2 /* GameMapUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GameMapUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E222800208BDAFB000018E2 /* GameMapUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMapUITests.swift; sourceTree = "<group>"; };
 		8E222802208BDAFB000018E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8E22280E208BDBE6000018E2 /* GameMapViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameMapViewController.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,7 +103,6 @@
 				8E2227E7208BDAFB000018E2 /* Assets.xcassets */,
 				8E2227E9208BDAFB000018E2 /* LaunchScreen.storyboard */,
 				8E2227EC208BDAFB000018E2 /* Info.plist */,
-				8E22280E208BDBE6000018E2 /* GameMapViewController.h */,
 			);
 			path = GameMap;
 			sourceTree = "<group>";
