@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import CoreLocation/CoreLocation.h
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
