@@ -18,30 +18,28 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Longitude" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RRw-11-Tmc">
-                                <rect key="frame" x="75" y="128" width="77" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="PiG-NC-De9">
-                                <rect key="frame" x="27" y="376" width="97" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="gMv-SK-n4e">
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <rect key="contentStretch" x="0.0" y="0.0" width="0.0" height="0.0"/>
+                            </mapView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="gMv-SK-n4e" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="DRU-Of-uiK"/>
+                            <constraint firstItem="gMv-SK-n4e" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="G8z-Ws-wRh"/>
+                            <constraint firstItem="gMv-SK-n4e" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="O2N-s8-q9F"/>
+                            <constraint firstItem="gMv-SK-n4e" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="dDb-Or-r46"/>
+                            <constraint firstItem="gMv-SK-n4e" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="fvt-zI-fqQ"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
-                        <outlet property="nameTextField" destination="PiG-NC-De9" id="aXc-vv-NDL"/>
+                        <outlet property="mapView" destination="gMv-SK-n4e" id="XhO-iX-YPs"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="21.600000000000001" y="29.23538230884558"/>
         </scene>
     </scenes>
 </document>
