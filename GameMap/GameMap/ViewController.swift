@@ -12,10 +12,12 @@ import UIKit
 import MapKit
 
 class ViewController: UIViewController {
-
+    @IBOutlet weak var mapImageView: UIImageView!
+    
      override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
     }
 
 //    override func didReceiveMemoryWarning() {
@@ -24,7 +26,7 @@ class ViewController: UIViewController {
 //    }
     
     // MARK: Properties
-    @IBOutlet weak var mapView: MKMapView!
+    //@IBOutlet weak var mapView: MKMapView!
     
     //MARK: Actions
     @IBAction func touchExit(_ sender: UITapGestureRecognizer) {

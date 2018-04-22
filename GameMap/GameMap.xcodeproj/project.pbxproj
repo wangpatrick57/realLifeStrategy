@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		11D47A2E208C3A1300F2BC57 /* rlsLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 11D47A2D208C3A1300F2BC57 /* rlsLogo.png */; };
+		414BDA64208CABFF0018DD94 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414BDA63208CABFF0018DD94 /* MapView.swift */; };
+		414BDA66208CBCCC0018DD94 /* redDot.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 414BDA65208CBCCC0018DD94 /* redDot.jpg */; };
 		8E2227E1208BDAFB000018E2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2227E0208BDAFB000018E2 /* AppDelegate.swift */; };
 		8E2227E3208BDAFB000018E2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2227E2208BDAFB000018E2 /* ViewController.swift */; };
 		8E2227E6208BDAFB000018E2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E2227E4208BDAFB000018E2 /* Main.storyboard */; };
@@ -36,6 +38,8 @@
 
 /* Begin PBXFileReference section */
 		11D47A2D208C3A1300F2BC57 /* rlsLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rlsLogo.png; sourceTree = "<group>"; };
+		414BDA63208CABFF0018DD94 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		414BDA65208CBCCC0018DD94 /* redDot.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = redDot.jpg; sourceTree = "<group>"; };
 		8E2227DD208BDAFB000018E2 /* GameMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GameMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E2227E0208BDAFB000018E2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8E2227E2208BDAFB000018E2 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -103,9 +107,11 @@
 				8E2227E2208BDAFB000018E2 /* ViewController.swift */,
 				8E2227E4208BDAFB000018E2 /* Main.storyboard */,
 				11D47A2D208C3A1300F2BC57 /* rlsLogo.png */,
+				414BDA65208CBCCC0018DD94 /* redDot.jpg */,
 				8E2227E7208BDAFB000018E2 /* Assets.xcassets */,
 				8E2227E9208BDAFB000018E2 /* LaunchScreen.storyboard */,
 				8E2227EC208BDAFB000018E2 /* Info.plist */,
+				414BDA63208CABFF0018DD94 /* MapView.swift */,
 			);
 			path = GameMap;
 			sourceTree = "<group>";
@@ -235,6 +241,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				414BDA66208CBCCC0018DD94 /* redDot.jpg in Resources */,
 				11D47A2E208C3A1300F2BC57 /* rlsLogo.png in Resources */,
 				8E2227EB208BDAFB000018E2 /* LaunchScreen.storyboard in Resources */,
 				8E2227E8208BDAFB000018E2 /* Assets.xcassets in Resources */,
@@ -264,6 +271,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8E2227E3208BDAFB000018E2 /* ViewController.swift in Sources */,
+				414BDA64208CABFF0018DD94 /* MapView.swift in Sources */,
 				8E2227E1208BDAFB000018E2 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
