@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		11CBE362208C211600E57977 /* rlsLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 11CBE361208C211600E57977 /* rlsLogo.png */; };
+		11D47A2E208C3A1300F2BC57 /* rlsLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 11D47A2D208C3A1300F2BC57 /* rlsLogo.png */; };
 		8E2227E1208BDAFB000018E2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2227E0208BDAFB000018E2 /* AppDelegate.swift */; };
 		8E2227E3208BDAFB000018E2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2227E2208BDAFB000018E2 /* ViewController.swift */; };
 		8E2227E6208BDAFB000018E2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E2227E4208BDAFB000018E2 /* Main.storyboard */; };
@@ -35,7 +35,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		11CBE361208C211600E57977 /* rlsLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = rlsLogo.png; path = ../../../../Downloads/rlsLogo.png; sourceTree = "<group>"; };
+		11D47A2D208C3A1300F2BC57 /* rlsLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rlsLogo.png; sourceTree = "<group>"; };
 		8E2227DD208BDAFB000018E2 /* GameMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GameMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E2227E0208BDAFB000018E2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8E2227E2208BDAFB000018E2 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -102,7 +102,7 @@
 				8E2227E0208BDAFB000018E2 /* AppDelegate.swift */,
 				8E2227E2208BDAFB000018E2 /* ViewController.swift */,
 				8E2227E4208BDAFB000018E2 /* Main.storyboard */,
-				11CBE361208C211600E57977 /* rlsLogo.png */,
+				11D47A2D208C3A1300F2BC57 /* rlsLogo.png */,
 				8E2227E7208BDAFB000018E2 /* Assets.xcassets */,
 				8E2227E9208BDAFB000018E2 /* LaunchScreen.storyboard */,
 				8E2227EC208BDAFB000018E2 /* Info.plist */,
@@ -235,7 +235,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				11CBE362208C211600E57977 /* rlsLogo.png in Resources */,
+				11D47A2E208C3A1300F2BC57 /* rlsLogo.png in Resources */,
 				8E2227EB208BDAFB000018E2 /* LaunchScreen.storyboard in Resources */,
 				8E2227E8208BDAFB000018E2 /* Assets.xcassets in Resources */,
 				8E2227E6208BDAFB000018E2 /* Main.storyboard in Resources */,
