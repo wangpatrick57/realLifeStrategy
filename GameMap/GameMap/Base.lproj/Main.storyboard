@@ -36,6 +36,14 @@
                                     <outletCollection property="gestureRecognizers" destination="1tw-ui-pHA" appends="YES" id="uI0-aj-Xfm"/>
                                 </connections>
                             </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hDi-Ib-1ee">
+                                <rect key="frame" x="171" y="532" width="32" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Next"/>
+                                <connections>
+                                    <segue destination="qTj-da-yup" kind="show" id="LLi-Wa-SkL"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
@@ -98,12 +106,16 @@
                                 </state>
                                 <connections>
                                     <action selector="JoinButton:" destination="sxP-on-dK2" eventType="touchUpInside" id="utb-pm-b6s"/>
+                                    <segue destination="dIx-AE-8jL" kind="show" id="KaN-f5-s3I"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="hXc-XV-Iu5"/>
                     </view>
+                    <connections>
+                        <segue destination="dIx-AE-8jL" kind="show" identifier="toIdTF" id="xCd-Pi-8JF"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="udr-Ln-lTV" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="sxP-on-dK2" userLabel="Exit" sceneMemberID="exit"/>
@@ -123,10 +135,10 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Next"/>
                                 <connections>
-                                    <segue destination="xch-7Z-DMd" kind="show" id="E3V-xm-PzN"/>
+                                    <segue destination="xch-7Z-DMd" kind="show" id="ylZ-jm-Mip"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Game ID: XXX " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WNz-nF-H1b">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Game ID: 12345 " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WNz-nF-H1b">
                                 <rect key="frame" x="114" y="246" width="146" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -142,10 +154,10 @@
             </objects>
             <point key="canvasLocation" x="-1441" y="877"/>
         </scene>
-        <!--View Controller-->
+        <!--GameIDTF-->
         <scene sceneID="RhY-yx-tFC">
             <objects>
-                <viewController id="dIx-AE-8jL" sceneMemberID="viewController">
+                <viewController id="dIx-AE-8jL" customClass="GameIDTF" customModule="GameMap" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="lcE-WZ-3tH">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -164,7 +176,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Enter"/>
                                 <connections>
-                                    <segue destination="xch-7Z-DMd" kind="show" id="yP5-bk-SR4"/>
+                                    <segue destination="xch-7Z-DMd" kind="show" id="yAi-Eh-Dlq"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Woj-Gy-dwY">
@@ -179,16 +191,19 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="WzB-hk-xJd"/>
                     </view>
+                    <connections>
+                        <outlet property="idTF" destination="4Bi-09-wrc" id="NQt-2l-ZcA"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BO3-WK-VvQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="511" y="877"/>
         </scene>
-        <!--View Controller-->
+        <!--NicknameTF-->
         <scene sceneID="foZ-oc-Wh8">
             <objects>
-                <viewController id="xch-7Z-DMd" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="SfQ-k4-ZXQ">
+                <viewController id="xch-7Z-DMd" customClass="NicknameTF" customModule="GameMap" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="SfQ-k4-ZXQ" customClass="UITextField">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -205,13 +220,16 @@
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <action selector="enter:" destination="xch-7Z-DMd" eventType="editingDidEnd" id="3NP-lb-G2V"/>
+                                </connections>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MdH-Nk-G7R">
                                 <rect key="frame" x="212" y="369" width="37" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Enter"/>
                                 <connections>
-                                    <segue destination="q5a-uH-HeU" kind="show" id="GZK-wt-3HE"/>
+                                    <segue destination="q5a-uH-HeU" kind="show" identifier="" id="GZK-wt-3HE"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kE3-zE-wyO">
@@ -226,15 +244,21 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="yIZ-86-nq6"/>
                     </view>
+                    <connections>
+                        <outlet property="idLabel" destination="xSy-RI-OLd" id="EnH-Qe-AaO"/>
+                        <outlet property="nickNameTF" destination="UuP-Gh-ebw" id="zEY-Xh-bEW"/>
+                        <outletCollection property="idLabel" destination="xSy-RI-OLd" id="U3P-sh-0TM"/>
+                        <segue destination="q5a-uH-HeU" kind="show" identifier="toTeamOption" id="Wy8-SO-h1i"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="B5I-CL-J3I" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-375" y="1636"/>
+            <point key="canvasLocation" x="-375" y="1641"/>
         </scene>
-        <!--View Controller-->
+        <!--Nickname Label-->
         <scene sceneID="gvF-zL-xXB">
             <objects>
-                <viewController id="q5a-uH-HeU" sceneMemberID="viewController">
+                <viewController id="q5a-uH-HeU" customClass="NicknameLabel" customModule="GameMap" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="US1-Ae-LWi">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -296,6 +320,9 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="lRE-Q1-QCS"/>
                     </view>
+                    <connections>
+                        <outlet property="label" destination="gcI-QT-V5V" id="AIS-o9-6sx"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tRy-mm-wTQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="lcn-VO-1im" userLabel="Exit" sceneMemberID="exit"/>
@@ -305,7 +332,6 @@
         <!--Map View-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
                 <viewController id="BYZ-38-t0r" customClass="MapView" customModule="GameMap" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -339,17 +365,20 @@
                         <outlet property="mapImageView" destination="IMw-aH-xDa" id="kg8-ff-7eu"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1408.8" y="1661.9190404797603"/>
         </scene>
     </scenes>
     <resources>
-        <image name="map" width="714" height="662"/>
+        <image name="map" width="130" height="130"/>
         <image name="rlsLogo.png" width="306" height="396"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="yP5-bk-SR4"/>
-        <segue reference="hMp-u2-6rX"/>
-        <segue reference="DP1-5t-6jj"/>
+        <segue reference="GZK-wt-3HE"/>
+        <segue reference="ylZ-jm-Mip"/>
+        <segue reference="KaN-f5-s3I"/>
+        <segue reference="MYK-9X-l1d"/>
+        <segue reference="g5B-9X-Nzf"/>
     </inferredMetricsTieBreakers>
 </document>
