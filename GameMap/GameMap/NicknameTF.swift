@@ -13,24 +13,30 @@ class NicknameTF: UIViewController {
     @IBOutlet weak var idLabel: UILabel!
     @IBOutlet weak var nickNameTF: UITextField!
     
-    //var id = "Game ID: XXXXX"
+    var id = "Game ID: 12345"
     
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        let nicknameLController = segue.destination as! NicknameLabel
-//        nicknameLController.nickname = nickNameTF.text!
-//    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        var senderButton = sender as? EnterButton
+        
+        if senderButton?.isTouchInside == true {
+            let nicknameLController = segue.destination as! NicknameLabel
+            nicknameLController.nickname = "Hi, " + nickNameTF.text! + "!"
+            nicknameLController.id = self.id
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-       // idLabel.text = id
+        idLabel.text = id
     }
     
     //MARK: Actions
 
-    //@IBAction func enter(_ sender: Any) {
-    //        if nickNameTF.text != "" {
-    //            performSegue(withIdentifier: "segue", sender: self)
-    //        }
-    //    }
+    @IBAction func enterPressed(_ sender: EnterButton) {
+        if nickNameTF.text != "" {
+            performSegue(withIdentifier: "segue", sender: self)
+        }
+    }
 }

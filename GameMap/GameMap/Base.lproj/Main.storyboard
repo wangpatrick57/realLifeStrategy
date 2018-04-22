@@ -135,7 +135,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Next"/>
                                 <connections>
-                                    <segue destination="xch-7Z-DMd" kind="show" id="ylZ-jm-Mip"/>
+                                    <segue destination="xch-7Z-DMd" kind="show" id="nCL-Vu-gJy"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Game ID: 12345 " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WNz-nF-H1b">
@@ -171,7 +171,7 @@
                                 <attributedString key="attributedText"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iqT-U4-eaK">
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iqT-U4-eaK" customClass="EnterButton" customModule="GameMap" customModuleProvider="target">
                                 <rect key="frame" x="206" y="376" width="37" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Enter"/>
@@ -220,15 +220,14 @@
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
-                                <connections>
-                                    <action selector="enter:" destination="xch-7Z-DMd" eventType="editingDidEnd" id="3NP-lb-G2V"/>
-                                </connections>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MdH-Nk-G7R">
+                            <button opaque="NO" tag="1" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MdH-Nk-G7R" customClass="EnterButton" customModule="GameMap" customModuleProvider="target">
                                 <rect key="frame" x="212" y="369" width="37" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <accessibility key="accessibilityConfiguration" identifier="enterButton"/>
                                 <state key="normal" title="Enter"/>
                                 <connections>
+                                    <action selector="enterPressed:" destination="xch-7Z-DMd" eventType="touchUpInside" id="EwN-D8-LdI"/>
                                     <segue destination="q5a-uH-HeU" kind="show" identifier="" id="GZK-wt-3HE"/>
                                 </connections>
                             </button>
@@ -237,7 +236,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Return"/>
                                 <connections>
-                                    <segue destination="qTj-da-yup" kind="show" id="gOX-JC-zjU"/>
+                                    <segue destination="dIx-AE-8jL" kind="show" id="NhM-eg-VY2"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -247,13 +246,13 @@
                     <connections>
                         <outlet property="idLabel" destination="xSy-RI-OLd" id="EnH-Qe-AaO"/>
                         <outlet property="nickNameTF" destination="UuP-Gh-ebw" id="zEY-Xh-bEW"/>
-                        <outletCollection property="idLabel" destination="xSy-RI-OLd" id="U3P-sh-0TM"/>
-                        <segue destination="q5a-uH-HeU" kind="show" identifier="toTeamOption" id="Wy8-SO-h1i"/>
+                        <segue destination="dIx-AE-8jL" kind="show" id="AHr-0G-goa"/>
+                        <segue destination="q5a-uH-HeU" kind="show" identifier="segue" id="EFb-3M-K7p"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="B5I-CL-J3I" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-375" y="1641"/>
+            <point key="canvasLocation" x="-375.19999999999999" y="1640.3298350824589"/>
         </scene>
         <!--Nickname Label-->
         <scene sceneID="gvF-zL-xXB">
@@ -284,9 +283,6 @@
                                 <state key="normal" title="Blue">
                                     <color key="titleColor" red="0.03661791323" green="0.36214847030000002" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 </state>
-                                <connections>
-                                    <action selector="blueTeamButton:" destination="lcn-VO-1im" eventType="touchDown" id="QGn-yU-hyJ"/>
-                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="25f-U9-GPZ">
                                 <rect key="frame" x="62" y="193" width="130" height="75"/>
@@ -296,9 +292,6 @@
                                 <state key="normal" title="Red">
                                     <color key="titleColor" red="1" green="0.0" blue="0.18623063740000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 </state>
-                                <connections>
-                                    <action selector="redTeamButton:" destination="lcn-VO-1im" eventType="touchDown" id="onM-z8-YeV"/>
-                                </connections>
                             </button>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Yf6-Gs-5hq">
                                 <rect key="frame" x="62" y="276" width="130" height="289"/>
@@ -308,8 +301,16 @@
                                 <rect key="frame" x="189" y="276" width="130" height="289"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </scrollView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8t0-oy-CVl">
+                                <rect key="frame" x="104" y="617" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Return"/>
+                                <connections>
+                                    <segue destination="xch-7Z-DMd" kind="show" id="fU7-lf-Ld9"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qgW-bn-poX">
-                                <rect key="frame" x="148" y="599" width="78" height="30"/>
+                                <rect key="frame" x="215" y="617" width="78" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Start Game"/>
                                 <connections>
@@ -321,11 +322,11 @@
                         <viewLayoutGuide key="safeArea" id="lRE-Q1-QCS"/>
                     </view>
                     <connections>
+                        <outlet property="idLabel" destination="yaI-zV-asR" id="cXu-q6-g6H"/>
                         <outlet property="label" destination="gcI-QT-V5V" id="AIS-o9-6sx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tRy-mm-wTQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="lcn-VO-1im" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="509.60000000000002" y="1661.9190404797603"/>
         </scene>
@@ -375,9 +376,9 @@
         <image name="rlsLogo.png" width="306" height="396"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="GZK-wt-3HE"/>
-        <segue reference="ylZ-jm-Mip"/>
-        <segue reference="KaN-f5-s3I"/>
+        <segue reference="EFb-3M-K7p"/>
+        <segue reference="fU7-lf-Ld9"/>
+        <segue reference="NhM-eg-VY2"/>
         <segue reference="MYK-9X-l1d"/>
         <segue reference="g5B-9X-Nzf"/>
     </inferredMetricsTieBreakers>

@@ -13,6 +13,7 @@
 		414BDA6C208CBF780018DD94 /* NicknameTF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414BDA6B208CBF780018DD94 /* NicknameTF.swift */; };
 		414BDA6E208CC19E0018DD94 /* NicknameLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414BDA6D208CC19E0018DD94 /* NicknameLabel.swift */; };
 		414BDA70208CC9C20018DD94 /* GameIDTF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414BDA6F208CC9C20018DD94 /* GameIDTF.swift */; };
+		414BDA74208CE61D0018DD94 /* EnterButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 414BDA73208CE61D0018DD94 /* EnterButton.swift */; };
 		8E2227E1208BDAFB000018E2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2227E0208BDAFB000018E2 /* AppDelegate.swift */; };
 		8E2227E3208BDAFB000018E2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2227E2208BDAFB000018E2 /* ViewController.swift */; };
 		8E2227E6208BDAFB000018E2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E2227E4208BDAFB000018E2 /* Main.storyboard */; };
@@ -47,6 +48,7 @@
 		414BDA6B208CBF780018DD94 /* NicknameTF.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameTF.swift; sourceTree = "<group>"; };
 		414BDA6D208CC19E0018DD94 /* NicknameLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameLabel.swift; sourceTree = "<group>"; };
 		414BDA6F208CC9C20018DD94 /* GameIDTF.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameIDTF.swift; sourceTree = "<group>"; };
+		414BDA73208CE61D0018DD94 /* EnterButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterButton.swift; sourceTree = "<group>"; };
 		8E2227DD208BDAFB000018E2 /* GameMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GameMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E2227E0208BDAFB000018E2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8E2227E2208BDAFB000018E2 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -123,6 +125,7 @@
 				8E2227EC208BDAFB000018E2 /* Info.plist */,
 				414BDA63208CABFF0018DD94 /* MapView.swift */,
 				414BDA67208CBF2E0018DD94 /* GameMap-Bridging-Header.h */,
+				414BDA73208CE61D0018DD94 /* EnterButton.swift */,
 			);
 			path = GameMap;
 			sourceTree = "<group>";
@@ -287,6 +290,7 @@
 				414BDA70208CC9C20018DD94 /* GameIDTF.swift in Sources */,
 				414BDA6E208CC19E0018DD94 /* NicknameLabel.swift in Sources */,
 				8E2227E1208BDAFB000018E2 /* AppDelegate.swift in Sources */,
+				414BDA74208CE61D0018DD94 /* EnterButton.swift in Sources */,
 				414BDA6C208CBF780018DD94 /* NicknameTF.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
