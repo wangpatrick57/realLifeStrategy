@@ -10,6 +10,7 @@ import UIKit
 
 class NicknameLabel: UIViewController {
     
+    var team = String()
     
     @IBOutlet weak var idLabel: UILabel!
     @IBOutlet weak var label: UILabel!
@@ -24,6 +25,15 @@ class NicknameLabel: UIViewController {
         idLabel.text = id
     }
     
+    @IBAction func teamSelected(_ sender: UIButton) {
+        if sender.tag == 1{
+            team = "Red"
+        }
+        if sender.tag == 2{
+            team = "Blue"
+        }
+        print(team)
+    }
     //MARK: Actions
     
 }

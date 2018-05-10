@@ -20,6 +20,7 @@ class NicknameTF: UIViewController {
         var senderButton = sender as? EnterButton
         
         if senderButton?.isTouchInside == true {
+            print("true")
             let nicknameLController = segue.destination as! NicknameLabel
             nicknameLController.nickname = "Hi, " + nickNameTF.text! + "!"
             nicknameLController.id = self.id
