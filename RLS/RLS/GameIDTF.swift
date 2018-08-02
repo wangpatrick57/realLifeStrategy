@@ -11,26 +11,24 @@ import UIKit
 class GameIDTF: UIViewController {
     
     @IBOutlet weak var idTF: UITextField!
-    
-    @IBAction func enter(_ sender: EnterButton) {
-        if idTF.text != ""{
-            performSegue(withIdentifier: "segue1", sender: self)
-        }
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        let senderButton = sender as? EnterButton
-        
-        if senderButton?.isTouchInside == true {
-            let idLController = segue.destination as! NicknameTF
-            idLController.id = "GameID: " + idTF.text!
-        }
-    }
-    
+//    @IBAction func enter(_ sender: EnterButton) {
+//        if idTF.text != ""{
+//            performSegue(withIdentifier: "segue1", sender: self)
+//        }
+//    }
+//
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//
+//        let senderButton = sender as? EnterButton
+//
+//        if senderButton?.isTouchInside == true {
+//            let idLController = segue.destination as! NicknameTFView
+//            idLController.id = "GameID: " + idTF.text!
+//        }
+//    }
+//
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
     }
-    
 }
