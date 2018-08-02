@@ -8,7 +8,7 @@
 
 import UIKit
 
-class NicknameLabel: UIViewController {
+class TOBEDELETEDNicknameLabel: UIViewController {
     
     var team = String()
     

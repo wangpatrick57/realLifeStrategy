@@ -63,7 +63,7 @@
         <!--HostOrJoin-->
         <scene sceneID="d5e-p9-kZP">
             <objects>
-                <viewController title="HostOrJoin" id="qoq-Th-0eg" sceneMemberID="viewController">
+                <viewController title="HostOrJoin" id="qoq-Th-0eg" customClass="HostOrJoinViewController" customModule="RLS" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ilj-QI-jk8" userLabel="HostOrJoinView">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -88,8 +88,7 @@
                                     <color key="titleShadowColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <action selector="JoinButton:" destination="7R0-3i-lKy" eventType="touchUpInside" id="aKi-q7-sxv"/>
-                                    <segue destination="SpX-Kg-5vU" kind="show" id="x7E-RK-So9"/>
+                                    <action selector="JoinButton:" destination="qoq-Th-0eg" eventType="touchUpInside" id="bad-CW-1bn"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="87S-dJ-Zws">
@@ -104,8 +103,7 @@
                                     <color key="titleShadowColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <action selector="hostButton:" destination="7R0-3i-lKy" eventType="touchUpInside" id="uFr-Xg-sgN"/>
-                                    <segue destination="hrO-SK-6aB" kind="show" id="XPN-kw-vUt"/>
+                                    <action selector="HostButton:" destination="qoq-Th-0eg" eventType="touchUpInside" id="Kq9-co-h6k"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -124,39 +122,53 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="kxp-dl-Yt3"/>
                     </view>
+                    <connections>
+                        <segue destination="hrO-SK-6aB" kind="show" identifier="HostGameIDSegue" id="b4Q-p1-Lm5"/>
+                        <segue destination="SpX-Kg-5vU" kind="show" identifier="JoinGameIDSegue" id="wTD-8y-od4"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="88i-Fz-Tgr" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="7R0-3i-lKy" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="-340" y="128"/>
         </scene>
         <!--HostGameID-->
         <scene sceneID="NT1-Sf-P3C">
             <objects>
-                <viewController title="HostGameID" id="hrO-SK-6aB" sceneMemberID="viewController">
+                <viewController title="HostGameID" id="hrO-SK-6aB" customClass="HostGameIDView" customModule="RLS" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="gma-mB-sFC" userLabel="HostGameIDView">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Game ID: 12345 " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nh3-6I-BiC" userLabel="GameIDLabel" propertyAccessControl="all">
-                                <rect key="frame" x="123" y="323" width="127.5" height="20.5"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RBJ-MN-WJl" userLabel="NextButton">
+                                <rect key="frame" x="171" y="319" width="32" height="29"/>
+                                <state key="normal" title="Next"/>
+                                <connections>
+                                    <action selector="NextButton:" destination="hrO-SK-6aB" eventType="touchUpInside" id="rQ0-Sn-4OB"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Game ID: " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q39-cs-X8Z">
+                                <rect key="frame" x="41" y="261" width="293" height="50"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RBJ-MN-WJl" userLabel="NextButton">
-                                <rect key="frame" x="171" y="351" width="32" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Next"/>
-                                <connections>
-                                    <segue destination="nP5-Pd-5pS" kind="show" id="Bct-sg-gZL"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="RBJ-MN-WJl" firstAttribute="centerX" secondItem="gma-mB-sFC" secondAttribute="centerX" id="Nul-jx-10x"/>
+                            <constraint firstItem="Q39-cs-X8Z" firstAttribute="top" secondItem="Mys-YQ-Pl9" secondAttribute="top" constant="241" id="Suf-Vc-Lnn"/>
+                            <constraint firstItem="RBJ-MN-WJl" firstAttribute="centerY" secondItem="gma-mB-sFC" secondAttribute="centerY" id="auw-zB-RQJ"/>
+                            <constraint firstItem="Q39-cs-X8Z" firstAttribute="leading" secondItem="Mys-YQ-Pl9" secondAttribute="leading" constant="41" id="pa7-Se-fpL"/>
+                            <constraint firstItem="Mys-YQ-Pl9" firstAttribute="bottom" secondItem="RBJ-MN-WJl" secondAttribute="bottom" constant="319" id="qSX-5L-h36"/>
+                            <constraint firstItem="RBJ-MN-WJl" firstAttribute="top" secondItem="Q39-cs-X8Z" secondAttribute="bottom" constant="8" symbolic="YES" id="s1L-h5-Lih"/>
+                            <constraint firstItem="Q39-cs-X8Z" firstAttribute="centerX" secondItem="RBJ-MN-WJl" secondAttribute="centerX" id="zwp-tA-hoo"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="Mys-YQ-Pl9"/>
                     </view>
+                    <connections>
+                        <outlet property="HostGameID" destination="Q39-cs-X8Z" id="YJU-Uj-Jhd"/>
+                        <segue destination="nP5-Pd-5pS" kind="show" identifier="EnterNicknameSegue" id="33A-tr-XmC"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bvb-Lp-dNo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -170,8 +182,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" usesAttributedText="YES" borderStyle="roundedRect" placeholder="Enter Game ID" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="I5y-UX-Rft" userLabel="IDTF" customClass="MyUITextField" customModule="RLS" customModuleProvider="target">
-                                <rect key="frame" x="63" y="318" width="273" height="30"/>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" usesAttributedText="YES" borderStyle="roundedRect" placeholder="Enter Game ID" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="I5y-UX-Rft" userLabel="IDTF">
+                                <rect key="frame" x="63" y="318.5" width="273" height="30"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <bool key="isElement" value="NO"/>
                                 </accessibility>
@@ -179,14 +191,14 @@
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="go"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wtX-eg-sb4" userLabel="EnterButton" customClass="EnterButton" customModule="RLS" customModuleProvider="target">
-                                <rect key="frame" x="206" y="376" width="37" height="30"/>
+                                <rect key="frame" x="206" y="376.5" width="37" height="30"/>
                                 <state key="normal" title="Enter"/>
                                 <connections>
-                                    <segue destination="nP5-Pd-5pS" kind="show" identifier="segue1" id="Kyw-zf-lJu"/>
+                                    <action selector="EnterButton:" destination="SpX-Kg-5vU" eventType="touchUpInside" id="biK-Cx-DOu"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7xk-X0-Aiv" userLabel="ReturnButton">
-                                <rect key="frame" x="119" y="376" width="46" height="30"/>
+                                <rect key="frame" x="119" y="376.5" width="46" height="30"/>
                                 <state key="normal" title="Return"/>
                                 <connections>
                                     <segue destination="qoq-Th-0eg" kind="show" id="D1b-4c-cdS"/>
@@ -198,7 +210,7 @@
                             <constraint firstItem="I5y-UX-Rft" firstAttribute="leading" secondItem="ULA-rq-dtT" secondAttribute="leading" constant="63" id="5wj-ke-bHr"/>
                             <constraint firstItem="ULA-rq-dtT" firstAttribute="trailing" secondItem="I5y-UX-Rft" secondAttribute="trailing" constant="39" id="6eB-J1-hnS"/>
                             <constraint firstAttribute="trailing" secondItem="wtX-eg-sb4" secondAttribute="trailing" constant="132" id="hFp-Am-osS"/>
-                            <constraint firstItem="wtX-eg-sb4" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="7xk-X0-Aiv" secondAttribute="trailing" symbolic="YES" id="jo6-G0-O13"/>
+                            <constraint firstItem="wtX-eg-sb4" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="7xk-X0-Aiv" secondAttribute="trailing" constant="8" symbolic="YES" id="jo6-G0-O13"/>
                             <constraint firstItem="7xk-X0-Aiv" firstAttribute="baseline" secondItem="wtX-eg-sb4" secondAttribute="baseline" id="lZi-N3-T9w"/>
                             <constraint firstItem="7xk-X0-Aiv" firstAttribute="leading" secondItem="ULA-rq-dtT" secondAttribute="leading" constant="119" id="my0-CL-G7g"/>
                             <constraint firstItem="7xk-X0-Aiv" firstAttribute="top" secondItem="I5y-UX-Rft" secondAttribute="bottom" constant="28" id="sa3-wa-0SK"/>
@@ -208,6 +220,7 @@
                     </view>
                     <connections>
                         <outlet property="idTF" destination="I5y-UX-Rft" id="IV5-ix-Zfk"/>
+                        <segue destination="nP5-Pd-5pS" kind="show" identifier="JoinEnterNicknameSegue" id="f0Y-Id-UZu"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4eh-w1-YJf" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -217,38 +230,38 @@
         <!--EnterNickname-->
         <scene sceneID="HBM-6J-Xfg">
             <objects>
-                <viewController title="EnterNickname" id="nP5-Pd-5pS" customClass="NicknameTF" customModule="RLS" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="EnterNickname" id="nP5-Pd-5pS" customClass="NicknameTFView" customModule="RLS" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Wmo-6U-uSF" userLabel="EnterNicknameView" customClass="UITextField">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Game ID: XXXXX" textAlignment="natural" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4d0-fR-0xm" userLabel="IDLabel">
-                                <rect key="frame" x="122" y="262" width="131" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter Nickname" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Wjl-7k-iBe" userLabel="NicknameTF" customClass="nickNameTF" customModule="GameMap">
-                                <rect key="frame" x="92" y="318" width="190" height="30"/>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter Nickname" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Wjl-7k-iBe" userLabel="NicknameTF">
+                                <rect key="frame" x="92" y="318.5" width="190" height="30"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="join" enablesReturnKeyAutomatically="YES" textContentType="nickname"/>
                             </textField>
                             <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vd8-Cc-9hA" userLabel="JoinButton" customClass="EnterButton" customModule="RLS" customModuleProvider="target">
-                                <rect key="frame" x="216" y="369" width="30" height="30"/>
+                                <rect key="frame" x="216" y="369.5" width="30" height="30"/>
                                 <accessibility key="accessibilityConfiguration" identifier="enterButton"/>
                                 <state key="normal" title="Join"/>
                                 <connections>
-                                    <segue destination="iCi-CW-8rI" kind="show" identifier="segue 4" id="zXf-4g-Gum"/>
+                                    <action selector="JoinButton:" destination="nP5-Pd-5pS" eventType="touchUpInside" id="ecZ-ce-GCQ"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IOf-cI-32C" userLabel="ReturnButton">
-                                <rect key="frame" x="125" y="369" width="46" height="30"/>
+                                <rect key="frame" x="125" y="369.5" width="46" height="30"/>
                                 <state key="normal" title="Return"/>
                                 <connections>
-                                    <segue destination="qoq-Th-0eg" kind="show" id="beP-Yy-CrT"/>
+                                    <segue destination="qoq-Th-0eg" kind="show" id="i05-3P-dzg"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Game ID: XXXXX" textAlignment="center" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4d0-fR-0xm" userLabel="IDLabel">
+                                <rect key="frame" x="16" y="258" width="343" height="52"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -261,23 +274,24 @@
                             <constraint firstItem="4d0-fR-0xm" firstAttribute="centerX" secondItem="Wjl-7k-iBe" secondAttribute="centerX" id="cAx-pB-JIb"/>
                             <constraint firstAttribute="trailing" secondItem="vd8-Cc-9hA" secondAttribute="trailing" constant="129" id="d1i-Ic-dTE"/>
                             <constraint firstItem="Wjl-7k-iBe" firstAttribute="centerX" secondItem="8ha-YF-SRD" secondAttribute="centerX" id="eLn-zK-xSA"/>
-                            <constraint firstItem="vd8-Cc-9hA" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="IOf-cI-32C" secondAttribute="trailing" symbolic="YES" id="iLM-o3-iKl"/>
+                            <constraint firstItem="vd8-Cc-9hA" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="IOf-cI-32C" secondAttribute="trailing" constant="8" symbolic="YES" id="iLM-o3-iKl"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="8ha-YF-SRD"/>
                     </view>
                     <connections>
-                        <outlet property="idLabel" destination="4d0-fR-0xm" id="Bmd-52-Qxp"/>
-                        <outlet property="nickNameTF" destination="Wjl-7k-iBe" id="z2u-XA-yhL"/>
+                        <outlet property="NickNameTF" destination="Wjl-7k-iBe" id="HSy-60-LZp"/>
+                        <outlet property="gameID" destination="4d0-fR-0xm" id="1hE-JN-o1v"/>
+                        <segue destination="iCi-CW-8rI" kind="show" identifier="PlayerListSegue" id="bSl-fr-Pgx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Sz9-OC-Py1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-340" y="1589"/>
+            <point key="canvasLocation" x="-340" y="1588.1559220389806"/>
         </scene>
         <!--PlayerList-->
         <scene sceneID="9f3-dY-cb8">
             <objects>
-                <viewController title="PlayerList" id="iCi-CW-8rI" customClass="NicknameLabel" customModule="RLS" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="PlayerList" id="iCi-CW-8rI" customClass="PlayerListView" customModule="RLS" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="tZk-6z-Pmo" userLabel="PlayerListView">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -367,7 +381,6 @@
                     </view>
                     <connections>
                         <outlet property="idLabel" destination="D1n-8D-cOr" id="at4-pH-bVF"/>
-                        <outlet property="label" destination="rd7-sb-4SI" id="BvH-DR-NW4"/>
                         <outlet property="nicknameLabel" destination="rd7-sb-4SI" id="3Uu-6Q-Azl"/>
                         <outlet property="redPlayersScroll" destination="bX1-ht-8kt" id="E51-qa-acC"/>
                     </connections>
@@ -416,8 +429,8 @@
         <image name="rlsLogo.png" width="306" height="396"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="zXf-4g-Gum"/>
-        <segue reference="Bct-sg-gZL"/>
-        <segue reference="beP-Yy-CrT"/>
+        <segue reference="bSl-fr-Pgx"/>
+        <segue reference="33A-tr-XmC"/>
+        <segue reference="i05-3P-dzg"/>
     </inferredMetricsTieBreakers>
 </document>

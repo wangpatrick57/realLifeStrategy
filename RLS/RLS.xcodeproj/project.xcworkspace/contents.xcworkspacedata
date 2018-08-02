@@ -2,15 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:../../../../Documents/GameMap/Podfile">
-   </FileRef>
-   <FileRef
-      location = "group:../../../../Documents/GameMap/Podfile.lock">
-   </FileRef>
-   <FileRef
-      location = "group:../../../../Documents/GameMap/Pods">
-   </FileRef>
-   <FileRef
       location = "self:">
    </FileRef>
 </Workspace>
