@@ -25,8 +25,8 @@
                                 <color key="textColor" red="0.5402161593" green="0.5402161593" blue="0.5402161593" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tTn-Ia-X0r">
-                                <rect key="frame" x="36" y="113" width="299" height="373"/>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tTn-Ia-X0r">
+                                <rect key="frame" x="38" y="113" width="299" height="373"/>
                                 <state key="normal" title="Next" image="rlsLogo.png"/>
                                 <connections>
                                     <segue destination="qoq-Th-0eg" kind="show" id="7sF-Wl-NRA"/>
@@ -431,6 +431,6 @@
     <inferredMetricsTieBreakers>
         <segue reference="bSl-fr-Pgx"/>
         <segue reference="33A-tr-XmC"/>
-        <segue reference="i05-3P-dzg"/>
+        <segue reference="wS3-6Q-DAs"/>
     </inferredMetricsTieBreakers>
 </document>
