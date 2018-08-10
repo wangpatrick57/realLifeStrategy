@@ -14,15 +14,13 @@ class PlayerListView : UIViewController{
     @IBOutlet weak var idLabel: UILabel!
     @IBOutlet weak var nicknameLabel: UILabel!
     
-    var nickname = String()
-    var id = String()
     var team = String()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         nicknameLabel.text = "Hi, " + nickname + "! Choose a team below:"
-        idLabel.text = id
+        idLabel.text = gameId
     }
     
     @IBOutlet weak var redPlayersScroll: UIScrollView!

@@ -34,11 +34,10 @@ class NicknameTFView: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let DestViewController : PlayerListView = segue.destination as! PlayerListView
-        nickname = nicknameTF.text!
     }
     
     func checkNameTaken() {
+        nickname = nicknameTF.text!
         let docRef:DocumentReference = db.document("Games/" + gameId + "/Players/" + nickname)
         
         docRef.getDocument { (document, error) in
