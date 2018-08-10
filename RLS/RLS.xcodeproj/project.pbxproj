@@ -26,7 +26,6 @@
 		41AEB0022112B3B800DF6AE5 /* HostOrJoinViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AEB0012112B3B800DF6AE5 /* HostOrJoinViewController.swift */; };
 		41B3E04A20F5998C00E7D232 /* rlsLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 41B3E04920F5998C00E7D232 /* rlsLogo.png */; };
 		41B3E04E20F59C8B00E7D232 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 41B3E04D20F59C8B00E7D232 /* Assets.xcassets */; };
-		41B3E06220F5C45200E7D232 /* 2 in Resources */ = {isa = PBXBuildFile; fileRef = 41B3E06120F5C45200E7D232 /* 2 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,11 +67,10 @@
 		41AEAFF921129BCD00DF6AE5 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
 		41AEAFFA21129BCD00DF6AE5 /* Podfile.lock */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile.lock; sourceTree = "<group>"; };
 		41AEAFFB21129BCF00DF6AE5 /* Pods */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Pods; sourceTree = "<group>"; };
-		41AEAFFF2112AEDF00DF6AE5 /* HostGameIDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HostGameIDView.swift; path = /Users/melodylee/Desktop/GameMap/RLS/RLS/HostGameIDView.swift; sourceTree = "<absolute>"; };
-		41AEB0012112B3B800DF6AE5 /* HostOrJoinViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HostOrJoinViewController.swift; path = /Users/melodylee/Desktop/GameMap/RLS/RLS/HostOrJoinViewController.swift; sourceTree = "<absolute>"; };
+		41AEAFFF2112AEDF00DF6AE5 /* HostGameIDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HostGameIDView.swift; path = RLS/HostGameIDView.swift; sourceTree = SOURCE_ROOT; };
+		41AEB0012112B3B800DF6AE5 /* HostOrJoinViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HostOrJoinViewController.swift; path = RLS/HostOrJoinViewController.swift; sourceTree = SOURCE_ROOT; };
 		41B3E04920F5998C00E7D232 /* rlsLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rlsLogo.png; sourceTree = SOURCE_ROOT; };
 		41B3E04D20F59C8B00E7D232 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		41B3E06120F5C45200E7D232 /* 2 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = 2; path = ../../../../Downloads/2; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,7 +137,6 @@
 				41B3E04920F5998C00E7D232 /* rlsLogo.png */,
 				418C137E20F1B9A800AE16C5 /* NicknameTFView.swift */,
 				418C138220F1BA0E00AE16C5 /* MapControllerView.swift */,
-				41B3E06120F5C45200E7D232 /* 2 */,
 				418C138620F1BA7D00AE16C5 /* Player.swift */,
 				417F570C2112BB3000CE6E4A /* PlayerListView.swift */,
 			);
@@ -271,7 +268,6 @@
 				41AEAFFC21129BCF00DF6AE5 /* Podfile in Resources */,
 				41B3E04A20F5998C00E7D232 /* rlsLogo.png in Resources */,
 				41AEAFFE21129BCF00DF6AE5 /* Pods in Resources */,
-				41B3E06220F5C45200E7D232 /* 2 in Resources */,
 				418C135720F1B89B00AE16C5 /* LaunchScreen.storyboard in Resources */,
 				41B3E04E20F59C8B00E7D232 /* Assets.xcassets in Resources */,
 				418C135220F1B89A00AE16C5 /* Main.storyboard in Resources */,
