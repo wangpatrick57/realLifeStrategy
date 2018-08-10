@@ -6,8 +6,8 @@ target 'RLS' do
   use_frameworks!
 
   # Pods for RLS
-  
-
+  pod 'FirebaseCore'
+  pod 'FirebaseFirestore'
 
   target 'RLSTests' do
     inherit! :search_paths
