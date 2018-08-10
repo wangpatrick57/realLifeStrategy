@@ -8,19 +8,16 @@
 import Foundation
 import UIKit
 
-class HostGameIDView : UIViewController{
+class HostGameIDView : UIViewController {
     @IBOutlet weak var HostGameID: UILabel!
     @IBAction func NextButton(_ sender: Any) {
         print("Next Button clicked")
         self.performSegue(withIdentifier: "EnterNicknameSegue", sender: self)
     }
     
-    var id = String()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        HostGameID.text = "Game ID: -1"
-        id = "-1"
+        HostGameID.text = "Game ID: " + gameId
     }
     
     override func didReceiveMemoryWarning() {
@@ -28,8 +25,6 @@ class HostGameIDView : UIViewController{
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        var DestViewController : NicknameTFView = segue.destination as! NicknameTFView
-        
-        DestViewController.id = id
+        //var DestViewController : NicknameTFView = segue.destination as! NicknameTFView
     }
 }

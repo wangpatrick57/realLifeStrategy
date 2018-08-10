@@ -8,27 +8,57 @@
 
 import Foundation
 import UIKit
+import FirebaseFirestore
 
 class NicknameTFView: UIViewController {
     
     @IBOutlet weak var gameID: UILabel!
-    @IBOutlet weak var NickNameTF: UITextField!
+    @IBOutlet weak var nicknameTF: UITextField!
+    
     @IBAction func JoinButton(_ sender: Any) {
         print("Join Button clicked")
-        self.performSegue(withIdentifier: "PlayerListSegue", sender: self)
+        
+        if (nicknameTF.text! != "") {
+            checkNameTaken()
+        }
+        //self.performSegue(withIdentifier: "PlayerListSegue", sender: self)
     }
     
     var id = String()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        gameID.text = "Game ID: " + id
+        gameID.text = "Game ID: " + gameId
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        var DestViewController : PlayerListView = segue.destination as! PlayerListView
-        
-        DestViewController.nickname = NickNameTF.text!
-        DestViewController.id = self.id
+        let DestViewController : PlayerListView = segue.destination as! PlayerListView
+        DestViewController.nickname = nicknameTF.text!
     }
     
+    func checkNameTaken() {
+        let nickname:String = nicknameTF.text!
+        let docRef:DocumentReference = db.document("Games/" + gameId + "/Players/" + nickname)
+        
+        docRef.getDocument { (document, error) in
+            if let document = document {
+                if document.exists {
+                    print(nickname + " taken")
+                } else {
+                    db.document("Games/" + gameId + "/Players/" + nickname).setData([
+                        "test": "test"
+                    ]) { err in
+                        if let err = err {
+                            print("Error writing document: \(err)")
+                        } else {
+                            print("Document successfully written!")
+                        }
+                    }
+                    
+                    print(nickname + " not taken")
+                    self.performSegue(withIdentifier: "PlayerListSegue", sender: self)
+                }
+            }
+        }
+    }
 }

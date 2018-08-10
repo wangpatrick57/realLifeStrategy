@@ -279,8 +279,8 @@
                         <viewLayoutGuide key="safeArea" id="8ha-YF-SRD"/>
                     </view>
                     <connections>
-                        <outlet property="NickNameTF" destination="Wjl-7k-iBe" id="HSy-60-LZp"/>
                         <outlet property="gameID" destination="4d0-fR-0xm" id="1hE-JN-o1v"/>
+                        <outlet property="nicknameTF" destination="Wjl-7k-iBe" id="Smi-rE-qU3"/>
                         <segue destination="iCi-CW-8rI" kind="show" identifier="PlayerListSegue" id="bSl-fr-Pgx"/>
                     </connections>
                 </viewController>
@@ -430,7 +430,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="bSl-fr-Pgx"/>
-        <segue reference="f0Y-Id-UZu"/>
+        <segue reference="33A-tr-XmC"/>
         <segue reference="i05-3P-dzg"/>
     </inferredMetricsTieBreakers>
 </document>
