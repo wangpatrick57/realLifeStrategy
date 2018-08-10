@@ -10,24 +10,28 @@ import Foundation
 import MapKit
 import CoreLocation
 
-class Player: NSObject, MKAnnotation {
+class Player: MKPointAnnotation{
     var name: String?
     var team: String
     var id: Double
-    var coordinate: CLLocationCoordinate2D
-    init(name:String,team:String,id:Double,coordinate:CLLocationCoordinate2D){
+
+    init(name:String,team:String,id:Double,coordinates:CLLocationCoordinate2D){
         self.name=name
         self.team=team
         self.id=id
-        self.coordinate=coordinate
+        super.init()
+        self.coordinate=coordinates
     }
     
     func setCoordinate(coordinate: CLLocationCoordinate2D) -> Void {
         self.coordinate=coordinate
     }
-    
+    func getCoordinate()->CLLocationCoordinate2D {
+        return self.coordinate
+    }
+    /*
     var subtitle: String? {
         return team
-    }
+    }*/
 }
 

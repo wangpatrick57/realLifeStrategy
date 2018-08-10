@@ -10,6 +10,8 @@ import Foundation
 import UIKit
 import FirebaseFirestore
 
+var nickname:String = ""
+
 class NicknameTFView: UIViewController {
     
     @IBOutlet weak var gameID: UILabel!
@@ -33,11 +35,10 @@ class NicknameTFView: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let DestViewController : PlayerListView = segue.destination as! PlayerListView
-        DestViewController.nickname = nicknameTF.text!
+        nickname = nicknameTF.text!
     }
     
     func checkNameTaken() {
-        let nickname:String = nicknameTF.text!
         let docRef:DocumentReference = db.document("Games/" + gameId + "/Players/" + nickname)
         
         docRef.getDocument { (document, error) in

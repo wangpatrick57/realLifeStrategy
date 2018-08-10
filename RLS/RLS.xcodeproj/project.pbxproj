@@ -17,7 +17,7 @@
 		418C136D20F1B89B00AE16C5 /* RLSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C136C20F1B89B00AE16C5 /* RLSUITests.swift */; };
 		418C137F20F1B9A800AE16C5 /* NicknameTFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C137E20F1B9A800AE16C5 /* NicknameTFView.swift */; };
 		418C138120F1B9C900AE16C5 /* GameIDTF.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C138020F1B9C900AE16C5 /* GameIDTF.swift */; };
-		418C138320F1BA0E00AE16C5 /* MapControllerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C138220F1BA0E00AE16C5 /* MapControllerView.swift */; };
+		418C138320F1BA0E00AE16C5 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C138220F1BA0E00AE16C5 /* MapViewController.swift */; };
 		418C138520F1BA2C00AE16C5 /* EnterButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C138420F1BA2C00AE16C5 /* EnterButton.swift */; };
 		418C138720F1BA7D00AE16C5 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C138620F1BA7D00AE16C5 /* Player.swift */; };
 		41AEAFFC21129BCF00DF6AE5 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 41AEAFF921129BCD00DF6AE5 /* Podfile */; };
@@ -66,7 +66,7 @@
 		418C136E20F1B89B00AE16C5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		418C137E20F1B9A800AE16C5 /* NicknameTFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameTFView.swift; sourceTree = "<group>"; };
 		418C138020F1B9C900AE16C5 /* GameIDTF.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameIDTF.swift; sourceTree = "<group>"; };
-		418C138220F1BA0E00AE16C5 /* MapControllerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapControllerView.swift; sourceTree = "<group>"; };
+		418C138220F1BA0E00AE16C5 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		418C138420F1BA2C00AE16C5 /* EnterButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterButton.swift; sourceTree = "<group>"; };
 		418C138620F1BA7D00AE16C5 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		41AEAFF921129BCD00DF6AE5 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
@@ -169,7 +169,7 @@
 				41B3E04D20F59C8B00E7D232 /* Assets.xcassets */,
 				41B3E04920F5998C00E7D232 /* rlsLogo.png */,
 				418C137E20F1B9A800AE16C5 /* NicknameTFView.swift */,
-				418C138220F1BA0E00AE16C5 /* MapControllerView.swift */,
+				418C138220F1BA0E00AE16C5 /* MapViewController.swift */,
 				418C138620F1BA7D00AE16C5 /* Player.swift */,
 				417F570C2112BB3000CE6E4A /* PlayerListView.swift */,
 			);
@@ -436,7 +436,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				418C138120F1B9C900AE16C5 /* GameIDTF.swift in Sources */,
-				418C138320F1BA0E00AE16C5 /* MapControllerView.swift in Sources */,
+				418C138320F1BA0E00AE16C5 /* MapViewController.swift in Sources */,
 				41AEB0002112AEDF00DF6AE5 /* HostGameIDView.swift in Sources */,
 				41AEB0022112B3B800DF6AE5 /* HostOrJoinViewController.swift in Sources */,
 				418C134F20F1B89A00AE16C5 /* StartView.swift in Sources */,

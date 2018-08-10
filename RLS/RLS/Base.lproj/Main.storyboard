@@ -392,7 +392,7 @@
         <!--Map-->
         <scene sceneID="p25-7h-B7h">
             <objects>
-                <viewController title="Map" id="cP6-KO-xW8" sceneMemberID="viewController">
+                <viewController title="Map" id="cP6-KO-xW8" customClass="MapViewController" customModule="RLS" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="XE0-yf-sTA">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -419,6 +419,9 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="RCF-qP-fri"/>
                     </view>
+                    <connections>
+                        <outlet property="map" destination="mND-6A-hkp" id="AJm-3B-oAS"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XVg-IN-cfz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -429,7 +432,7 @@
         <image name="rlsLogo.png" width="306" height="396"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="bSl-fr-Pgx"/>
+        <segue reference="BRb-al-mTs"/>
         <segue reference="33A-tr-XmC"/>
         <segue reference="i05-3P-dzg"/>
     </inferredMetricsTieBreakers>
