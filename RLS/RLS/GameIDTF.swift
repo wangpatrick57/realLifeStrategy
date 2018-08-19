@@ -8,12 +8,30 @@
 
 import Foundation
 import UIKit
+import Firebase
 
 class GameIDTF: UIViewController {
     @IBOutlet var idTF: UITextField!
+    
     @IBAction func EnterButton(_ sender: Any) {
         print("Enter Button clicked")
-        self.performSegue(withIdentifier: "JoinEnterNicknameSegue", sender: self)
+        checkGameExists()
+    }
+    
+    func checkGameExists() {
+        gameId = idTF.text!
+        let docRef:DocumentReference = db.document("Games/" + gameId)
+        
+        docRef.getDocument { (document, error) in
+            if let document = document {
+                if document.exists {
+                    print(gameId + " exists")
+                    self.performSegue(withIdentifier: "JoinEnterNicknameSegue", sender: self)
+                } else {
+                    print(gameId + " doesn't exists")
+                }
+            }
+        }
     }
     
     override func viewDidLoad() {

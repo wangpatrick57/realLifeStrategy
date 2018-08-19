@@ -46,7 +46,8 @@ class NicknameTFView: UIViewController {
                     print(nickname + " taken")
                 } else {
                     db.document("Games/" + gameId + "/Players/" + nickname).setData([
-                        "test": "test"
+                        "lat": 0,
+                        "long": 0
                     ]) { err in
                         if let err = err {
                             print("Error writing document: \(err)")

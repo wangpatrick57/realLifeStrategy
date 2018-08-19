@@ -317,8 +317,11 @@
                                 <state key="normal" title="Blue">
                                     <color key="titleColor" red="0.03661791323" green="0.36214847030000002" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 </state>
+                                <connections>
+                                    <action selector="blueSelected:" destination="iCi-CW-8rI" eventType="touchUpInside" id="M8M-fM-MuJ"/>
+                                </connections>
                             </button>
-                            <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oKi-gS-pBB" userLabel="RedTeamButton" customClass="red">
+                            <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oKi-gS-pBB" userLabel="RedTeamButton">
                                 <rect key="frame" x="62" y="193" width="130" height="75"/>
                                 <color key="backgroundColor" red="1" green="0.79973935309999999" blue="0.70959067890000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <constraints>
@@ -328,6 +331,9 @@
                                 <state key="normal" title="Red">
                                     <color key="titleColor" red="1" green="0.0" blue="0.18623063740000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 </state>
+                                <connections>
+                                    <action selector="redSelected:" destination="iCi-CW-8rI" eventType="touchUpInside" id="S1a-dN-Yxd"/>
+                                </connections>
                             </button>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bX1-ht-8kt" userLabel="RPlayersScroll">
                                 <rect key="frame" x="62" y="276" width="130" height="289"/>
@@ -346,7 +352,7 @@
                                 <rect key="frame" x="215" y="617" width="78" height="30"/>
                                 <state key="normal" title="Start Game"/>
                                 <connections>
-                                    <segue destination="cP6-KO-xW8" kind="show" id="LFp-WF-rn1"/>
+                                    <action selector="enterGamePressed:" destination="iCi-CW-8rI" eventType="touchUpInside" id="MGc-sA-Sql"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -380,9 +386,11 @@
                         <viewLayoutGuide key="safeArea" id="cVu-60-l1i"/>
                     </view>
                     <connections>
+                        <outlet property="blueButton" destination="jM2-sD-aAA" id="hnV-z0-di8"/>
                         <outlet property="idLabel" destination="D1n-8D-cOr" id="at4-pH-bVF"/>
                         <outlet property="nicknameLabel" destination="rd7-sb-4SI" id="3Uu-6Q-Azl"/>
-                        <outlet property="redPlayersScroll" destination="bX1-ht-8kt" id="E51-qa-acC"/>
+                        <outlet property="redButton" destination="oKi-gS-pBB" id="CZq-jq-Afy"/>
+                        <segue destination="cP6-KO-xW8" kind="show" identifier="ShowMap" id="0UB-cg-L7h"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vk9-hP-FSO" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -433,7 +441,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="BRb-al-mTs"/>
-        <segue reference="33A-tr-XmC"/>
-        <segue reference="i05-3P-dzg"/>
+        <segue reference="v3r-UE-hxb"/>
+        <segue reference="D1b-4c-cdS"/>
     </inferredMetricsTieBreakers>
 </document>

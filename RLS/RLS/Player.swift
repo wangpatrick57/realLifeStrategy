@@ -13,14 +13,12 @@ import CoreLocation
 class Player: MKPointAnnotation{
     var name: String?
     var team: String
-    var id: Double
 
-    init(name:String,team:String,id:Double,coordinates:CLLocationCoordinate2D){
+    init(name:String,team:String,coordinate:CLLocationCoordinate2D){
         self.name=name
         self.team=team
-        self.id=id
         super.init()
-        self.coordinate=coordinates
+        self.coordinate=coordinate
     }
     
     func setCoordinate(coordinate: CLLocationCoordinate2D) -> Void {

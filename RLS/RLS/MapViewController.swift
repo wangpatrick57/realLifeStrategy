@@ -20,7 +20,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     let manager = CLLocationManager()
     var playerList: [Player] = []
     var once = false
-    var annotation: Player = Player(name: "Bob", team: "Red", id: 1, coordinates: CLLocationCoordinate2DMake(0,0))
+    var annotation: Player = Player(name: "Bob", team: "Red", coordinate: CLLocationCoordinate2DMake(0,0))
     var myLocation: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude:0,longitude: 0)
     var x: Float = 0
     var y: Float = 0
@@ -29,6 +29,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations[0]
+        print("locman")
+        
         if (!once){
             let span: MKCoordinateSpan = MKCoordinateSpanMake(0.01, 0.01)
             myLocation = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
@@ -36,13 +38,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             map.setRegion(region, animated: true)
             //print(location.coordinate.latitude, " and ", location.coordinate.longitude)
             self.map.showsUserLocation = true
-            annotation = Player(name: "Bob",team: "Red",id: 1,coordinates: myLocation)
-            map.addAnnotation(annotation)
             once = true
         }
-        db.document("Games/" + gameId + "/Players/" + nickname)
         
-        
+        db.document("Games/" + gameId + "/Players/" + nickname).updateData([
+            "lat": location.coordinate.latitude,
+            "long": location.coordinate.longitude
+            ])
     }
     
     override func viewDidLoad() {
@@ -51,8 +53,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         manager.desiredAccuracy = kCLLocationAccuracyBest
         manager.requestWhenInUseAuthorization()
         manager.startUpdatingLocation()
-        timer = Timer.scheduledTimer(timeInterval: 0.05, target: self, selector: #selector(getData), userInfo: nil, repeats: true)
-        colRef = Firestore.firestore().collection("Games").document("gameOne").collection("Red Players")
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(handleData), userInfo: nil, repeats: true)
         print("col Ref initialized")
         /*[UIView animateWithDuration:0.3f
          animations:^{
@@ -60,30 +61,36 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
          }]*/
     }
     
-    @objc func getData() {
-        colRef.getDocuments() { (querySnapshot, error) in
+    @objc func handleData() {
+        getData()
+        //sendData()
+    }
+    
+   func getData() {
+        db.collection("Games/" + gameId + "/Players").whereField("team", isEqualTo: team).getDocuments() { (querySnapshot, error) in
             if let error = error{
                 print(error)
             } else {
                 for ann in self.map.annotations{
                     self.map.removeAnnotation(ann)
                 }
-                for playerDoc in querySnapshot!.documents {
-                    let myData = playerDoc.data()
-                    self.myLocation = CLLocationCoordinate2D(latitude: Double(myData["Latitude"] as? Float ?? 20), longitude: Double(myData["Longitude"] as? Float ?? 20))
-                    self.annotation = Player(name: "James", team: "Red", id: 1, coordinates: self.myLocation)
-                    print(self.myLocation.latitude, " and ", self.myLocation.longitude)
-                    self.map.addAnnotation(self.annotation)
+                for document in querySnapshot!.documents {
+                    if (document.documentID != nickname) {
+                        let data = document.data()
+                        let coordinate = CLLocationCoordinate2D(latitude: Double(data["lat"] as? Float ?? 20), longitude: Double(data["long"] as? Float ?? 20))
+                        let annotation = Player(name: document.documentID, team: data["team"] as! String, coordinate: coordinate)
+                        self.map.addAnnotation(annotation)
+                    }
                 }
-                //print("Query exists")
             }
         }
-        //print (x, " and ", y)
+    }
+    
+    func setData() {
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
 }
