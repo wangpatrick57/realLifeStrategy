@@ -11,25 +11,27 @@ import MapKit
 import CoreLocation
 
 class Player: MKPointAnnotation{
-    var name: String?
+    var name: String
     var team: String
-
+    var visionDist: Double = 20 //meters
+    
     init(name:String,team:String,coordinate:CLLocationCoordinate2D){
         self.name=name
         self.team=team
         super.init()
+        self.title = self.name
         self.coordinate=coordinate
     }
     
     func setCoordinate(coordinate: CLLocationCoordinate2D) -> Void {
         self.coordinate=coordinate
     }
+    
     func getCoordinate()->CLLocationCoordinate2D {
         return self.coordinate
     }
     /*
-    var subtitle: String? {
-        return team
-    }*/
+     var subtitle: String? {
+     return team
+     }*/
 }
-
