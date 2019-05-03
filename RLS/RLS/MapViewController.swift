@@ -20,7 +20,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet weak var map: MKMapView!
     
     let manager = CLLocationManager()
-    var playerList: [Player] = []
+    var playerDict: [String: Player] = [:]
     var once = false
     var annotation: Player = Player(name: "Bob", team: "Red", coordinate: CLLocationCoordinate2DMake(0,0))
     var myLocation: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude:0,longitude: 0)
@@ -75,6 +75,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     func getData() {
         //eventually make a server app that calculates vision so that the clients don't have access to all the enemies' positions
+        //first loop is to check for new players
         db.collection("Games/" + gameId + "/Players").getDocuments() { (querySnapshot, error) in
             if let error = error{
                 print(error)
@@ -84,18 +85,36 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
                 }
                 
                 for document in querySnapshot!.documents {
+                    let data = document.data()
+                    let coordinate = CLLocationCoordinate2D(latitude: data["lat"] as! Double, longitude: data["long"] as! Double)
+                    var inList = false
+                    
+                    for name in self.playerDict.keys {
+                        if (name == document.documentID) {
+                            inList = true
+                            break
+                        }
+                    }
+                    
+                    if (!inList) {
+                        self.playerDict[document.documentID] = Player(name: document.documentID, team: data["team"] as? String ?? "none", coordinate: coordinate)
+                    }
+                }
+            }
+        }
+        
+        //second loop is to check for vision
+        db.collection("Games/" + gameId + "/Players").getDocuments() { (querySnapshot, error) in
+            if let error = error{
+                print(error)
+            } else {
+                for document in querySnapshot!.documents {
                     if (self.hasVisionOf(document: document)) {
-                        let data = document.data()
-                        let coordinate = CLLocationCoordinate2D(latitude: data["lat"] as! Double, longitude: data["long"] as! Double)
-                        let thisPlayer = Player(name: document.documentID, team: data["team"] as! String, coordinate: coordinate)
-                        
-                        /*if let index = self.playerList.firstIndex(of: thisPlayer) {
-                            
+                        if let thisPlayer = self.playerDict[document.documentID] {
+                            self.map.addAnnotation(thisPlayer)
                         } else {
-                            self.playerList[self.playerList.count] = thisPlayer
-                        }*/
-                        
-                        self.map.addAnnotation(thisPlayer)
+                            print("player doesn't exist")
+                        }
                     }
                 }
             }

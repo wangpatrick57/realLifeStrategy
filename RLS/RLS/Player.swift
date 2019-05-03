@@ -30,6 +30,10 @@ class Player: MKPointAnnotation{
     func getCoordinate()->CLLocationCoordinate2D {
         return self.coordinate
     }
+    
+    func getName() -> String {
+        return name
+    }
     /*
      var subtitle: String? {
      return team
