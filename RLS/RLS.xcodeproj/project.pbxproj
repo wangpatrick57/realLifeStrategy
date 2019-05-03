@@ -276,13 +276,16 @@
 				TargetAttributes = {
 					418C134820F1B89A00AE16C5 = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 1020;
 					};
 					418C135C20F1B89B00AE16C5 = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 1020;
 						TestTargetID = 418C134820F1B89A00AE16C5;
 					};
 					418C136720F1B89B00AE16C5 = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 1020;
 						TestTargetID = 418C134820F1B89A00AE16C5;
 					};
 				};
@@ -627,7 +630,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = Ethan.RLS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -646,7 +649,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = Ethan.RLS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -667,7 +670,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = RLS.RLSTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RLS.app/RLS";
 			};
@@ -689,7 +692,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = RLS.RLSTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RLS.app/RLS";
 			};
@@ -710,7 +713,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = RLS.RLSUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = RLS;
 			};
@@ -731,7 +734,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = RLS.RLSUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = RLS;
 			};

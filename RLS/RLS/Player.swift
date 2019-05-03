@@ -34,6 +34,14 @@ class Player: MKPointAnnotation{
     func getName() -> String {
         return name
     }
+    
+    func setTeam(team: String) {
+        self.team = team
+    }
+    
+    func getTeam() -> String {
+        return team
+    }
     /*
      var subtitle: String? {
      return team
