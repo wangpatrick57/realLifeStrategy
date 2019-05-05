@@ -20,9 +20,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet weak var map: MKMapView!
     
     let manager = CLLocationManager()
-    var playerDict: [String: Player] = [:]
-    var myTeamDict: [String: Player] = [:]
-    var otherTeamDict: [String: Player] = [:]
+    var playerDict: [String: Player] = [:] //dictionary of all players
+    var myTeamDict: [String: Player] = [:] //dictionary of players on "your" team
+    var otherTeamDict: [String: Player] = [:] //dictionary of players on the "other" team
     var once = false
     var annotation: Player = Player(name: "Bob", team: "Red", coordinate: CLLocationCoordinate2DMake(0,0))
     var myLocation: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude:0,longitude: 0)
@@ -32,10 +32,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     var colRef: CollectionReference!
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let location = locations[0]
+        let location = locations[0] //the latest location
         print("locman")
         
         if (!once){
+            //i'm not sure how this works someone pls comment - patrick
             let span: MKCoordinateSpan = MKCoordinateSpan.init(latitudeDelta: 0.01, longitudeDelta: 0.01)
             myLocation = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
             let region:MKCoordinateRegion = MKCoordinateRegion.init(center: myLocation, span: span)
@@ -45,6 +46,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
             once = true
         }
         
+        //write data
         db.document("Games/" + gameId + "/Players/" + nickname).updateData([
             "lat": location.coordinate.latitude,
             "long": location.coordinate.longitude
@@ -77,19 +79,25 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     func getData() {
         //eventually make a server app that calculates vision so that the clients don't have access to all the enemies' positions
+        
+        //overall loop to get the data
         db.collection("Games/" + gameId + "/Players").getDocuments() { (querySnapshot, error) in
             if let error = error{
                 print(error)
             } else {
                 //this loop is to check for new players and update existing ones
+                //it first updates playerDict, then updates myTeam and otherTeam dicts
                 //don't run this every frame; instead, run this on a button called update players
                 for document in querySnapshot!.documents {
                     let data = document.data()
+                    
+                    //"this" refers to the current document's location or team, not "this phone's" location or team
                     let thisCoordinate = CLLocationCoordinate2D(latitude: data["lat"] as! Double, longitude: data["long"] as! Double)
                     let thisTeam = data["team"] as? String ?? "none"
                     let thisName = document.documentID
                     var inList = false
                     
+                    //check if they're already in playerDict (this can be simplified using dictionary.index()
                     for key in self.playerDict.keys {
                         if (key == thisName) {
                             inList = true
@@ -97,6 +105,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
                         }
                     }
                     
+                    //either updates their data or adds them to the dict
                     if (inList) {
                         self.playerDict[thisName]?.setCoordinate(coordinate: thisCoordinate)
                         self.playerDict[thisName]?.setTeam(team: thisTeam)
@@ -105,6 +114,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
                         self.playerDict[thisName] = playerToAdd
                     }
                     
+                    //updates myTeam and otherTeam dicts
                     if (thisTeam == team) {
                         self.myTeamDict[thisName] = self.playerDict[thisName]
                         
@@ -144,6 +154,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     }
     
     func hasVisionOf(playerToCheck: Player) -> Bool {
+        //if they're on your team you can see them
         if (playerToCheck.getTeam() == team) {
             return true
         }
@@ -154,6 +165,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         let lat2 : Double = coordToCheck.latitude
         let lon2 : Double = coordToCheck.longitude
         
+        //loops through every player on your team and checks if that teammate can see the playerToCheck
         for key in myTeamDict.keys {
             if let thisPlayer = myTeamDict[key] {
                 let coord = thisPlayer.getCoordinate()
@@ -169,6 +181,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         return false
     }
     
+    //a function i stole online that tells you the distance in meters between two coordinates
     func latLongDist(lat1: Double, lon1: Double, lat2: Double, lon2: Double) -> Double {
         let R = 6378.137 // Radius of earth in KM
         let dLat = lat2 * Double.pi / 180 - lat1 * Double.pi / 180
