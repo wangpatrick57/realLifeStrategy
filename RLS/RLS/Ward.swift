@@ -1,28 +1,19 @@
 //
-//  Player.swift
+//  Ward.swift
 //  RLS
 //
-//  Created by Ethan Soo on 4/22/18.
-//  Copyright © 2018 Hackathon Event. All rights reserved.
+//  Created by Patrick Wang on 5/4/19.
+//  Copyright © 2019 Melody Lee. All rights reserved.
 //
 
 import Foundation
 import MapKit
 import CoreLocation
 
-class Player: MKPointAnnotation{
+class Ward: MKPointAnnotation{
     private var name: String
     private var team: String
-    private var ward: Ward?
-    let visionDist: Double = 20 //meters
-    
-    override init() {
-        self.name = ""
-        self.team = ""
-        super.init()
-        self.title = self.name
-        self.coordinate = CLLocationCoordinate2D(latitude: 0, longitude: 0)
-    }
+    let visionDist: Double = 30 //meters
     
     init(name:String,team:String,coordinate:CLLocationCoordinate2D){
         self.name=name
@@ -50,17 +41,5 @@ class Player: MKPointAnnotation{
     
     func getTeam() -> String {
         return team
-    }
-    
-    func addWard() {
-        ward = Ward(name: name + "'s ward", team: team, coordinate: coordinate)
-    }
-    
-    func addWardAt(coordinate: CLLocationCoordinate2D) {
-        ward = Ward(name: name + "'s ward", team: team, coordinate: coordinate)
-    }
-    
-    func getWard() -> Ward? {
-        return ward
     }
 }

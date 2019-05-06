@@ -12,6 +12,7 @@ import FirebaseFirestore
 var gameId:String = "generating"
 let gameIdLength:Int = 5
 let db = Firestore.firestore()
+let debug = true
 
 class HostOrJoinViewController : UIViewController {
     @IBAction func HostButton(_ sender: Any) {

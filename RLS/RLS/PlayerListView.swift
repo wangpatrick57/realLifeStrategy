@@ -7,9 +7,10 @@
 //
 
 import Foundation
+import MapKit
 import UIKit
 
-var team: String = ""
+var myPlayer:Player = Player()
 
 class PlayerListView : UIViewController{
     
@@ -21,6 +22,7 @@ class PlayerListView : UIViewController{
     var redSelected: UIColor = UIColor(red: 246.0/255.0, green: 91.0/255.0, blue: 73.0/255.0, alpha: 1.0)
     var blueUnselected: UIColor = UIColor(red: 167.0/255.0, green: 177.0/255.0, blue: 247.0/255.0, alpha: 1.0)
     var blueSelected: UIColor = UIColor(red: 73.0/255.0, green: 94.0/255.0, blue: 246.0/255.0, alpha: 1.0)
+    var team: String = ""
     
     @IBAction func redSelected(_ sender: Any) {
         team = "red"
@@ -44,8 +46,9 @@ class PlayerListView : UIViewController{
     
     @IBAction func enterGamePressed(_ sender: Any) {
         if (team != "") {
-            self.performSegue(withIdentifier: "ShowMap", sender: self)
-            db.document("Games/" + gameId + "/Players/" + nickname).updateData([
+            myPlayer = Player(name: nickname, team: team, coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
+            
+            db.document("Games/" + gameId + "/Players/" + myPlayer.getName()).updateData([
                 "team": team
             ]) { err in
                 if let err = err {
@@ -54,6 +57,8 @@ class PlayerListView : UIViewController{
                     print("Document successfully updated")
                 }
             }
+            
+            self.performSegue(withIdentifier: "ShowMap", sender: self)
         }
     }
     
