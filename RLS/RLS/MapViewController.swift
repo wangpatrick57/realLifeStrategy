@@ -56,7 +56,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     @IBAction func dropWard(_ sender: Any) {
         myPlayer.addWard()
         let coordinate = myPlayer.getCoordinate()
-        
         db.document("Games/" + gameId + "/Players/" + myPlayer.getName()).updateData([
             "wardLat": coordinate.latitude,
             "wardLong": coordinate.longitude
