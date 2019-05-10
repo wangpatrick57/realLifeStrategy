@@ -9,8 +9,8 @@ import UIKit
 import Firebase
 import FirebaseFirestore
 
-var gameId:String = "generating"
-let gameIdLength:Int = 5
+var gameID:String = "generating"
+let gameIDLength:Int = 5
 let db = Firestore.firestore()
 let debug = true
 
@@ -35,16 +35,16 @@ class HostOrJoinViewController : UIViewController {
     }
     
     func checkIdTaken() {
-        gameId = generateGameId()
-        let docRef:DocumentReference = db.document("Games/" + gameId)
+        gameID = generateGameId()
+        let docRef:DocumentReference = db.document("Games/" + gameID)
         
         docRef.getDocument { (document, error) in
             if let document = document {
                 if document.exists {
-                    print(gameId + " taken")
+                    print(gameID + " taken")
                     self.checkIdTaken()
                 } else {
-                    db.document("Games/" + gameId).setData([
+                    db.document("Games/" + gameID).setData([
                         "test": "test"
                     ]) { err in
                         if let err = err {
@@ -54,7 +54,7 @@ class HostOrJoinViewController : UIViewController {
                         }
                     }
                     
-                    print(gameId + " not taken")
+                    print(gameID + " not taken")
                     self.performSegue(withIdentifier: "HostGameIDSegue", sender: self)
                 }
             }
@@ -62,10 +62,10 @@ class HostOrJoinViewController : UIViewController {
     }
     
     func generateGameId()->String {
-        var gameId:String = ""
+        var gameID:String = ""
         let alphabet: [String] = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
         
-        for i in 1...gameIdLength {
+        for i in 1...gameIDLength {
             let rand:Int = Int(arc4random_uniform(36))
             var add:String
             
@@ -75,9 +75,9 @@ class HostOrJoinViewController : UIViewController {
                 add = alphabet[rand - 10]
             }
             
-            gameId += add
+            gameID += add
         }
         
-        return gameId
+        return gameID
     }
 }

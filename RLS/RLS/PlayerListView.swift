@@ -41,14 +41,14 @@ class PlayerListView : UIViewController{
         redButton.backgroundColor = redUnselected
         blueButton.backgroundColor = blueUnselected
         nicknameLabel.text = "Hi, " + nickname + "! Choose a team below:"
-        idLabel.text = "Game ID: " + gameId
+        idLabel.text = "Game ID: " + gameID
     }
     
     @IBAction func enterGamePressed(_ sender: Any) {
         if (team != "") {
             myPlayer = Player(name: nickname, team: team, coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
             
-            db.document("Games/" + gameId + "/Players/" + myPlayer.getName()).updateData([
+            db.document("Games/" + gameID + "/Players/" + myPlayer.getName()).updateData([
                 "team": team
             ]) { err in
                 if let err = err {

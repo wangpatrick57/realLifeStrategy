@@ -278,7 +278,7 @@
                         <viewLayoutGuide key="safeArea" id="8ha-YF-SRD"/>
                     </view>
                     <connections>
-                        <outlet property="gameID" destination="4d0-fR-0xm" id="1hE-JN-o1v"/>
+                        <outlet property="gameIDLabel" destination="4d0-fR-0xm" id="WPi-Q7-2HR"/>
                         <outlet property="nicknameTF" destination="Wjl-7k-iBe" id="Smi-rE-qU3"/>
                         <segue destination="iCi-CW-8rI" kind="show" identifier="PlayerListSegue" id="bSl-fr-Pgx"/>
                     </connections>
@@ -415,11 +415,26 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cL8-T9-r7N">
-                                <rect key="frame" x="169" y="103" width="36" height="30"/>
+                                <rect key="frame" x="76" y="533" width="36" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Ward"/>
                                 <connections>
                                     <action selector="dropWard:" destination="cP6-KO-xW8" eventType="touchUpInside" id="Xs7-w6-YVw"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Game ID: XXXXX" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xtF-th-WhU">
+                                <rect key="frame" x="16" y="48" width="96" height="15"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OTz-v7-aHz">
+                                <rect key="frame" x="256" y="533" width="41" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Death"/>
+                                <connections>
+                                    <action selector="death:" destination="cP6-KO-xW8" eventType="touchUpInside" id="LFY-Pt-KLY"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -435,12 +450,13 @@
                         <viewLayoutGuide key="safeArea" id="RCF-qP-fri"/>
                     </view>
                     <connections>
+                        <outlet property="gameIDLabel" destination="xtF-th-WhU" id="Eru-1T-uFd"/>
                         <outlet property="map" destination="mND-6A-hkp" id="AJm-3B-oAS"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XVg-IN-cfz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-340" y="3088"/>
+            <point key="canvasLocation" x="-340" y="3087.7061469265368"/>
         </scene>
     </scenes>
     <resources>
@@ -449,6 +465,6 @@
     <inferredMetricsTieBreakers>
         <segue reference="BRb-al-mTs"/>
         <segue reference="v3r-UE-hxb"/>
-        <segue reference="D1b-4c-cdS"/>
+        <segue reference="i05-3P-dzg"/>
     </inferredMetricsTieBreakers>
 </document>

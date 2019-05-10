@@ -17,7 +17,7 @@ class HostGameIDView : UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        HostGameID.text = "Game ID: " + gameId
+        HostGameID.text = "Game ID: " + gameID
     }
     
     override func didReceiveMemoryWarning() {

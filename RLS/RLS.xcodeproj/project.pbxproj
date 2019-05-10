@@ -633,6 +633,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = N7JGJ59VTM;
 				INFOPLIST_FILE = RLS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -652,6 +653,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = N7JGJ59VTM;
 				INFOPLIST_FILE = RLS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
