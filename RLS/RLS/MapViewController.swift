@@ -15,6 +15,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
     
     //map
     @IBOutlet weak var map: MKMapView!
+    @IBOutlet weak var ward : UIButton!
+    @IBOutlet weak var returnButtonMap : UIButton!
+    @IBOutlet weak var death : UIButton!
     
     let manager = CLLocationManager()
     var playerDict: [String: Player] = [:] //dictionary of all players
@@ -64,7 +67,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         myPlayer.addWard()
         let coordinate = myPlayer.getCoordinate()
         
-        db.document("Games/" + gameId + "/Players/" + myPlayer.getName()).updateData([
+        db.document("Games/" + gameID + "/Players/" + myPlayer.getName()).updateData([
             "wardLat": coordinate.latitude,
             "wardLong": coordinate.longitude
             ])
@@ -104,6 +107,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
          myAnnotation.coordinate = newCoordinate;
          }]*/
         
+        //Change button colors to Player's team color
+        if myPlayer.getTeam() == "red" {
+            returnButtonMap.backgroundColor = UIColor.red
+        } else{
+            returnButtonMap.backgroundColor = UIColor.blue
+        }
     }
     
     @objc func handleData() {

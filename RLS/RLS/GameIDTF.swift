@@ -44,7 +44,7 @@ class GameIDTF: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-            var DestViewController : NicknameTFView = segue.destination as! NicknameTFView
+            let DestViewController : NicknameTFView = segue.destination as! NicknameTFView
             DestViewController.id = idTF.text!
     }
 }
