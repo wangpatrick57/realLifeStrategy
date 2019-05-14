@@ -95,6 +95,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         manager.allowsBackgroundLocationUpdates = true
         manager.pausesLocationUpdatesAutomatically = false
         
+        map.delegate = self;
+        
         //start timer
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(handleData), userInfo: nil, repeats: true)
         
@@ -374,3 +376,18 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
 }
 
 
+extension MapViewController: MKMapViewDelegate{
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "Player")
+        let annotation = annotation as? Player
+        if annotationView == nil{
+            let annotationView = MKAnnotationView.init(annotation: annotation, reuseIdentifier: "Player")
+        }
+    
+        if annotation?.getTeam() == "red" {
+            annotationView?.image = UIImage(named: "Red Player")
+        }
+    }
+    
+}

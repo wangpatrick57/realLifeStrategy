@@ -10,7 +10,7 @@ import Foundation
 import MapKit
 import CoreLocation
 
-class Player: MKPointAnnotation{
+class Player: MKAnnotation{
     private var name: String
     private var team: String
     private var ward: Ward?
