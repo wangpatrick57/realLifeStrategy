@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import FirebaseFirestore
 
 class HostGameIDView : UIViewController {
     @IBOutlet weak var HostGameID: UILabel!
