@@ -14,11 +14,13 @@ class Player: MKPointAnnotation{
     private var name: String
     private var team: String
     private var ward: Ward?
+    private var dead: Bool
     let visionDist: Double = 20 //meters
     
     override init() {
         self.name = ""
         self.team = ""
+        self.dead = false
         super.init()
         self.title = self.name
         self.coordinate = CLLocationCoordinate2D(latitude: 0, longitude: 0)
@@ -27,6 +29,7 @@ class Player: MKPointAnnotation{
     init(name:String,team:String,coordinate:CLLocationCoordinate2D){
         self.name=name
         self.team=team
+        self.dead = false
         super.init()
         self.title = self.name
         self.coordinate=coordinate
@@ -50,6 +53,14 @@ class Player: MKPointAnnotation{
     
     func getTeam() -> String {
         return team
+    }
+    
+    func getDead() -> Bool {
+        return dead
+    }
+    
+    func setDead(dead: Bool) {
+        self.dead = dead
     }
     
     func addWard() {

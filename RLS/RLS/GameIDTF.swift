@@ -19,16 +19,16 @@ class GameIDTF: UIViewController {
     }
     
     func checkGameExists() {
-        gameId = idTF.text!
-        let docRef:DocumentReference = db.document("Games/" + gameId)
+        gameID = idTF.text!
+        let docRef:DocumentReference = db.document("Games/" + gameID)
         
         docRef.getDocument { (document, error) in
             if let document = document {
                 if document.exists {
-                    print(gameId + " exists")
+                    print(gameID + " exists")
                     self.performSegue(withIdentifier: "JoinEnterNicknameSegue", sender: self)
                 } else {
-                    print(gameId + " doesn't exists")
+                    print(gameID + " doesn't exists")
                 }
             }
         }
