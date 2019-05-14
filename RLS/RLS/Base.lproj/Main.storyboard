@@ -310,6 +310,7 @@
                             <constraint firstItem="vd8-Cc-9hA" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="IOf-cI-32C" secondAttribute="trailing" constant="8" symbolic="YES" id="r5S-dL-fNL"/>
                             <constraint firstItem="IOf-cI-32C" firstAttribute="leading" secondItem="Wmo-6U-uSF" secondAttribute="leading" constant="125" id="tIo-7F-g5i"/>
                         </constraints>
+                        <viewLayoutGuide key="safeArea" id="aKT-Oq-UdU"/>
                     </view>
                     <connections>
                         <outlet property="gameIDLabel" destination="4d0-fR-0xm" id="WPi-Q7-2HR"/>
@@ -519,7 +520,7 @@
                         <outlet property="death" destination="OTz-v7-aHz" id="ARO-Po-zEA"/>
                         <outlet property="gameIDLabel" destination="xtF-th-WhU" id="Eru-1T-uFd"/>
                         <outlet property="map" destination="mND-6A-hkp" id="AJm-3B-oAS"/>
-                        <outlet property="returnButton" destination="8jn-Ye-9oO" id="hs8-S1-Yay"/>
+                        <outlet property="returnButtonMap" destination="8jn-Ye-9oO" id="obk-IJ-No3"/>
                         <outlet property="ward" destination="cL8-T9-r7N" id="Opn-1e-Vbi"/>
                     </connections>
                 </viewController>
@@ -532,8 +533,8 @@
         <image name="rlsLogo.png" width="306" height="396"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="bSl-fr-Pgx"/>
-        <segue reference="f0Y-Id-UZu"/>
+        <segue reference="BRb-al-mTs"/>
+        <segue reference="v3r-UE-hxb"/>
         <segue reference="i05-3P-dzg"/>
     </inferredMetricsTieBreakers>
 </document>

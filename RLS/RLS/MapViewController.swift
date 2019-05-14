@@ -109,9 +109,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         
         //Change button colors to Player's team color
         if myPlayer.getTeam() == "red" {
-            returnButtonMap.backgroundColor = UIColor.red
+            returnButtonMap.setTitleColor(.red, for : .normal)
+            ward.setTitleColor(.red, for : .normal)
+            death.setTitleColor(.red, for : .normal)
         } else{
-            returnButtonMap.backgroundColor = UIColor.blue
+            returnButtonMap.setTitleColor(.blue, for : .normal)
+            ward.setTitleColor(.blue, for : .normal)
+            death.setTitleColor(.blue, for : .normal)
         }
     }
     
