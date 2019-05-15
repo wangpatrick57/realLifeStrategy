@@ -15,11 +15,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     
     //map
     @IBOutlet weak var map: MKMapView!
+    @IBOutlet weak var ward : UIButton!
+    @IBOutlet weak var returnButtonMap : UIButton!
+    @IBOutlet weak var death : UIButton!
     
     let manager = CLLocationManager()
     var playerDict: [String: Player] = [myPlayer.getName() : myPlayer] //dictionary of all players
     var deadNames: [String] = [] //list of the names of the dead players on "my" team
-    var myPings: [String: Double] = [] //dict of the names of my pings to their create times. the name is "\(myName)\(pingNum)"
+    var myPings: [String: Double] = [:] //dict of the names of my pings to their create times. the name is "\(myName)\(pingNum)"
     var pingNum = 0
     var myTeamPings: [Ping] = [] //list of pings to draw
     var once = false
@@ -43,6 +46,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         manager.allowsBackgroundLocationUpdates = true
         manager.pausesLocationUpdatesAutomatically = false
         
+        map.delegate = self
+        
         //start timer
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(handleData), userInfo: nil, repeats: true)
         
@@ -61,6 +66,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
          animations:^{
          myAnnotation.coordinate = newCoordinate;
          }]*/
+        
+        //Change button colors to Player's team color
+        if myPlayer.getTeam() == "red" {
+            returnButtonMap.setTitleColor(.red, for : .normal)
+            ward.setTitleColor(.red, for : .normal)
+            death.setTitleColor(.red, for : .normal)
+        } else{
+            returnButtonMap.setTitleColor(.blue, for : .normal)
+            ward.setTitleColor(.blue, for : .normal)
+            death.setTitleColor(.blue, for : .normal)
+        }
         
     }
     
@@ -113,7 +129,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     }
     
     //ping with long press
-    /*@objc func handleLongPress(gestureRecognizer: UILongPressGestureRecognizer) {
+    @objc func handleLongPress(gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state == UIGestureRecognizer.State.began {
             let touchLocation = gestureRecognizer.location(in: map)
             let locationCoordinate = map.convert(touchLocation,toCoordinateFrom: map)
@@ -122,13 +138,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             pingNum += 1
             myPings[pingName] = currTime
             
-            db.document("Games/" + gameID + "/Pings/" + pingName).updateData([
+            /*db.document("Games/" + gameID + "/Pings/" + pingName).updateData([
                 "lat": locationCoordinate.latitude,
                 "long": locationCoordinate.longitude,
                 "team": myPlayer.getTeam()
-                ])
+                ])*/
         }
-    }*/
+    }
     
     @objc func handleData() {
         getData()
@@ -346,3 +362,34 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
 }
 
 
+extension MapViewController: MKMapViewDelegate{
+
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "Entity")
+        if annotationView == nil{
+            let annotationView = MKAnnotationView.init(annotation: annotation, reuseIdentifier: "Entity")
+        }
+        
+        if let annotation = annotation as? Player{
+            if annotation.getTeam() == "red" {
+                annotationView?.image = UIImage(named: "Red Player")
+            }
+            if annotation.getTeam() == "blue" {
+                annotationView?.image = UIImage(named: "Blue Player")
+            }
+            return annotationView
+        }
+        if let annotation = annotation as? Ward{
+            if annotation.getTeam() == "red" {
+                annotationView?.image = UIImage(named: "Red Ward")
+            }
+            if annotation.getTeam() == "Blue" {
+                annotationView?.image = UIImage(named: "Blue Ward")
+            }
+            return annotationView
+        }
+        
+        return nil
+    }
+
+}

@@ -8,6 +8,7 @@ target 'RLS' do
   # Pods for RLS
   pod 'Firebase/Core'
   pod 'Firebase/Firestore'
+  pod 'Firebase/Database'
 
   target 'RLSTests' do
     inherit! :search_paths

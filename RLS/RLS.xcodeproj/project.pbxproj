@@ -3,15 +3,16 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		1911425C6CCA30A01546F241 /* Pods_RLSUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA1E1B67838E847E6AAD68CE /* Pods_RLSUITests.framework */; };
 		417F570D2112BB3000CE6E4A /* PlayerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417F570C2112BB3000CE6E4A /* PlayerListView.swift */; };
+		41867B74228B8D0300B504EE /* ControlPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41867B73228B8D0300B504EE /* ControlPoint.swift */; };
 		418C134D20F1B89A00AE16C5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C134C20F1B89A00AE16C5 /* AppDelegate.swift */; };
 		418C134F20F1B89A00AE16C5 /* StartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C134E20F1B89A00AE16C5 /* StartView.swift */; };
-		418C135220F1B89A00AE16C5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418C135020F1B89A00AE16C5 /* Main.storyboard */; };
+		418C135220F1B89A00AE16C5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418C135020F1B89A00AE16C5 /* Main.storyboard */; settings = {ASSET_TAGS = (MapButton, ); }; };
 		418C135720F1B89B00AE16C5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418C135520F1B89B00AE16C5 /* LaunchScreen.storyboard */; };
 		418C136220F1B89B00AE16C5 /* RLSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C136120F1B89B00AE16C5 /* RLSTests.swift */; };
 		418C136D20F1B89B00AE16C5 /* RLSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C136C20F1B89B00AE16C5 /* RLSUITests.swift */; };
@@ -55,6 +56,7 @@
 /* Begin PBXFileReference section */
 		0BF4B5F19F6E53416261CE16 /* Pods-RLSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RLSTests/Pods-RLSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		417F570C2112BB3000CE6E4A /* PlayerListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerListView.swift; sourceTree = "<group>"; };
+		41867B73228B8D0300B504EE /* ControlPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlPoint.swift; sourceTree = "<group>"; };
 		418C134920F1B89A00AE16C5 /* RLS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RLS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		418C134C20F1B89A00AE16C5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		418C134E20F1B89A00AE16C5 /* StartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartView.swift; sourceTree = "<group>"; };
@@ -181,6 +183,7 @@
 				C4C2B3032288C3E600A7D844 /* Ping.swift */,
 				417F570C2112BB3000CE6E4A /* PlayerListView.swift */,
 				7D172FC4228353B400DBEB59 /* PlayerDistanceUtil.swift */,
+				41867B73228B8D0300B504EE /* ControlPoint.swift */,
 			);
 			path = RLS;
 			sourceTree = "<group>";
@@ -279,6 +282,9 @@
 		418C134120F1B89A00AE16C5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				KnownAssetTags = (
+					MapButton,
+				);
 				LastSwiftUpdateCheck = 0940;
 				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = "Melody Lee";
@@ -398,33 +404,16 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-RLS/Pods-RLS-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/BoringSSL/openssl.framework",
-				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
-				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
-				"${BUILT_PRODUCTS_DIR}/gRPC/GRPCClient.framework",
-				"${BUILT_PRODUCTS_DIR}/gRPC-Core/grpc.framework",
-				"${BUILT_PRODUCTS_DIR}/gRPC-ProtoRPC/ProtoRPC.framework",
-				"${BUILT_PRODUCTS_DIR}/gRPC-RxLibrary/RxLibrary.framework",
-				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
-				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RLS/Pods-RLS-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRPCClient.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpc.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ProtoRPC.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxLibrary.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-RLS/Pods-RLS-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-RLS/Pods-RLS-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RLS/Pods-RLS-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		C6D2D4853BC8115865BE83EF /* [CP] Check Pods Manifest.lock */ = {
@@ -457,6 +446,7 @@
 				C4C2B3042288C3E600A7D844 /* Ping.swift in Sources */,
 				41AEB0002112AEDF00DF6AE5 /* HostGameIDView.swift in Sources */,
 				C4EEC859227E9A910088CB32 /* Ward.swift in Sources */,
+				41867B74228B8D0300B504EE /* ControlPoint.swift in Sources */,
 				41AEB0022112B3B800DF6AE5 /* HostOrJoinViewController.swift in Sources */,
 				7D172FC5228353B400DBEB59 /* PlayerDistanceUtil.swift in Sources */,
 				418C134F20F1B89A00AE16C5 /* StartView.swift in Sources */,
@@ -638,17 +628,19 @@
 			baseConfigurationReference = DF770C68C7A54E2277520EA0 /* Pods-RLS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = N7JGJ59VTM;
+				DEVELOPMENT_TEAM = HC52YQHF3W;
 				INFOPLIST_FILE = RLS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Ethan.RLS;
+				PRODUCT_BUNDLE_IDENTIFIER = "Info-Jordan";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -658,17 +650,19 @@
 			baseConfigurationReference = 6FD4B4481C6849C868996249 /* Pods-RLS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = N7JGJ59VTM;
+				DEVELOPMENT_TEAM = HC52YQHF3W;
 				INFOPLIST_FILE = RLS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Ethan.RLS;
+				PRODUCT_BUNDLE_IDENTIFIER = "Info-Jordan";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

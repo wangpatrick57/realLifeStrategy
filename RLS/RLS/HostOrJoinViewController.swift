@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Firebase
 import FirebaseFirestore
 
 var gameID:String = "generating"

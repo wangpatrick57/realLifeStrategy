@@ -22,7 +22,6 @@ class Player: MKPointAnnotation{
         self.team = ""
         self.dead = false
         super.init()
-        self.title = self.name
         self.coordinate = CLLocationCoordinate2D(latitude: 0, longitude: 0)
     }
     
@@ -31,7 +30,6 @@ class Player: MKPointAnnotation{
         self.team=team
         self.dead = false
         super.init()
-        self.title = self.name
         self.coordinate=coordinate
     }
     

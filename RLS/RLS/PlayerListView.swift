@@ -18,6 +18,7 @@ class PlayerListView : UIViewController{
     @IBOutlet weak var nicknameLabel: UILabel!
     @IBOutlet weak var redButton: UIButton!
     @IBOutlet weak var blueButton: UIButton!
+    
     var redUnselected: UIColor = UIColor(red: 247.0/255.0, green: 181.0/255.0, blue: 167.0/255.0, alpha: 1.0)
     var redSelected: UIColor = UIColor(red: 246.0/255.0, green: 91.0/255.0, blue: 73.0/255.0, alpha: 1.0)
     var blueUnselected: UIColor = UIColor(red: 167.0/255.0, green: 177.0/255.0, blue: 247.0/255.0, alpha: 1.0)

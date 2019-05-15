@@ -17,14 +17,15 @@
 #import "FIRFirestore.h"
 
 #include <memory>
+#include <string>
 
+#include "Firestore/core/src/firebase/firestore/api/firestore.h"
 #include "Firestore/core/src/firebase/firestore/auth/credentials_provider.h"
-#include "Firestore/core/src/firebase/firestore/model/database_id.h"
-#include "absl/strings/string_view.h"
+#include "Firestore/core/src/firebase/firestore/util/async_queue.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class FSTDispatchQueue;
+@class FIRApp;
 @class FSTFirestoreClient;
 @class FSTUserDataConverter;
 
@@ -34,14 +35,14 @@ NS_ASSUME_NONNULL_BEGIN
  * Initializes a Firestore object with all the required parameters directly. This exists so that
  * tests can create FIRFirestore objects without needing FIRApp.
  */
-- (instancetype)initWithProjectID:(const absl::string_view)projectID
-                         database:(const absl::string_view)database
-                   persistenceKey:(NSString *)persistenceKey
-              credentialsProvider:(std::unique_ptr<firebase::firestore::auth::CredentialsProvider>)
-                                      credentialsProvider
-              workerDispatchQueue:(FSTDispatchQueue *)workerDispatchQueue
-                      firebaseApp:(FIRApp *)app;
-
+- (instancetype)
+      initWithProjectID:(std::string)projectID
+               database:(std::string)database
+         persistenceKey:(std::string)persistenceKey
+    credentialsProvider:
+        (std::unique_ptr<firebase::firestore::auth::CredentialsProvider>)credentialsProvider
+            workerQueue:(std::unique_ptr<firebase::firestore::util::AsyncQueue>)workerQueue
+            firebaseApp:(FIRApp *)app;
 @end
 
 /** Internal FIRFirestore API we don't want exposed in our public header files. */
@@ -49,6 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** Checks to see if logging is is globally enabled for the Firestore client. */
 + (BOOL)isLoggingEnabled;
+
++ (FIRFirestore *)recoverFromFirestore:(firebase::firestore::api::Firestore *)firestore;
 
 /**
  * Shutdown this `FIRFirestore`, releasing all resources (abandoning any outstanding writes,
@@ -58,6 +61,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)shutdownWithCompletion:(nullable void (^)(NSError *_Nullable error))completion
     NS_SWIFT_NAME(shutdown(completion:));
+
+@property(nonatomic, assign, readonly) firebase::firestore::api::Firestore *wrapped;
+
+@property(nonatomic, assign, readonly) firebase::firestore::util::AsyncQueue *workerQueue;
 
 // FIRFirestore ownes the DatabaseId instance.
 @property(nonatomic, assign, readonly) const firebase::firestore::model::DatabaseId *databaseID;

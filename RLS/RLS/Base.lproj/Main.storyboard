@@ -16,7 +16,7 @@
                 <viewController title="Start" id="Ngn-uP-buz" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="pea-Nr-zre">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="touch to battle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="M5M-gj-ZfA">
                                 <rect key="frame" x="131.5" y="465" width="112" height="21"/>
@@ -24,8 +24,11 @@
                                 <color key="textColor" red="0.5402161593" green="0.5402161593" blue="0.5402161593" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tTn-Ia-X0r">
-                                <rect key="frame" x="38" y="113" width="299" height="373"/>
+                            <button opaque="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tTn-Ia-X0r">
+                                <rect key="frame" x="35" y="113" width="299" height="373"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
+                                </accessibility>
                                 <state key="normal" title="Next" image="rlsLogo.png"/>
                                 <connections>
                                     <segue destination="qoq-Th-0eg" kind="show" id="7sF-Wl-NRA"/>
@@ -35,12 +38,12 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
                         <constraints>
-                            <constraint firstItem="tTn-Ia-X0r" firstAttribute="leading" secondItem="Tfg-2T-NDD" secondAttribute="leading" constant="36" id="1hV-Iq-Emj"/>
+                            <constraint firstItem="tTn-Ia-X0r" firstAttribute="leading" secondItem="Tfg-2T-NDD" secondAttribute="leading" constant="35" id="1hV-Iq-Emj"/>
                             <constraint firstItem="tTn-Ia-X0r" firstAttribute="bottom" secondItem="M5M-gj-ZfA" secondAttribute="bottom" id="IYF-1e-68q"/>
                             <constraint firstItem="tTn-Ia-X0r" firstAttribute="top" secondItem="Tfg-2T-NDD" secondAttribute="top" constant="93" id="U41-qa-mso"/>
                             <constraint firstItem="M5M-gj-ZfA" firstAttribute="centerX" secondItem="Tfg-2T-NDD" secondAttribute="centerX" id="gTR-Vb-U3K"/>
                             <constraint firstItem="Tfg-2T-NDD" firstAttribute="bottom" secondItem="tTn-Ia-X0r" secondAttribute="bottom" constant="181" id="mPb-PE-Pw7"/>
-                            <constraint firstItem="Tfg-2T-NDD" firstAttribute="trailing" secondItem="tTn-Ia-X0r" secondAttribute="trailing" constant="40" id="swy-cs-FiO"/>
+                            <constraint firstItem="Tfg-2T-NDD" firstAttribute="trailing" secondItem="tTn-Ia-X0r" secondAttribute="trailing" constant="41" id="swy-cs-FiO"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Tfg-2T-NDD"/>
                         <connections>
@@ -69,6 +72,9 @@
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p4b-z6-QFP">
                                 <rect key="frame" x="164.5" y="530" width="46" height="30"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
+                                </accessibility>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="y4G-8V-cjC"/>
                                 </constraints>
@@ -80,6 +86,9 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nm8-8E-V4A">
                                 <rect key="frame" x="58" y="297" width="259" height="150"/>
                                 <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
+                                </accessibility>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="26"/>
                                 <color key="tintColor" red="0.03661791323" green="0.36214847030000002" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Join">
@@ -93,6 +102,9 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="87S-dJ-Zws">
                                 <rect key="frame" x="58" y="139" width="259" height="150"/>
                                 <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
+                                </accessibility>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="150" id="3Sy-99-1zC"/>
                                 </constraints>
@@ -140,6 +152,9 @@
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RBJ-MN-WJl" userLabel="NextButton">
                                 <rect key="frame" x="171.5" y="319" width="32" height="29"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
+                                </accessibility>
                                 <state key="normal" title="Next"/>
                                 <connections>
                                     <action selector="NextButton:" destination="hrO-SK-6aB" eventType="touchUpInside" id="rQ0-Sn-4OB"/>
@@ -184,6 +199,7 @@
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" usesAttributedText="YES" borderStyle="roundedRect" placeholder="Enter Game ID" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="I5y-UX-Rft" userLabel="IDTF">
                                 <rect key="frame" x="63" y="318.5" width="273" height="30"/>
                                 <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" keyboardKey="YES" staticText="YES"/>
                                     <bool key="isElement" value="NO"/>
                                 </accessibility>
                                 <attributedString key="attributedText"/>
@@ -191,6 +207,9 @@
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wtX-eg-sb4" userLabel="EnterButton" customClass="EnterButton" customModule="RLS" customModuleProvider="target">
                                 <rect key="frame" x="206" y="376.5" width="37" height="30"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
+                                </accessibility>
                                 <state key="normal" title="Enter"/>
                                 <connections>
                                     <action selector="EnterButton:" destination="SpX-Kg-5vU" eventType="touchUpInside" id="biK-Cx-DOu"/>
@@ -198,6 +217,9 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7xk-X0-Aiv" userLabel="ReturnButton">
                                 <rect key="frame" x="119" y="376.5" width="46" height="30"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
+                                </accessibility>
                                 <state key="normal" title="Return"/>
                                 <connections>
                                     <segue destination="qoq-Th-0eg" kind="show" id="D1b-4c-cdS"/>
@@ -230,33 +252,45 @@
         <scene sceneID="HBM-6J-Xfg">
             <objects>
                 <viewController title="EnterNickname" id="nP5-Pd-5pS" customClass="NicknameTFView" customModule="RLS" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Wmo-6U-uSF" userLabel="EnterNicknameView" customClass="UITextField">
+                    <view key="view" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Wmo-6U-uSF" userLabel="EnterNicknameView">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter Nickname" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Wjl-7k-iBe" userLabel="NicknameTF">
-                                <rect key="frame" x="92" y="318.5" width="191" height="30"/>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter Nickname" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Wjl-7k-iBe" userLabel="NicknameTF">
+                                <rect key="frame" x="96" y="303" width="184" height="30"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" keyboardKey="YES"/>
+                                </accessibility>
+                                <viewLayoutGuide key="safeArea" id="Akm-vV-xTv"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="join" enablesReturnKeyAutomatically="YES" textContentType="nickname"/>
                             </textField>
                             <button opaque="NO" tag="4" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vd8-Cc-9hA" userLabel="JoinButton" customClass="EnterButton" customModule="RLS" customModuleProvider="target">
-                                <rect key="frame" x="216" y="369.5" width="30" height="30"/>
-                                <accessibility key="accessibilityConfiguration" identifier="enterButton"/>
+                                <rect key="frame" x="216" y="356" width="30" height="30"/>
+                                <accessibility key="accessibilityConfiguration" identifier="enterButton">
+                                    <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
+                                </accessibility>
                                 <state key="normal" title="Join"/>
                                 <connections>
                                     <action selector="JoinButton:" destination="nP5-Pd-5pS" eventType="touchUpInside" id="ecZ-ce-GCQ"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IOf-cI-32C" userLabel="ReturnButton">
-                                <rect key="frame" x="125" y="369.5" width="46" height="30"/>
+                                <rect key="frame" x="125" y="356" width="46" height="30"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
+                                </accessibility>
                                 <state key="normal" title="Return"/>
                                 <connections>
                                     <segue destination="qoq-Th-0eg" kind="show" id="i05-3P-dzg"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Game ID: XXXXX" textAlignment="center" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4d0-fR-0xm" userLabel="IDLabel">
-                                <rect key="frame" x="16" y="258" width="343" height="52"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Game ID: XXXXX" textAlignment="center" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4d0-fR-0xm" userLabel="IDLabel">
+                                <rect key="frame" x="122" y="243" width="130.5" height="52"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="52" id="nE1-ED-I8V"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -264,18 +298,19 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="Wjl-7k-iBe" firstAttribute="centerY" secondItem="Wmo-6U-uSF" secondAttribute="centerY" id="20u-1A-HG3"/>
-                            <constraint firstItem="IOf-cI-32C" firstAttribute="leading" secondItem="8ha-YF-SRD" secondAttribute="leading" constant="125" id="LQd-DJ-KFj"/>
-                            <constraint firstItem="4d0-fR-0xm" firstAttribute="top" secondItem="8ha-YF-SRD" secondAttribute="top" constant="242" id="M73-ad-V8Z"/>
-                            <constraint firstItem="IOf-cI-32C" firstAttribute="top" secondItem="Wjl-7k-iBe" secondAttribute="bottom" constant="21" id="PYI-wd-fQm"/>
-                            <constraint firstItem="IOf-cI-32C" firstAttribute="baseline" secondItem="vd8-Cc-9hA" secondAttribute="baseline" id="QAm-uH-Fnp"/>
-                            <constraint firstItem="Wjl-7k-iBe" firstAttribute="leading" secondItem="8ha-YF-SRD" secondAttribute="leading" constant="92" id="WsL-22-Ilb"/>
-                            <constraint firstItem="4d0-fR-0xm" firstAttribute="centerX" secondItem="Wjl-7k-iBe" secondAttribute="centerX" id="cAx-pB-JIb"/>
-                            <constraint firstAttribute="trailing" secondItem="vd8-Cc-9hA" secondAttribute="trailing" constant="129" id="d1i-Ic-dTE"/>
-                            <constraint firstItem="Wjl-7k-iBe" firstAttribute="centerX" secondItem="8ha-YF-SRD" secondAttribute="centerX" id="eLn-zK-xSA"/>
-                            <constraint firstItem="vd8-Cc-9hA" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="IOf-cI-32C" secondAttribute="trailing" constant="8" symbolic="YES" id="iLM-o3-iKl"/>
+                            <constraint firstItem="Wjl-7k-iBe" firstAttribute="leading" secondItem="Wmo-6U-uSF" secondAttribute="leading" constant="96" id="0Gj-XZ-gFY"/>
+                            <constraint firstItem="4d0-fR-0xm" firstAttribute="trailing" secondItem="Wmo-6U-uSF" secondAttribute="trailingMargin" constant="-106.5" id="6C4-lK-o8X"/>
+                            <constraint firstItem="IOf-cI-32C" firstAttribute="top" secondItem="Wjl-7k-iBe" secondAttribute="bottom" constant="23" id="DQp-fC-YK5"/>
+                            <constraint firstItem="Wjl-7k-iBe" firstAttribute="top" secondItem="4d0-fR-0xm" secondAttribute="bottom" constant="8" id="EJD-OT-w5O"/>
+                            <constraint firstAttribute="trailing" secondItem="vd8-Cc-9hA" secondAttribute="trailing" constant="129" id="HED-eU-qsc"/>
+                            <constraint firstAttribute="trailing" secondItem="Wjl-7k-iBe" secondAttribute="trailing" constant="95" id="Q8O-ra-QNc"/>
+                            <constraint firstItem="4d0-fR-0xm" firstAttribute="top" secondItem="Wmo-6U-uSF" secondAttribute="top" constant="243" id="Set-0l-YiB"/>
+                            <constraint firstItem="IOf-cI-32C" firstAttribute="baseline" secondItem="vd8-Cc-9hA" secondAttribute="baseline" id="cQg-aU-oIW"/>
+                            <constraint firstItem="4d0-fR-0xm" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Wmo-6U-uSF" secondAttribute="leadingMargin" id="oSf-GH-rvy"/>
+                            <constraint firstItem="vd8-Cc-9hA" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="IOf-cI-32C" secondAttribute="trailing" constant="8" symbolic="YES" id="r5S-dL-fNL"/>
+                            <constraint firstItem="IOf-cI-32C" firstAttribute="leading" secondItem="Wmo-6U-uSF" secondAttribute="leading" constant="125" id="tIo-7F-g5i"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="8ha-YF-SRD"/>
+                        <viewLayoutGuide key="safeArea" id="aKT-Oq-UdU"/>
                     </view>
                     <connections>
                         <outlet property="gameIDLabel" destination="4d0-fR-0xm" id="WPi-Q7-2HR"/>
@@ -313,6 +348,9 @@
                             <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jM2-sD-aAA" userLabel="BlueTeamButton">
                                 <rect key="frame" x="189" y="193" width="130" height="75"/>
                                 <color key="backgroundColor" red="0.7872202411" green="0.89634864780000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
+                                </accessibility>
                                 <state key="normal" title="Blue">
                                     <color key="titleColor" red="0.03661791323" green="0.36214847030000002" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 </state>
@@ -323,6 +361,9 @@
                             <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oKi-gS-pBB" userLabel="RedTeamButton">
                                 <rect key="frame" x="62" y="193" width="130" height="75"/>
                                 <color key="backgroundColor" red="1" green="0.79973935309999999" blue="0.70959067890000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
+                                </accessibility>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="75" id="Qav-or-ppG"/>
                                 </constraints>
@@ -342,6 +383,9 @@
                             </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="efo-N2-TfR" userLabel="ReutrnButton">
                                 <rect key="frame" x="104" y="617" width="46" height="30"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
+                                </accessibility>
                                 <state key="normal" title="Return"/>
                                 <connections>
                                     <segue destination="nP5-Pd-5pS" kind="show" id="v3r-UE-hxb"/>
@@ -349,6 +393,9 @@
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ntp-Wa-kkS" userLabel="StartButton">
                                 <rect key="frame" x="215" y="617" width="78" height="30"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
+                                </accessibility>
                                 <state key="normal" title="Start Game"/>
                                 <connections>
                                     <action selector="enterGamePressed:" destination="iCi-CW-8rI" eventType="touchUpInside" id="MGc-sA-Sql"/>
@@ -363,6 +410,7 @@
                             <constraint firstItem="bX1-ht-8kt" firstAttribute="bottom" secondItem="al2-th-9WW" secondAttribute="bottom" id="ACh-Dc-xfy"/>
                             <constraint firstItem="oKi-gS-pBB" firstAttribute="leading" secondItem="bX1-ht-8kt" secondAttribute="leading" id="IBF-sJ-ZIM"/>
                             <constraint firstItem="oKi-gS-pBB" firstAttribute="top" secondItem="rd7-sb-4SI" secondAttribute="bottom" constant="25" id="Kxe-iu-jpj"/>
+                            <constraint firstItem="cVu-60-l1i" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="D1n-8D-cOr" secondAttribute="trailing" symbolic="YES" id="LcJ-FG-XC1"/>
                             <constraint firstItem="oKi-gS-pBB" firstAttribute="leading" secondItem="cVu-60-l1i" secondAttribute="leading" constant="62" id="NMR-Se-JZQ"/>
                             <constraint firstItem="rd7-sb-4SI" firstAttribute="centerX" secondItem="cVu-60-l1i" secondAttribute="centerX" id="OEC-hk-hmn"/>
                             <constraint firstItem="bX1-ht-8kt" firstAttribute="top" secondItem="al2-th-9WW" secondAttribute="top" id="OF0-Z1-SFQ"/>
@@ -408,21 +456,31 @@
                                 <rect key="frame" x="0.0" y="34" width="375" height="633"/>
                                 <gestureRecognizers/>
                             </mapView>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8jn-Ye-9oO">
-                                <rect key="frame" x="164" y="617" width="46" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8jn-Ye-9oO">
+                                <rect key="frame" x="164.5" y="590" width="46" height="30"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
+                                </accessibility>
+                                <rect key="contentStretch" x="0.0" y="0.0" width="0.0" height="0.0"/>
+                                <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="15"/>
                                 <state key="normal" title="Return"/>
                                 <connections>
                                     <segue destination="iCi-CW-8rI" kind="show" id="BRb-al-mTs"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cL8-T9-r7N">
-                                <rect key="frame" x="76" y="533" width="36" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="WardButton" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cL8-T9-r7N">
+                                <rect key="frame" x="56" y="533" width="36" height="30"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
+                                </accessibility>
                                 <state key="normal" title="Ward"/>
                                 <connections>
                                     <action selector="dropWard:" destination="cP6-KO-xW8" eventType="touchUpInside" id="Xs7-w6-YVw"/>
                                 </connections>
                             </button>
+<<<<<<< HEAD
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Game ID: MMMMMM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xtF-th-WhU">
                                 <rect key="frame" x="16" y="48" width="119" height="15"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -433,27 +491,52 @@
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OTz-v7-aHz">
                                 <rect key="frame" x="256" y="533" width="41" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+=======
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OTz-v7-aHz">
+                                <rect key="frame" x="272" y="533" width="41" height="30"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
+                                </accessibility>
+>>>>>>> f0e992afaedb9a1ddfb778f2a4edce4075ce8839
                                 <state key="normal" title="Death"/>
                                 <connections>
                                     <action selector="death:" destination="cP6-KO-xW8" eventType="touchUpInside" id="LFY-Pt-KLY"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Game ID: XXXXX" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xtF-th-WhU">
+                                <rect key="frame" x="16" y="48" width="96" height="15"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
                         <constraints>
+                            <constraint firstItem="xtF-th-WhU" firstAttribute="leading" secondItem="XE0-yf-sTA" secondAttribute="leading" constant="16" id="2ob-gv-t7x"/>
                             <constraint firstItem="mND-6A-hkp" firstAttribute="centerX" secondItem="8jn-Ye-9oO" secondAttribute="centerX" id="2uX-oL-Oal"/>
                             <constraint firstItem="mND-6A-hkp" firstAttribute="top" secondItem="RCF-qP-fri" secondAttribute="top" constant="14" id="40x-2z-Oa3"/>
+                            <constraint firstItem="OTz-v7-aHz" firstAttribute="baseline" secondItem="cL8-T9-r7N" secondAttribute="baseline" id="5b7-xn-vXG"/>
+                            <constraint firstItem="OTz-v7-aHz" firstAttribute="top" secondItem="RCF-qP-fri" secondAttribute="top" constant="513" id="7DV-aL-uCH"/>
                             <constraint firstItem="mND-6A-hkp" firstAttribute="bottom" secondItem="RCF-qP-fri" secondAttribute="bottom" id="Bb4-fA-Pex"/>
-                            <constraint firstItem="8jn-Ye-9oO" firstAttribute="top" secondItem="RCF-qP-fri" secondAttribute="top" constant="567" id="Gl1-5f-Hhd"/>
+                            <constraint firstItem="cL8-T9-r7N" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="xtF-th-WhU" secondAttribute="trailing" constant="-20" id="Da4-Ub-3wC"/>
+                            <constraint firstItem="8jn-Ye-9oO" firstAttribute="top" secondItem="RCF-qP-fri" secondAttribute="top" constant="570" id="Gl1-5f-Hhd"/>
+                            <constraint firstItem="OTz-v7-aHz" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="cL8-T9-r7N" secondAttribute="trailing" constant="8" symbolic="YES" id="Gld-MO-NSl"/>
                             <constraint firstItem="RCF-qP-fri" firstAttribute="trailing" secondItem="mND-6A-hkp" secondAttribute="trailing" id="LXq-1n-72b"/>
+                            <constraint firstItem="cL8-T9-r7N" firstAttribute="leading" secondItem="RCF-qP-fri" secondAttribute="leading" constant="56" id="aWM-mp-dfc"/>
                             <constraint firstItem="mND-6A-hkp" firstAttribute="leading" secondItem="RCF-qP-fri" secondAttribute="leading" id="grw-5c-dHk"/>
+                            <constraint firstItem="xtF-th-WhU" firstAttribute="top" secondItem="RCF-qP-fri" secondAttribute="top" constant="28" id="vaj-mk-4F3"/>
+                            <constraint firstItem="RCF-qP-fri" firstAttribute="trailing" secondItem="OTz-v7-aHz" secondAttribute="trailing" constant="62" id="yKT-Zg-GaP"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="RCF-qP-fri"/>
                     </view>
                     <connections>
+                        <outlet property="death" destination="OTz-v7-aHz" id="ARO-Po-zEA"/>
                         <outlet property="gameIDLabel" destination="xtF-th-WhU" id="Eru-1T-uFd"/>
                         <outlet property="map" destination="mND-6A-hkp" id="AJm-3B-oAS"/>
+                        <outlet property="returnButtonMap" destination="8jn-Ye-9oO" id="obk-IJ-No3"/>
+                        <outlet property="ward" destination="cL8-T9-r7N" id="Opn-1e-Vbi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XVg-IN-cfz" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -466,7 +549,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="BRb-al-mTs"/>
-        <segue reference="v3r-UE-hxb"/>
-        <segue reference="i05-3P-dzg"/>
+        <segue reference="f0Y-Id-UZu"/>
+        <segue reference="D1b-4c-cdS"/>
     </inferredMetricsTieBreakers>
 </document>
