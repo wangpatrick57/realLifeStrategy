@@ -372,7 +372,7 @@ extension MapViewController: MKMapViewDelegate{
         
         if let annotation = annotation as? Player{
             if annotation.getTeam() == "red" {
-                annotationView!.image = UIImage(named: "Test")
+                annotationView?.image = UIImage(named: "Red Player")
             }
             if annotation.getTeam() == "blue" {
                 annotationView?.image = UIImage(named: "Blue Player")
