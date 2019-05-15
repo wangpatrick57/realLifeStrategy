@@ -389,7 +389,7 @@ extension MapViewController: MKMapViewDelegate{
             return annotationView
         }
         
-        return nil
+        return annotationView
     }
 
 }
