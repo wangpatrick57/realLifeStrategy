@@ -365,14 +365,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
 extension MapViewController: MKMapViewDelegate{
 
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "Entity")
+        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "Entity")
         if annotationView == nil{
-            let annotationView = MKAnnotationView.init(annotation: annotation, reuseIdentifier: "Entity")
+            annotationView = MKAnnotationView.init(annotation: annotation, reuseIdentifier: "Entity")
         }
         
         if let annotation = annotation as? Player{
             if annotation.getTeam() == "red" {
-                annotationView?.image = UIImage(named: "Red Player")
+                annotationView!.image = UIImage(named: "Test")
             }
             if annotation.getTeam() == "blue" {
                 annotationView?.image = UIImage(named: "Blue Player")
@@ -389,7 +389,7 @@ extension MapViewController: MKMapViewDelegate{
             return annotationView
         }
         
-        return annotationView
+        return nil
     }
 
 }
