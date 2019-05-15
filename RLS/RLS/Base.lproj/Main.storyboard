@@ -406,6 +406,7 @@
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="mND-6A-hkp">
                                 <rect key="frame" x="0.0" y="34" width="375" height="633"/>
+                                <gestureRecognizers/>
                             </mapView>
                             <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8jn-Ye-9oO">
                                 <rect key="frame" x="164" y="617" width="46" height="30"/>
@@ -422,8 +423,8 @@
                                     <action selector="dropWard:" destination="cP6-KO-xW8" eventType="touchUpInside" id="Xs7-w6-YVw"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Game ID: XXXXX" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xtF-th-WhU">
-                                <rect key="frame" x="16" y="48" width="96" height="15"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Game ID: MMMMMM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xtF-th-WhU">
+                                <rect key="frame" x="16" y="48" width="119" height="15"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <nil key="textColor"/>
@@ -439,6 +440,7 @@
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="mND-6A-hkp" firstAttribute="centerX" secondItem="8jn-Ye-9oO" secondAttribute="centerX" id="2uX-oL-Oal"/>
                             <constraint firstItem="mND-6A-hkp" firstAttribute="top" secondItem="RCF-qP-fri" secondAttribute="top" constant="14" id="40x-2z-Oa3"/>

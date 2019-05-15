@@ -64,11 +64,15 @@ class Player: MKPointAnnotation{
     }
     
     func addWard() {
-        ward = Ward(name: name + "'s ward", team: team, coordinate: coordinate)
+        addWardAt(coordinate: coordinate)
     }
     
     func addWardAt(coordinate: CLLocationCoordinate2D) {
-        ward = Ward(name: name + "'s ward", team: team, coordinate: coordinate)
+        if let myWard = ward {
+            myWard.setCoordinate(coordinate: coordinate)
+        } else {
+            ward = Ward(name: name + "'s ward", team: team, coordinate: coordinate)
+        }
     }
     
     func getWard() -> Ward? {
