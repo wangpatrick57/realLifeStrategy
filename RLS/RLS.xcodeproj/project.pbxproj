@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1911425C6CCA30A01546F241 /* Pods_RLSUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA1E1B67838E847E6AAD68CE /* Pods_RLSUITests.framework */; };
 		417F570D2112BB3000CE6E4A /* PlayerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417F570C2112BB3000CE6E4A /* PlayerListView.swift */; };
+		41867B74228B8D0300B504EE /* ControlPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41867B73228B8D0300B504EE /* ControlPoint.swift */; };
 		418C134D20F1B89A00AE16C5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C134C20F1B89A00AE16C5 /* AppDelegate.swift */; };
 		418C134F20F1B89A00AE16C5 /* StartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C134E20F1B89A00AE16C5 /* StartView.swift */; };
 		418C135220F1B89A00AE16C5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418C135020F1B89A00AE16C5 /* Main.storyboard */; settings = {ASSET_TAGS = (MapButton, ); }; };
@@ -54,6 +55,7 @@
 /* Begin PBXFileReference section */
 		0BF4B5F19F6E53416261CE16 /* Pods-RLSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RLSTests/Pods-RLSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		417F570C2112BB3000CE6E4A /* PlayerListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerListView.swift; sourceTree = "<group>"; };
+		41867B73228B8D0300B504EE /* ControlPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlPoint.swift; sourceTree = "<group>"; };
 		418C134920F1B89A00AE16C5 /* RLS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RLS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		418C134C20F1B89A00AE16C5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		418C134E20F1B89A00AE16C5 /* StartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartView.swift; sourceTree = "<group>"; };
@@ -178,6 +180,7 @@
 				C4EEC858227E9A910088CB32 /* Ward.swift */,
 				417F570C2112BB3000CE6E4A /* PlayerListView.swift */,
 				7D172FC4228353B400DBEB59 /* PlayerDistanceUtil.swift */,
+				41867B73228B8D0300B504EE /* ControlPoint.swift */,
 			);
 			path = RLS;
 			sourceTree = "<group>";
@@ -439,6 +442,7 @@
 				418C138320F1BA0E00AE16C5 /* MapViewController.swift in Sources */,
 				41AEB0002112AEDF00DF6AE5 /* HostGameIDView.swift in Sources */,
 				C4EEC859227E9A910088CB32 /* Ward.swift in Sources */,
+				41867B74228B8D0300B504EE /* ControlPoint.swift in Sources */,
 				41AEB0022112B3B800DF6AE5 /* HostOrJoinViewController.swift in Sources */,
 				7D172FC5228353B400DBEB59 /* PlayerDistanceUtil.swift in Sources */,
 				418C134F20F1B89A00AE16C5 /* StartView.swift in Sources */,

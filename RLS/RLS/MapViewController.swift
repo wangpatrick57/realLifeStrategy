@@ -377,17 +377,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
 
 
 extension MapViewController: MKMapViewDelegate{
-    
+
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "Player")
         let annotation = annotation as? Player
         if annotationView == nil{
             let annotationView = MKAnnotationView.init(annotation: annotation, reuseIdentifier: "Player")
         }
-    
+
         if annotation?.getTeam() == "red" {
             annotationView?.image = UIImage(named: "Red Player")
         }
     }
-    
+
 }

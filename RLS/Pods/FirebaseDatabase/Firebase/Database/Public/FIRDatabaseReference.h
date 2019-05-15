@@ -52,11 +52,6 @@ NS_SWIFT_NAME(DatabaseReference)
 - (FIRDatabaseReference *)child:(NSString *)pathString;
 
 /**
- * childByAppendingPath: is deprecated, use child: instead.
- */
-- (FIRDatabaseReference *)childByAppendingPath:(NSString *)pathString __deprecated_msg("use child: instead");
-
-/**
  * childByAutoId generates a new child location using a unique key and returns a
  * FIRDatabaseReference to it. This is useful when the children of a Firebase Database
  * location represent a list of items.
@@ -697,7 +692,7 @@ is meant to be preserved, you should use setValue:andPriority: instead.
  *
  * @return The key of the location this reference points to.
  */
-@property (strong, readonly, nonatomic) NSString* key;
+@property (strong, readonly, nonatomic, nullable) NSString* key;
 
 /**
  * Gets the URL for the Firebase Database location referenced by this FIRDatabaseReference.
