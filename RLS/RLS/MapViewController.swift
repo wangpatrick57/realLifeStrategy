@@ -379,15 +379,30 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
 extension MapViewController: MKMapViewDelegate{
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "Player")
-        let annotation = annotation as? Player
+        let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "Entity")
         if annotationView == nil{
-            let annotationView = MKAnnotationView.init(annotation: annotation, reuseIdentifier: "Player")
+            let annotationView = MKAnnotationView.init(annotation: annotation, reuseIdentifier: "Entity")
         }
-    
-        if annotation?.getTeam() == "red" {
-            annotationView?.image = UIImage(named: "Red Player")
+        if let annotation = annotation as? Player{
+            if annotation.getTeam() == "red" {
+                annotationView?.image = UIImage(named: "Red Player")
+            }
+            if annotation.getTeam() == "blue" {
+                annotationView?.image = UIImage(named: "Blue Player")
+            }
+            return annotationView
         }
+        if let annotation = annotation as? Ward{
+            if annotation.getTeam() == "red" {
+                annotationView?.image = UIImage(named: "Red Ward")
+            }
+            if annotation.getTeam() == "Blue" {
+                annotationView?.image = UIImage(named: "Blue Ward")
+            }
+            return annotationView
+        }
+        
+        return nil
     }
     
 }
