@@ -10,7 +10,7 @@ import Foundation
 import MapKit
 import CoreLocation
 
-class Player: MKAnnotation{
+class Player: MKPointAnnotation{
     private var name: String
     private var team: String
     private var ward: Ward?
@@ -22,7 +22,6 @@ class Player: MKAnnotation{
         self.team = ""
         self.dead = false
         super.init()
-        self.title = self.name
         self.coordinate = CLLocationCoordinate2D(latitude: 0, longitude: 0)
     }
     
@@ -31,7 +30,6 @@ class Player: MKAnnotation{
         self.team=team
         self.dead = false
         super.init()
-        self.title = self.name
         self.coordinate=coordinate
     }
     
