@@ -94,6 +94,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             ward.setTitleColor(.blue, for : .normal)
             death.setTitleColor(.blue, for : .normal)
         }
+        
+        
+        //retrieve data of control point from server
+        getCPData()
     }
     
     //Calvin was here. In memoriam 2019 - 2019
@@ -311,30 +315,58 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //draw rays based on a dict
         //draw circles around each player and ward in myTeamDict for vision OR just wards if we're doing that
         
-        //retrieve data of control point from server
-        getCP()
+        //Check if player is in the CP radius
+        for cp in self.cps{
+            if cp.inArea(myPlayer: myPlayer) {
+                //if player is in radius, update number in server
+                if myPlayer.getTeam() == "red"{
+                    cp.addNumRed(num: 1)
+                    db.document("Games/" + gameID + "/CP/" + cp.getID()).updateData(["numRed" : cp.getNumRed()])
+                } else {
+                    cp.addNumBlue(num: 1)
+                    db.document("Games/" + gameID + "/CP/" + cp.getID()).updateData(["numBlue" : cp.getNumBlue()])
+                }
+                db.document("Games/" + gameID + "/CP/" + cp.getID()).updateData(["team" : cp.getTeam()])
+            }
+        }
     }
     
     //retrieve control point from server
-    func getCP(){
+    func getCPData(){
+        print("getting CP data from server")
+        
         //initialize ControlPoint
-        db.collection("Games/" + gameID + "/ControlPoints").getDocuments() { (querySnapshot, error) in
+        db.collection("Games/" + gameID + "/CP").getDocuments() { (querySnapshot, error) in
             if let error = error{
                 print(error)
             } else {
+                print("CP server collection path valid")
                 //this loop is to check for new players and update existing ones
                 //it first updates playerDict, then updates myTeam and otherTeam dicts
                 for document in querySnapshot!.documents {
+                    var cpExist : Bool = false
                     for cp in self.cps {
-                        if cp.getID() != document.documentID{
-                            let newCP = ControlPoint()
-                            let data = document.data()
-                            newCP.setNumRed(numRed: data["numRed"] as? Int ?? 0)
-                            newCP.setNumBlue(numBlue: data["numBlue"] as? Int ?? 0)
-                            newCP.setID(id: document.documentID)
-                            newCP.setLocation(location: CLLocationCoordinate2D(latitude: data["lat"] as? Double ?? 0, longitude: data["long"] as? Double ?? 0))
-                            newCP.determineColor()
+                        if cp.getID() == document.documentID{
+                            cpExist = true
                         }
+                    }
+                    if(!cpExist){
+                        let newCP = ControlPoint()
+                        let data = document.data()
+                        newCP.setNumRed(numRed: data["numRed"] as? Int ?? 0)
+                        newCP.setNumBlue(numBlue: data["numBlue"] as? Int ?? 0)
+                        newCP.setID(id: document.documentID)
+                        newCP.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: data["lat"] as? Double ?? 0, longitude: data["long"] as? Double ?? 0))
+                        newCP.setTeam(team: data["team"] as? String ?? "")
+                        
+                        self.cps.append(newCP)
+                        
+                        //put CP on map
+                        newCP.title = newCP.getID()
+                        self.map.addAnnotation(newCP)
+                        
+                        print("New CP added: " + newCP.getID())
+                        print("new CP location: " + String(newCP.getLocation().latitude))
                     }
                 }
             }
@@ -461,6 +493,17 @@ extension MapViewController: MKMapViewDelegate{
         if let annotation = annotation as? Ward{
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Ward")
+            }
+            if annotation.getTeam() == "blue" {
+                annotationView?.image = UIImage(named: "Blue Ward")
+            }
+        }
+        if let annotation = annotation as? ControlPoint{
+            if annotation.getTeam() == "neutral" {
+                annotationView?.image = UIImage(named: "Blue Player")
+            }
+            if annotation.getTeam() == "red" {
+                annotationView?.image = UIImage(named: "Red Ward") //Need to make icons for control points
             }
             if annotation.getTeam() == "blue" {
                 annotationView?.image = UIImage(named: "Blue Ward")
