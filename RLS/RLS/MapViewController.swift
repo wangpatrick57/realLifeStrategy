@@ -41,6 +41,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     @IBOutlet weak var gameIDLabel: UILabel!
     var cps = [ControlPoint]() //collection of control points - date retrieve from server
     
+    var font : String = "San Francisco"
+    
     override func viewDidLoad() {
         //necessary map stuff
         super.viewDidLoad()
@@ -472,7 +474,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
 
 
 extension MapViewController: MKMapViewDelegate{
-
+    
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "Entity")
         if annotationView == nil{
@@ -482,14 +484,21 @@ extension MapViewController: MKMapViewDelegate{
         if let annotation = annotation as? Player{
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Player")
-                let name = UILabel(frame: CGRect(x: -25, y: 15, width: 50, height: 14))
-                name.textAlignment = .center
-                name.font = UIFont(name: "Arial", size: 10)
-                name.text = annotation.getName()
-                annotationView?.addSubview(name)
+                annotation.title = annotation.getName()
+                if #available(iOS 11.0, *) {
+                    annotationView?.displayPriority = .required
+                } else {
+                    //do nothing
+                }
             }
             if annotation.getTeam() == "blue" {
                 annotationView?.image = UIImage(named: "Blue Player")
+                annotation.title = annotation.getName()
+                if #available(iOS 11.0, *) {
+                    annotationView?.displayPriority = .required
+                } else {
+                    //do nothing
+                }
             }
         }
         if let annotation = annotation as? Ward{
@@ -511,6 +520,17 @@ extension MapViewController: MKMapViewDelegate{
                 annotationView?.image = UIImage(named: "Blue Ward")
             }
         }
+        
+        //add title
+        let name = UILabel(frame: CGRect(x: -19, y: 18, width: 50, height: 12))
+        name.textAlignment = .center
+        name.font = UIFont(name: font, size: 12)
+        name.text = annotation.title ?? "NameNotFound"
+        name.backgroundColor = UIColor(hue: 0, saturation: 0, brightness: 0.8, alpha: 0.5)
+        name.adjustsFontSizeToFitWidth = true
+        name.minimumScaleFactor = 0.5
+        annotationView?.addSubview(name)
+        
         annotationView?.canShowCallout = true
         return annotationView
     }
