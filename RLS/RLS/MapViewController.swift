@@ -23,6 +23,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var playerDict: [String: Player] = [myPlayer.getName() : myPlayer] //dictionary of all players
     var deadNames: [String] = [] //list of the names of the dead players on "my" team
     var myPings: [String: Double] = [:] //dict of the names of my pings to their create times. the name is "\(myName)\(pingNum)"
+    var respawnPointCoords: [CLLocationCoordinate2D] = []
     var pingNum = 0
     var myTeamPings: [Ping] = [] //list of pings to draw
     var once = false
@@ -32,8 +33,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var timer: Timer!
     var colRef: CollectionReference!
     var inDangerStartTime = -1.0
+    var respawnEnterTime = -1.0
     let deathTime = 5.0
     let tetherDist = 20.0
+    let respawnTime = 15.0
+    let respawnDist = 10.0
     @IBOutlet weak var gameIDLabel: UILabel!
     
     override func viewDidLoad() {
@@ -67,6 +71,18 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
          myAnnotation.coordinate = newCoordinate;
          }]*/
         
+        //respawn point array
+        db.collection("Games/\(gameID)/RespawnPoints").getDocuments() { (querySnapshot, error) in
+            if let error = error{
+                print(error)
+            } else {
+                for document in querySnapshot!.documents {
+                    let data = document.data()
+                    self.respawnPointCoords.append(CLLocationCoordinate2D(latitude: data["lat"] as? Double ?? 0, longitude: data["long"] as? Double ?? 0))
+                }
+            }
+        }
+        
         //Change button colors to Player's team color
         if myPlayer.getTeam() == "red" {
             returnButtonMap.setTitleColor(.red, for : .normal)
@@ -77,7 +93,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             ward.setTitleColor(.blue, for : .normal)
             death.setTitleColor(.blue, for : .normal)
         }
-        
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -148,6 +163,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     
     @objc func handleData() {
         getData()
+        step()
         //sendData()
     }
     
@@ -203,8 +219,19 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                 }
             }
         }
-        
+    }
+    
+    func step() {
         //RESPAWN
+        let currTime = CACurrentMediaTime()
+        
+        if (inRespawnArea()) {
+            if (currTime > respawnEnterTime + respawnTime) {
+                myPlayer.setDead(dead: false)
+            }
+        } else {
+            respawnEnterTime = currTime
+        }
         
         //RAY COMBAT
         
@@ -335,6 +362,22 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                         return true
                     }
                 }
+            }
+        }
+        
+        return false
+    }
+    
+    func inRespawnArea() -> Bool {
+        for coord in respawnPointCoords {
+            let myCoord = myPlayer.getCoordinate()
+            let lat1 = myCoord.latitude
+            let lon1 = myCoord.longitude
+            let lat2 = coord.latitude
+            let lon2 = coord.longitude
+            
+            if (latLongDist(lat1: lat1, lon1: lon1, lat2: lat2, lon2: lon2) < respawnDist) {
+                return true
             }
         }
         
