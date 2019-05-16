@@ -522,15 +522,16 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         //add title
-        let name = UILabel(frame: CGRect(x: -19, y: 18, width: 50, height: 12))
-        name.textAlignment = .center
-        name.font = UIFont(name: font, size: 12)
-        name.text = annotation.title ?? "NameNotFound"
-        name.backgroundColor = UIColor(hue: 0, saturation: 0, brightness: 0.8, alpha: 0.5)
-        name.adjustsFontSizeToFitWidth = true
-        name.minimumScaleFactor = 0.5
-        annotationView?.addSubview(name)
-        
+        if (annotation as! UIView).subviews.isEmpty {
+            let name = UILabel(frame: CGRect(x: -19, y: 18, width: 50, height: 12))
+            name.textAlignment = .center
+            name.font = UIFont(name: font, size: 12)
+            name.text = annotation.title ?? "NameNotFound"
+            name.backgroundColor = UIColor(hue: 0, saturation: 0, brightness: 0.8, alpha: 0.5)
+            name.adjustsFontSizeToFitWidth = true
+            name.minimumScaleFactor = 0.5
+            annotationView?.addSubview(name)
+        }
         annotationView?.canShowCallout = true
         return annotationView
     }
