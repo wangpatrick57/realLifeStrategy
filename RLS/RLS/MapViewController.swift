@@ -475,6 +475,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
 
 extension MapViewController: MKMapViewDelegate{
     
+    //called when an annotation is added or deleted I think?
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "Entity")
         if annotationView == nil{
@@ -534,5 +535,9 @@ extension MapViewController: MKMapViewDelegate{
         }
         annotationView?.canShowCallout = true
         return annotationView
+    }
+    
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        return MKOverlayRenderer(overlay: overlay)
     }
 }
