@@ -35,6 +35,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     let deathTime = 5.0
     let tetherDist = 20.0
     @IBOutlet weak var gameIDLabel: UILabel!
+    var cps = [ControlPoint]() //collection of control points - date retrieve from server
     
     override func viewDidLoad() {
         //necessary map stuff
@@ -80,6 +81,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         
     }
     
+    //Calvin was here. In memoriam 2019 - 2019
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations[0] //the latest location
         
@@ -280,6 +282,35 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //DRAW MKMAPOVERLAYS
         //draw rays based on a dict
         //draw circles around each player and ward in myTeamDict for vision OR just wards if we're doing that
+        
+        //retrieve data of control point from server
+        getCP()
+    }
+    
+    //retrieve control point from server
+    func getCP(){
+        //initialize ControlPoint
+        db.collection("Games/" + gameID + "/ControlPoints").getDocuments() { (querySnapshot, error) in
+            if let error = error{
+                print(error)
+            } else {
+                //this loop is to check for new players and update existing ones
+                //it first updates playerDict, then updates myTeam and otherTeam dicts
+                for document in querySnapshot!.documents {
+                    for cp in self.cps {
+                        if cp.getID() != document.documentID{
+                            let newCP = ControlPoint()
+                            let data = document.data()
+                            newCP.setNumRed(numRed: data["numRed"] as? Int ?? 0)
+                            newCP.setNumBlue(numBlue: data["numBlue"] as? Int ?? 0)
+                            newCP.setID(id: document.documentID)
+                            newCP.setLocation(location: CLLocationCoordinate2D(latitude: data["lat"] as? Double ?? 0, longitude: data["long"] as? Double ?? 0))
+                            newCP.determineColor()
+                        }
+                    }
+                }
+            }
+        }
     }
     
     func existsInDict(annTitleToCheck: String) -> Bool {
@@ -391,5 +422,4 @@ extension MapViewController: MKMapViewDelegate{
         
         return nil
     }
-
 }

@@ -16,14 +16,16 @@ import CoreLocation
 class ControlPoint : MKPointAnnotation{
     private var numRed : Int
     private var numBlue : Int
-    private var color : UIColor
+    private var team : UIColor
     private var location : CLLocationCoordinate2D
+    private var id : String
     
     override init(){
         self.numRed = 0
         self.numBlue = 0
-        self.color = UIColor.gray
-        self.location = CLLocationCoordinate2D(latitude: 37.320416, longitude: 122.010172)
+        self.team = UIColor.gray
+        self.location = CLLocationCoordinate2D(latitude: 0, longitude: 0)
+        determineColor()
         super.init()
         
         //write CP data to Firebase
@@ -39,23 +41,31 @@ class ControlPoint : MKPointAnnotation{
     }
     
     //automatically calls determineColor() to update the color of the CP
-    func getColor() -> UIColor {
+    func getTeam() -> UIColor {
         determineColor()
-        return color
+        return team
     }
     
     func setLocation(location : CLLocationCoordinate2D) {
         self.location = location
     }
     
+    func getID() -> String {
+        return id
+    }
+    
+    func setID(id : String){
+        self.id = id
+    }
+    
     //determines the color of the CP depends on the amount of players on each team in the territory
-    private func determineColor(){
+    func determineColor(){
         if numBlue == numRed {
-            color = UIColor.gray
+            team = UIColor.gray
         } else if numBlue > numRed {
-            color = UIColor.blue
+            team = UIColor.blue
         } else {
-            color = UIColor.red
+            team = UIColor.red
         }
         
     }
