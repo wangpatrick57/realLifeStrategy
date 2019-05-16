@@ -19,13 +19,15 @@ class ControlPoint : MKPointAnnotation{
     private var team : String
     private var id : String
     private var radius : Double
+    private var playerStay : Bool //checks if player is staying in CP radius or just entered; true being player is staying in CP
     
     override init(){
         self.numRed = 0
         self.numBlue = 0
         self.team = "neutral"
         self.id = ""
-        self.radius = 20
+        self.radius = 10000000
+        self.playerStay = false
         super.init()
         self.title = self.id
         
@@ -82,7 +84,9 @@ class ControlPoint : MKPointAnnotation{
     
     //determines the color of the CP depends on the amount of players on each team in the territory
     func determineColor(){
-        if numBlue > numRed {
+        if numBlue == numRed{
+            return
+        }else if numBlue > numRed {
             team = "blue"
         } else {
             team = "red"
@@ -109,9 +113,16 @@ class ControlPoint : MKPointAnnotation{
         let lon2 = coordinate.longitude
         
         if (latLongDist(lat1: lat1, lon1: lon1, lat2: lat2, lon2: lon2) < radius) {
+            if playerStay {
+                return false
+            }
+            print("player has entered the CP radius")
+            playerStay = true
             return true
         }
         
+        print("player has left CP radius")
+        playerStay = false
         return false
     }
     

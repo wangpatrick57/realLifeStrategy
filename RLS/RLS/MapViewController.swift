@@ -53,6 +53,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         
         map.delegate = self
         
+        //retrieve data of control point from server
+        getCPData()
+        
         //start timer
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(handleData), userInfo: nil, repeats: true)
         
@@ -95,12 +98,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             death.setTitleColor(.blue, for : .normal)
         }
         
-        
-        //retrieve data of control point from server
-        getCPData()
     }
     
-    //Calvin was here. In memoriam 2019 - 2019
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations[0] //the latest location
         
@@ -318,15 +317,18 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //Check if player is in the CP radius
         for cp in self.cps{
             if cp.inArea(myPlayer: myPlayer) {
+                let ref : DocumentReference = db.document("Games/" + gameID + "/CP/" + cp.getID())
                 //if player is in radius, update number in server
                 if myPlayer.getTeam() == "red"{
                     cp.addNumRed(num: 1)
-                    db.document("Games/" + gameID + "/CP/" + cp.getID()).updateData(["numRed" : cp.getNumRed()])
+                    ref.updateData(["numRed": cp.getNumRed()])
+                    print("updated numRed in server")
                 } else {
                     cp.addNumBlue(num: 1)
-                    db.document("Games/" + gameID + "/CP/" + cp.getID()).updateData(["numBlue" : cp.getNumBlue()])
+                    ref.updateData(["numBlue": cp.getNumBlue()])
+                    print("updated numBlue in server")
                 }
-                db.document("Games/" + gameID + "/CP/" + cp.getID()).updateData(["team" : cp.getTeam()])
+                ref.updateData(["team" : cp.getTeam()])
             }
         }
     }
