@@ -9,6 +9,7 @@
 import Foundation
 import MapKit
 import UIKit
+import Firebase
 
 var myPlayer:Player = Player()
 
@@ -24,6 +25,7 @@ class PlayerListView : UIViewController{
     var blueUnselected: UIColor = UIColor(red: 167.0/255.0, green: 177.0/255.0, blue: 247.0/255.0, alpha: 1.0)
     var blueSelected: UIColor = UIColor(red: 73.0/255.0, green: 94.0/255.0, blue: 246.0/255.0, alpha: 1.0)
     var team: String = ""
+    var respawnPointNum: Int = 0
     
     @IBAction func redSelected(_ sender: Any) {
         team = "red"
@@ -43,6 +45,32 @@ class PlayerListView : UIViewController{
         blueButton.backgroundColor = blueUnselected
         nicknameLabel.text = "Hi, " + nickname + "! Choose a team below:"
         idLabel.text = "Game ID: " + gameID
+        
+        if (nickname == "host") {
+            let docRef = db.collection("Games").document(gameID)
+            
+            docRef.getDocument { (document, error) in
+                if let document = document, document.exists {
+                    let data = document.data()
+                    if let data = data {
+                        self.respawnPointNum = data["numRespawnPoints"] as! Int
+                    } else {
+                        print("a")
+                    }
+                } else {
+                    print("document doesn't exist")
+                }
+            }
+            
+            print(respawnPointNum)
+            
+            for i in 0..<respawnPointNum {
+                db.document("Games/\(gameID)/RespawnPoints/point\(i)").updateData([
+                    "lat": 0,
+                    "long": 0
+                    ])
+            }
+        }
     }
     
     @IBAction func enterGamePressed(_ sender: Any) {
