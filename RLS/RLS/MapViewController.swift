@@ -408,9 +408,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
 extension MapViewController: MKMapViewDelegate{
 
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "Entity")
+        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "Entity")
         if annotationView == nil{
-            let annotationView = MKAnnotationView.init(annotation: annotation, reuseIdentifier: "Entity")
+            annotationView = MKAnnotationView.init(annotation: annotation, reuseIdentifier: "Entity")
         }
         
         if let annotation = annotation as? Player{
