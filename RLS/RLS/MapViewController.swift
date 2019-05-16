@@ -23,6 +23,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var playerDict: [String: Player] = [myPlayer.getName() : myPlayer] //dictionary of all players
     var deadNames: [String] = [] //list of the names of the dead players on "my" team
     var myPings: [String: Double] = [:] //dict of the names of my pings to their create times. the name is "\(myName)\(pingNum)"
+    var respawnPointCoords: [CLLocationCoordinate2D] = []
     var pingNum = 0
     var myTeamPings: [Ping] = [] //list of pings to draw
     var once = false
@@ -32,8 +33,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var timer: Timer!
     var colRef: CollectionReference!
     var inDangerStartTime = -1.0
+    var respawnEnterTime = -1.0
     let deathTime = 5.0
     let tetherDist = 20.0
+    let respawnTime = 15.0
+    let respawnDist = 10.0
     @IBOutlet weak var gameIDLabel: UILabel!
     var cps = [ControlPoint]() //collection of control points - date retrieve from server
     
@@ -68,6 +72,18 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
          myAnnotation.coordinate = newCoordinate;
          }]*/
         
+        //respawn point array
+        db.collection("Games/\(gameID)/RespawnPoints").getDocuments() { (querySnapshot, error) in
+            if let error = error{
+                print(error)
+            } else {
+                for document in querySnapshot!.documents {
+                    let data = document.data()
+                    self.respawnPointCoords.append(CLLocationCoordinate2D(latitude: data["lat"] as? Double ?? 0, longitude: data["long"] as? Double ?? 0))
+                }
+            }
+        }
+        
         //Change button colors to Player's team color
         if myPlayer.getTeam() == "red" {
             returnButtonMap.setTitleColor(.red, for : .normal)
@@ -78,7 +94,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             ward.setTitleColor(.blue, for : .normal)
             death.setTitleColor(.blue, for : .normal)
         }
-        
     }
     
     //Calvin was here. In memoriam 2019 - 2019
@@ -150,6 +165,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     
     @objc func handleData() {
         getData()
+        step()
         //sendData()
     }
     
@@ -205,8 +221,19 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                 }
             }
         }
-        
+    }
+    
+    func step() {
         //RESPAWN
+        let currTime = CACurrentMediaTime()
+        
+        if (inRespawnArea()) {
+            if (currTime > respawnEnterTime + respawnTime) {
+                myPlayer.setDead(dead: false)
+            }
+        } else {
+            respawnEnterTime = currTime
+        }
         
         //RAY COMBAT
         
@@ -271,6 +298,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                 
                 if (!playerOnMap && (!thisDead && visible)) {
                     map.addAnnotation(thisPlayer)
+                    print(thisPlayer.title as Any)
                 }
                 
                 if (playerOnMap && (thisDead || !visible)) {
@@ -372,6 +400,22 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         return false
     }
     
+    func inRespawnArea() -> Bool {
+        for coord in respawnPointCoords {
+            let myCoord = myPlayer.getCoordinate()
+            let lat1 = myCoord.latitude
+            let lon1 = myCoord.longitude
+            let lat2 = coord.latitude
+            let lon2 = coord.longitude
+            
+            if (latLongDist(lat1: lat1, lon1: lon1, lat2: lat2, lon2: lon2) < respawnDist) {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
     //a function i stole online that tells you the distance in meters between two coordinates
     func latLongDist(lat1: Double, lon1: Double, lat2: Double, lon2: Double) -> Double {
         let R = 6378.137 // Radius of earth in KM
@@ -404,22 +448,25 @@ extension MapViewController: MKMapViewDelegate{
         if let annotation = annotation as? Player{
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Player")
+                let name = UILabel(frame: CGRect(x: -25, y: 15, width: 50, height: 14))
+                name.textAlignment = .center
+                name.font = UIFont(name: "Arial", size: 10)
+                name.text = annotation.getName()
+                annotationView?.addSubview(name)
             }
             if annotation.getTeam() == "blue" {
                 annotationView?.image = UIImage(named: "Blue Player")
             }
-            return annotationView
         }
         if let annotation = annotation as? Ward{
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Ward")
             }
-            if annotation.getTeam() == "Blue" {
+            if annotation.getTeam() == "blue" {
                 annotationView?.image = UIImage(named: "Blue Ward")
             }
-            return annotationView
         }
-        
-        return nil
+        annotationView?.canShowCallout = true
+        return annotationView
     }
 }
