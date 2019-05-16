@@ -431,7 +431,7 @@ extension MapViewController: MKMapViewDelegate{
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Ward")
             }
-            if annotation.getTeam() == "Blue" {
+            if annotation.getTeam() == "blue" {
                 annotationView?.image = UIImage(named: "Blue Ward")
             }
         }
