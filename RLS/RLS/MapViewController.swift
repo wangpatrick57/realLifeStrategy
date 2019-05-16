@@ -417,9 +417,10 @@ extension MapViewController: MKMapViewDelegate{
         if let annotation = annotation as? Player{
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Player")
-                let name = UILabel(frame: CGRect(x: 0, y: -16, width: 20, height: 8))
+                let name = UILabel(frame: CGRect(x: -25, y: 15, width: 50, height: 14))
                 name.textAlignment = .center
-                name.font = UIFont(name: "Rockwell", size: 6)
+                name.font = UIFont(name: "Arial", size: 10)
+                name.text = annotation.getName()
                 annotationView?.addSubview(name)
             }
             if annotation.getTeam() == "blue" {
