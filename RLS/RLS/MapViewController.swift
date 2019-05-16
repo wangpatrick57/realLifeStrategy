@@ -269,6 +269,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                 
                 if (!playerOnMap && (!thisDead && visible)) {
                     map.addAnnotation(thisPlayer)
+                    print(thisPlayer.title as Any)
                 }
                 
                 if (playerOnMap && (thisDead || !visible)) {
@@ -373,11 +374,14 @@ extension MapViewController: MKMapViewDelegate{
         if let annotation = annotation as? Player{
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Player")
+                let name = UILabel(frame: CGRect(x: 0, y: -16, width: 20, height: 8))
+                name.textAlignment = .center
+                name.font = UIFont(name: "Rockwell", size: 6)
+                annotationView?.addSubview(name)
             }
             if annotation.getTeam() == "blue" {
                 annotationView?.image = UIImage(named: "Blue Player")
             }
-            return annotationView
         }
         if let annotation = annotation as? Ward{
             if annotation.getTeam() == "red" {
@@ -386,10 +390,9 @@ extension MapViewController: MKMapViewDelegate{
             if annotation.getTeam() == "Blue" {
                 annotationView?.image = UIImage(named: "Blue Ward")
             }
-            return annotationView
         }
-        
-        return nil
+        annotationView?.canShowCallout = true
+        return annotationView
     }
 
 }

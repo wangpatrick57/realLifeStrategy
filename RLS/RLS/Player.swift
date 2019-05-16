@@ -30,6 +30,8 @@ class Player: MKPointAnnotation{
         self.team=team
         self.dead = false
         super.init()
+        self.title = name
+        self.subtitle = team
         self.coordinate=coordinate
     }
     
@@ -47,6 +49,7 @@ class Player: MKPointAnnotation{
     
     func setTeam(team: String) {
         self.team = team
+        self.subtitle = team
     }
     
     func getTeam() -> String {
