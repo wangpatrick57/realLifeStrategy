@@ -540,10 +540,6 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         if let annotation = annotation as? Player{
-            print(" ")
-            print("title \(annotation.title)")
-            print("name \(annotation.getName())")
-            
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Player")
                 //annotation.title = annotation.getName()
@@ -568,8 +564,6 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         if let annotation = annotation as? Ward{
-            print("ward")
-            
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Ward")
                 //annotation.title = annotation.getName()
@@ -604,10 +598,6 @@ extension MapViewController: MKMapViewDelegate{
                 annotationView?.image = UIImage(named: "Blue Ward")
             }
         }
-        
-        print("team \(annTeam)")
-        print("title \(annotation.title)")
-        print("name \(annName)")
         
         //add title
         if annotationView?.subviews.isEmpty ?? false{
