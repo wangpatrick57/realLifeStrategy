@@ -41,6 +41,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     @IBOutlet weak var gameIDLabel: UILabel!
     var cps = [ControlPoint]() //collection of control points - date retrieve from server
     
+    var font : String = "San Francisco"
+    
     override func viewDidLoad() {
         //necessary map stuff
         super.viewDidLoad()
@@ -52,6 +54,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         manager.pausesLocationUpdatesAutomatically = false
         
         map.delegate = self
+        
+        //retrieve data of control point from server
+        getCPData()
         
         //start timer
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(handleData), userInfo: nil, repeats: true)
@@ -99,7 +104,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         playerDict[myPlayer.getName()] = myPlayer
     }
     
-    //Calvin was here. In memoriam 2019 - 2019
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = locations[0] //the latest location
         
@@ -345,30 +349,61 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //draw rays based on a dict
         //draw circles around each player and ward in myTeamDict for vision OR just wards if we're doing that
         
-        //retrieve data of control point from server
-        getCP()
+        //Check if player is in the CP radius
+        for cp in self.cps{
+            if cp.inArea(myPlayer: myPlayer) {
+                let ref : DocumentReference = db.document("Games/" + gameID + "/CP/" + cp.getID())
+                //if player is in radius, update number in server
+                if myPlayer.getTeam() == "red"{
+                    cp.addNumRed(num: 1)
+                    ref.updateData(["numRed": cp.getNumRed()])
+                    print("updated numRed in server")
+                } else {
+                    cp.addNumBlue(num: 1)
+                    ref.updateData(["numBlue": cp.getNumBlue()])
+                    print("updated numBlue in server")
+                }
+                ref.updateData(["team" : cp.getTeam()])
+            }
+        }
     }
     
     //retrieve control point from server
-    func getCP(){
+    func getCPData(){
+        print("getting CP data from server")
+        
         //initialize ControlPoint
-        db.collection("Games/" + gameID + "/ControlPoints").getDocuments() { (querySnapshot, error) in
+        db.collection("Games/" + gameID + "/CP").getDocuments() { (querySnapshot, error) in
             if let error = error{
                 print(error)
             } else {
+                print("CP server collection path valid")
                 //this loop is to check for new players and update existing ones
                 //it first updates playerDict, then updates myTeam and otherTeam dicts
                 for document in querySnapshot!.documents {
+                    var cpExist : Bool = false
                     for cp in self.cps {
-                        if cp.getID() != document.documentID{
-                            let newCP = ControlPoint()
-                            let data = document.data()
-                            newCP.setNumRed(numRed: data["numRed"] as? Int ?? 0)
-                            newCP.setNumBlue(numBlue: data["numBlue"] as? Int ?? 0)
-                            newCP.setID(id: document.documentID)
-                            newCP.setLocation(location: CLLocationCoordinate2D(latitude: data["lat"] as? Double ?? 0, longitude: data["long"] as? Double ?? 0))
-                            newCP.determineColor()
+                        if cp.getID() == document.documentID{
+                            cpExist = true
                         }
+                    }
+                    if(!cpExist){
+                        let newCP = ControlPoint()
+                        let data = document.data()
+                        newCP.setNumRed(numRed: data["numRed"] as? Int ?? 0)
+                        newCP.setNumBlue(numBlue: data["numBlue"] as? Int ?? 0)
+                        newCP.setID(id: document.documentID)
+                        newCP.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: data["lat"] as? Double ?? 0, longitude: data["long"] as? Double ?? 0))
+                        newCP.setTeam(team: data["team"] as? String ?? "")
+                        
+                        self.cps.append(newCP)
+                        
+                        //put CP on map
+                        newCP.title = newCP.getID()
+                        self.map.addAnnotation(newCP)
+                        
+                        print("New CP added: " + newCP.getID())
+                        print("new CP location: " + String(newCP.getLocation().latitude))
                     }
                 }
             }
@@ -472,7 +507,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
 
 
 extension MapViewController: MKMapViewDelegate{
-
+    
+    //called when an annotation is added or deleted I think?
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "Entity")
         
@@ -482,44 +518,79 @@ extension MapViewController: MKMapViewDelegate{
         
         if let annotation = annotation as? Player{
             if annotation.getTeam() == "red" {
-                if let view = annotationView {
-                    view.image = UIImage(named: "Red Player")
-                    view.addSubview(generateNameTag(name: annotation.getName()))
+                annotationView?.image = UIImage(named: "Red Player")
+                annotation.title = annotation.getName()
+                
+                if #available(iOS 11.0, *) {
+                    annotationView?.displayPriority = .required
+                } else {
+                    //do nothing
                 }
             }
             
             if annotation.getTeam() == "blue" {
-                if let view = annotationView {
-                    view.image = UIImage(named: "Blue Player")
-                    view.addSubview(generateNameTag(name: annotation.getName()))
+                annotationView?.image = UIImage(named: "Blue Player")
+                annotation.title = annotation.getName()
+                
+                if #available(iOS 11.0, *) {
+                    annotationView?.displayPriority = .required
+                } else {
+                    //do nothing
                 }
             }
         }
         
         if let annotation = annotation as? Ward{
             if annotation.getTeam() == "red" {
-                if let view = annotationView {
-                    view.image = UIImage(named: "Red Ward")
-                    view.addSubview(generateNameTag(name: annotation.getName()))
+                annotationView?.image = UIImage(named: "Red Ward")
+                annotation.title = annotation.getName()
+                
+                if #available(iOS 11.0, *) {
+                    annotationView?.displayPriority = .required
+                } else {
+                    //do nothing
                 }
             }
             
             if annotation.getTeam() == "blue" {
-                if let view = annotationView {
-                    view.image = UIImage(named: "Blue Ward")
-                    view.addSubview(generateNameTag(name: annotation.getName()))
+                annotationView?.image = UIImage(named: "Red Ward")
+                annotation.title = annotation.getName()
+                
+                if #available(iOS 11.0, *) {
+                    annotationView?.displayPriority = .required
+                } else {
+                    //do nothing
                 }
             }
+        }
+        if let annotation = annotation as? ControlPoint{
+            if annotation.getTeam() == "neutral" {
+                annotationView?.image = UIImage(named: "Blue Player")
+            }
+            if annotation.getTeam() == "red" {
+                annotationView?.image = UIImage(named: "Red Ward") //Need to make icons for control points
+            }
+            if annotation.getTeam() == "blue" {
+                annotationView?.image = UIImage(named: "Blue Ward")
+            }
+        }
+        
+        //add title
+        if (annotation as! UIView).subviews.isEmpty {
+            let name = UILabel(frame: CGRect(x: -19, y: 18, width: 50, height: 12))
+            name.textAlignment = .center
+            name.font = UIFont(name: font, size: 12)
+            name.text = annotation.title ?? "NameNotFound"
+            name.backgroundColor = UIColor(hue: 0, saturation: 0, brightness: 0.8, alpha: 0.5)
+            name.adjustsFontSizeToFitWidth = true
+            name.minimumScaleFactor = 0.5
+            annotationView?.addSubview(name)
         }
         annotationView?.canShowCallout = true
         return annotationView
     }
     
-    func generateNameTag(name: String) -> UILabel {
-        let nameTag = UILabel(frame: CGRect(x: 0, y: 15, width: 50, height: 14))
-        nameTag.textAlignment = .center
-        nameTag.font = UIFont(name: "Arial", size: 10)
-        nameTag.text = name
-        return nameTag
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        return MKOverlayRenderer(overlay: overlay)
     }
 }
