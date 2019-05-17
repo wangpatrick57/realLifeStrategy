@@ -553,7 +553,7 @@ extension MapViewController: MKMapViewDelegate{
             }
             
             if annotation.getTeam() == "blue" {
-                annotationView?.image = UIImage(named: "Red Ward")
+                annotationView?.image = UIImage(named: "Blue Ward")
                 annotation.title = annotation.getName()
                 
                 if #available(iOS 11.0, *) {
@@ -576,7 +576,7 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         //add title
-        if (annotation as! UIView).subviews.isEmpty {
+        if (annotation as? UIView)?.subviews.isEmpty ?? false {
             let name = UILabel(frame: CGRect(x: -19, y: 18, width: 50, height: 12))
             name.textAlignment = .center
             name.font = UIFont(name: font, size: 12)
@@ -586,6 +586,7 @@ extension MapViewController: MKMapViewDelegate{
             name.minimumScaleFactor = 0.5
             annotationView?.addSubview(name)
         }
+        
         annotationView?.canShowCallout = true
         return annotationView
     }
