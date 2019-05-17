@@ -36,8 +36,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var respawnEnterTime = -1.0
     let deathTime = 5.0
     let tetherDist = 20.0
-    let respawnTime = 15.0
-    let respawnDist = 10.0
+    let respawnTime = 2.0
+    let respawnDist = 30.0
     @IBOutlet weak var gameIDLabel: UILabel!
     var cps = [ControlPoint]() //collection of control points - date retrieve from server
     
@@ -94,6 +94,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             ward.setTitleColor(.blue, for : .normal)
             death.setTitleColor(.blue, for : .normal)
         }
+        
+        //add myPlayer to playerDict
+        playerDict[myPlayer.getName()] = myPlayer
     }
     
     //Calvin was here. In memoriam 2019 - 2019
@@ -121,6 +124,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             ])
     }
     
+    @IBAction func onReturnPressed(_ sender: Any) {
+        db.document("Games/\(gameID)/Players/\(myPlayer.getName())").delete() { err in
+            print(err)
+        }
+        
+        self.performSegue(withIdentifier: "ShowPlayerList", sender: nil)
+    }
+    
     @IBAction func dropWard(_ sender: Any) {
         if (!myPlayer.getDead()) {
             myPlayer.addWard()
@@ -139,10 +150,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         } else {
             myPlayer.setDead(dead: true)
         }
-        
-        db.document("Games/" + gameID + "/Players/" + myPlayer.getName()).updateData([
-            "dead": myPlayer.getDead()
-            ])
     }
     
     //ping with long press
@@ -165,7 +172,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     
     @objc func handleData() {
         getData()
-        step()
         //sendData()
     }
     
@@ -178,8 +184,16 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             if let error = error{
                 print(error)
             } else {
-                //this loop is to check for new players and update existing ones
-                //it first updates playerDict, then updates myTeam and otherTeam dicts
+                //set all players as disconnected
+                for thisName in self.playerDict.keys {
+                    if let thisPlayer = self.playerDict[thisName] {
+                        if (thisPlayer != myPlayer) {
+                            thisPlayer.setConnected(connected: false)
+                        }
+                    }
+                }
+                
+                //loop to add all the players
                 for document in querySnapshot!.documents {
                     if (document.documentID != myPlayer.getName()) {
                         let data = document.data()
@@ -209,7 +223,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                                 }
                             }
                         } else {
-                            let playerToAdd = Player(name: thisName, team: data["team"] as? String ?? "none", coordinate: thisCoordinate)
+                            let playerToAdd = Player(name: thisName, team: data["team"] as? String ?? "none", coordinate: thisCoordinate, dead: thisDead)
                             
                             if (thisWardCoordinate.latitude != 0 || thisWardCoordinate.longitude != 0) {
                                 playerToAdd.addWardAt(coordinate: thisWardCoordinate)
@@ -217,8 +231,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                             
                             self.playerDict[thisName] = playerToAdd
                         }
+                        
+                        self.playerDict[thisName]?.setConnected(connected: true)
                     }
                 }
+                
+                //step is in here so it runs AFTER getting all the data
+                self.step()
             }
         }
     }
@@ -227,9 +246,15 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //RESPAWN
         let currTime = CACurrentMediaTime()
         
-        if (inRespawnArea()) {
-            if (currTime > respawnEnterTime + respawnTime) {
-                myPlayer.setDead(dead: false)
+        if (myPlayer.getDead()) {
+            if (inRespawnArea()) {
+                if (currTime > respawnEnterTime + respawnTime) {
+                    myPlayer.setDead(dead: false)
+                }
+                
+                print("in respawn area")
+            } else {
+                respawnEnterTime = currTime
             }
         } else {
             respawnEnterTime = currTime
@@ -250,6 +275,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                 var playerOnMap: Bool = false
                 var wardOnMap: Bool = false
                 let thisDead = thisPlayer.getDead()
+                let thisConnected = thisPlayer.getConnected()
                 
                 for ann in annArray {
                     if (thisPlayer.title == ann.title) {
@@ -263,12 +289,16 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                     }
                 }
                 
-                if (!playerOnMap && !thisDead) {
+                print("A \(thisName) \(playerOnMap) \(thisDead)")
+                
+                if (thisConnected && !playerOnMap && !thisDead) {
                     map.addAnnotation(thisPlayer)
+                    print("a\(thisName)")
                 }
                 
-                if (playerOnMap && thisDead) {
+                if (playerOnMap && (thisDead || !thisConnected)) {
                     map.removeAnnotation(thisPlayer)
+                    print("b\(thisName)")
                 }
                 
                 if (!wardOnMap) {
@@ -288,6 +318,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                 
                 var playerOnMap: Bool = false
                 let thisDead = thisPlayer.getDead()
+                let thisConnected = thisPlayer.getConnected()
                 let visible = self.hasVisionOf(playerToCheck: thisPlayer)
                 
                 for ann in annArray {
@@ -296,13 +327,16 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                     }
                 }
                 
-                if (!playerOnMap && (!thisDead && visible)) {
+                print("B \(thisName) \(playerOnMap) \(thisDead)")
+                
+                if (thisConnected && !playerOnMap && (!thisDead && visible)) {
                     map.addAnnotation(thisPlayer)
-                    print(thisPlayer.title as Any)
+                    print("c\(thisName)")
                 }
                 
-                if (playerOnMap && (thisDead || !visible)) {
+                if (playerOnMap && (thisDead || !visible || !thisConnected)) {
                     map.removeAnnotation(thisPlayer)
+                    print("d\(thisName)")
                 }
             }
         }
@@ -441,32 +475,51 @@ extension MapViewController: MKMapViewDelegate{
 
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "Entity")
+        
         if annotationView == nil{
             annotationView = MKAnnotationView.init(annotation: annotation, reuseIdentifier: "Entity")
         }
         
         if let annotation = annotation as? Player{
             if annotation.getTeam() == "red" {
-                annotationView?.image = UIImage(named: "Red Player")
-                let name = UILabel(frame: CGRect(x: -25, y: 15, width: 50, height: 14))
-                name.textAlignment = .center
-                name.font = UIFont(name: "Arial", size: 10)
-                name.text = annotation.getName()
-                annotationView?.addSubview(name)
+                if let view = annotationView {
+                    view.image = UIImage(named: "Red Player")
+                    view.addSubview(generateNameTag(name: annotation.getName()))
+                }
             }
+            
             if annotation.getTeam() == "blue" {
-                annotationView?.image = UIImage(named: "Blue Player")
+                if let view = annotationView {
+                    view.image = UIImage(named: "Blue Player")
+                    view.addSubview(generateNameTag(name: annotation.getName()))
+                }
             }
         }
+        
         if let annotation = annotation as? Ward{
             if annotation.getTeam() == "red" {
-                annotationView?.image = UIImage(named: "Red Ward")
+                if let view = annotationView {
+                    view.image = UIImage(named: "Red Ward")
+                    view.addSubview(generateNameTag(name: annotation.getName()))
+                }
             }
+            
             if annotation.getTeam() == "blue" {
-                annotationView?.image = UIImage(named: "Blue Ward")
+                if let view = annotationView {
+                    view.image = UIImage(named: "Blue Ward")
+                    view.addSubview(generateNameTag(name: annotation.getName()))
+                }
             }
         }
         annotationView?.canShowCallout = true
         return annotationView
+    }
+    
+    func generateNameTag(name: String) -> UILabel {
+        let nameTag = UILabel(frame: CGRect(x: 0, y: 15, width: 50, height: 14))
+        nameTag.textAlignment = .center
+        nameTag.font = UIFont(name: "Arial", size: 10)
+        nameTag.text = name
+        return nameTag
     }
 }

@@ -16,7 +16,7 @@ let debug = true
 class HostOrJoinViewController : UIViewController {
     @IBAction func HostButton(_ sender: Any) {
         print("Host Button clicked")
-        checkIdTaken()
+        checkIDTaken()
     }
     
     @IBAction func JoinButton(_ sender: Any) {
@@ -33,15 +33,15 @@ class HostOrJoinViewController : UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    func checkIdTaken() {
-        gameID = generateGameId()
+    func checkIDTaken() {
+        gameID = generateGameID()
         let docRef:DocumentReference = db.document("Games/" + gameID)
         
         docRef.getDocument { (document, error) in
             if let document = document {
                 if document.exists {
                     print(gameID + " taken")
-                    self.checkIdTaken()
+                    self.checkIDTaken()
                 } else {
                     db.document("Games/" + gameID).setData([
                         "test": "test"
@@ -60,7 +60,7 @@ class HostOrJoinViewController : UIViewController {
         }
     }
     
-    func generateGameId()->String {
+    func generateGameID()->String {
         var gameID:String = ""
         let alphabet: [String] = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
         

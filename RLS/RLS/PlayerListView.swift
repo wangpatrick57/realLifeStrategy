@@ -52,23 +52,23 @@ class PlayerListView : UIViewController{
             docRef.getDocument { (document, error) in
                 if let document = document, document.exists {
                     let data = document.data()
+                    
                     if let data = data {
-                        self.respawnPointNum = data["numRespawnPoints"] as! Int
-                    } else {
+                        self.respawnPointNum = data["respawnPointNum"] as? Int ?? 0
                         print("a")
+                    }
+                    
+                    print("b")
+                    for i in 0..<self.respawnPointNum {
+                        print(i)
+                        db.document("Games/\(gameID)/RespawnPoints/point\(i)").setData([
+                            "lat": 0,
+                            "long": 0
+                            ])
                     }
                 } else {
                     print("document doesn't exist")
                 }
-            }
-            
-            print(respawnPointNum)
-            
-            for i in 0..<respawnPointNum {
-                db.document("Games/\(gameID)/RespawnPoints/point\(i)").updateData([
-                    "lat": 0,
-                    "long": 0
-                    ])
             }
         }
     }

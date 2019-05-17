@@ -15,6 +15,7 @@ class Player: MKPointAnnotation{
     private var team: String
     private var ward: Ward?
     private var dead: Bool
+    private var connected = true
     let visionDist: Double = 20 //meters
     
     override init() {
@@ -29,6 +30,16 @@ class Player: MKPointAnnotation{
         self.name=name
         self.team=team
         self.dead = false
+        super.init()
+        self.title = name
+        self.subtitle = team
+        self.coordinate=coordinate
+    }
+    
+    init(name:String,team:String,coordinate:CLLocationCoordinate2D, dead:Bool){
+        self.name=name
+        self.team=team
+        self.dead = dead
         super.init()
         self.title = name
         self.subtitle = team
@@ -62,6 +73,18 @@ class Player: MKPointAnnotation{
     
     func setDead(dead: Bool) {
         self.dead = dead
+        
+        db.document("Games/" + gameID + "/Players/" + name).updateData([
+            "dead": dead
+            ])
+    }
+    
+    func getConnected() -> Bool {
+        return connected
+    }
+    
+    func setConnected(connected: Bool) {
+        self.connected = connected
     }
     
     func addWard() {

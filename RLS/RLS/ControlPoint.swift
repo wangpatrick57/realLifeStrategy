@@ -25,8 +25,9 @@ class ControlPoint : MKPointAnnotation{
         self.numBlue = 0
         self.team = UIColor.gray
         self.location = CLLocationCoordinate2D(latitude: 0, longitude: 0)
-        determineColor()
+        self.id = ""
         super.init()
+        determineColor()
         
         //write CP data to Firebase
 //        db.document("Games/" + gameID + "/ControlPoints/" + ("CP" + self.location.latitude)).updateData(["lat": location.latitude, "long": location.longitude, "color": color, "numRed": numRed, "numBlue": numBlue,])
@@ -69,6 +70,4 @@ class ControlPoint : MKPointAnnotation{
         }
         
     }
-    
-    
 }

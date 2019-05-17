@@ -466,7 +466,7 @@
                                 <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="15"/>
                                 <state key="normal" title="Return"/>
                                 <connections>
-                                    <segue destination="iCi-CW-8rI" kind="show" id="BRb-al-mTs"/>
+                                    <action selector="onReturnPressed:" destination="cP6-KO-xW8" eventType="touchUpInside" id="5FF-0R-jxD"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="WardButton" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cL8-T9-r7N">
@@ -524,6 +524,7 @@
                         <outlet property="map" destination="mND-6A-hkp" id="AJm-3B-oAS"/>
                         <outlet property="returnButtonMap" destination="8jn-Ye-9oO" id="obk-IJ-No3"/>
                         <outlet property="ward" destination="cL8-T9-r7N" id="Opn-1e-Vbi"/>
+                        <segue destination="iCi-CW-8rI" kind="show" identifier="ShowPlayerList" id="Ln6-5H-nl1"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XVg-IN-cfz" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -535,8 +536,8 @@
         <image name="rlsLogo.png" width="306" height="396"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="BRb-al-mTs"/>
-        <segue reference="f0Y-Id-UZu"/>
+        <segue reference="Ln6-5H-nl1"/>
+        <segue reference="v3r-UE-hxb"/>
         <segue reference="D1b-4c-cdS"/>
     </inferredMetricsTieBreakers>
 </document>
