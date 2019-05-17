@@ -563,6 +563,7 @@ extension MapViewController: MKMapViewDelegate{
                 }
             }
         }
+        
         if let annotation = annotation as? ControlPoint{
             if annotation.getTeam() == "neutral" {
                 annotationView?.image = UIImage(named: "Blue Player")
