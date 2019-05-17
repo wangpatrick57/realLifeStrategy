@@ -293,16 +293,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                     }
                 }
                 
-                print("A \(thisName) \(playerOnMap) \(thisDead)")
-                
                 if (thisConnected && !playerOnMap && !thisDead) {
                     map.addAnnotation(thisPlayer)
-                    print("a\(thisName)")
                 }
                 
                 if (playerOnMap && (thisDead || !thisConnected)) {
                     map.removeAnnotation(thisPlayer)
-                    print("b\(thisName)")
                 }
                 
                 if (!wardOnMap) {
@@ -331,16 +327,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                     }
                 }
                 
-                print("B \(thisName) \(playerOnMap) \(thisDead)")
-                
                 if (thisConnected && !playerOnMap && (!thisDead && visible)) {
                     map.addAnnotation(thisPlayer)
-                    print("c\(thisName)")
                 }
                 
                 if (playerOnMap && (thisDead || !visible || !thisConnected)) {
                     map.removeAnnotation(thisPlayer)
-                    print("d\(thisName)")
                 }
             }
         }
