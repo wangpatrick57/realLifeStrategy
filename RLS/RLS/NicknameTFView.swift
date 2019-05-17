@@ -39,12 +39,6 @@ class NicknameTFView: UIViewController {
     func checkNameTaken() {
         nickname = nicknameTF.text ?? ""
         
-        if (nickname == "host") {
-            db.document("Games/\(gameID)").setData([
-                "respawnPointNum": 0
-                ])
-        }
-        
         let docRef:DocumentReference = db.document("Games/" + gameID + "/Players/" + nickname)
         
         docRef.getDocument { (document, error) in
