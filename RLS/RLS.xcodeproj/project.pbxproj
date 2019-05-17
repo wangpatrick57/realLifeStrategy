@@ -26,11 +26,11 @@
 		41AEAFFE21129BCF00DF6AE5 /* Pods in Resources */ = {isa = PBXBuildFile; fileRef = 41AEAFFB21129BCF00DF6AE5 /* Pods */; };
 		41AEB0002112AEDF00DF6AE5 /* HostGameIDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AEAFFF2112AEDF00DF6AE5 /* HostGameIDView.swift */; };
 		41AEB0022112B3B800DF6AE5 /* HostOrJoinViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AEB0012112B3B800DF6AE5 /* HostOrJoinViewController.swift */; };
-		41B3E04A20F5998C00E7D232 /* rlsLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 41B3E04920F5998C00E7D232 /* rlsLogo.png */; };
 		41B3E04E20F59C8B00E7D232 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 41B3E04D20F59C8B00E7D232 /* Assets.xcassets */; };
 		560815A2AB5B280C3B0D1552 /* Pods_RLS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDB0D880FB5B1DA32DC93FE6 /* Pods_RLS.framework */; };
 		7D172FC5228353B400DBEB59 /* PlayerDistanceUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D172FC4228353B400DBEB59 /* PlayerDistanceUtil.swift */; };
 		9EB423F711536779065E3150 /* Pods_RLSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CD8C69DED8F8FB32199A875 /* Pods_RLSTests.framework */; };
+		C45D3C8F228F44A6002589E3 /* RespawnPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */; };
 		C4C2B3042288C3E600A7D844 /* Ping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C2B3032288C3E600A7D844 /* Ping.swift */; };
 		C4EEC859227E9A910088CB32 /* Ward.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EEC858227E9A910088CB32 /* Ward.swift */; };
 		C4FA0810211404B100DF7FE4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C4FA080F211404B000DF7FE4 /* GoogleService-Info.plist */; };
@@ -80,7 +80,6 @@
 		41AEAFFB21129BCF00DF6AE5 /* Pods */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Pods; sourceTree = "<group>"; };
 		41AEAFFF2112AEDF00DF6AE5 /* HostGameIDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HostGameIDView.swift; path = RLS/HostGameIDView.swift; sourceTree = SOURCE_ROOT; };
 		41AEB0012112B3B800DF6AE5 /* HostOrJoinViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HostOrJoinViewController.swift; path = RLS/HostOrJoinViewController.swift; sourceTree = SOURCE_ROOT; };
-		41B3E04920F5998C00E7D232 /* rlsLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rlsLogo.png; sourceTree = SOURCE_ROOT; };
 		41B3E04D20F59C8B00E7D232 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4B2EA44608C7F3984D0624B7 /* Pods-RLSUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLSUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RLSUITests/Pods-RLSUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		4CD8C69DED8F8FB32199A875 /* Pods_RLSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RLSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -89,6 +88,7 @@
 		B07169557C838AFFEAD4811A /* Pods-RLSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RLSTests/Pods-RLSTests.release.xcconfig"; sourceTree = "<group>"; };
 		BD20F52C6D6CC9A7A53F9DE7 /* Pods-RLSUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLSUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RLSUITests/Pods-RLSUITests.release.xcconfig"; sourceTree = "<group>"; };
 		BDB0D880FB5B1DA32DC93FE6 /* Pods_RLS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RLS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RespawnPoint.swift; sourceTree = "<group>"; };
 		C4C2B3032288C3E600A7D844 /* Ping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ping.swift; sourceTree = "<group>"; };
 		C4EEC858227E9A910088CB32 /* Ward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ward.swift; sourceTree = "<group>"; };
 		C4FA080F211404B000DF7FE4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -177,7 +177,6 @@
 				418C135520F1B89B00AE16C5 /* LaunchScreen.storyboard */,
 				418C135820F1B89B00AE16C5 /* Info.plist */,
 				41B3E04D20F59C8B00E7D232 /* Assets.xcassets */,
-				41B3E04920F5998C00E7D232 /* rlsLogo.png */,
 				418C137E20F1B9A800AE16C5 /* NicknameTFView.swift */,
 				418C138220F1BA0E00AE16C5 /* MapViewController.swift */,
 				418C138620F1BA7D00AE16C5 /* Player.swift */,
@@ -185,6 +184,7 @@
 				C4C2B3032288C3E600A7D844 /* Ping.swift */,
 				417F570C2112BB3000CE6E4A /* PlayerListView.swift */,
 				7D172FC4228353B400DBEB59 /* PlayerDistanceUtil.swift */,
+				C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */,
 				41867B73228B8D0300B504EE /* ControlPoint.swift */,
 				EBA8C3D4228DDB2C0008E38C /* ViewCircleOverlay.swift */,
 			);
@@ -343,7 +343,6 @@
 			files = (
 				41AEAFFC21129BCF00DF6AE5 /* Podfile in Resources */,
 				C4FA0810211404B100DF7FE4 /* GoogleService-Info.plist in Resources */,
-				41B3E04A20F5998C00E7D232 /* rlsLogo.png in Resources */,
 				41AEAFFE21129BCF00DF6AE5 /* Pods in Resources */,
 				418C135720F1B89B00AE16C5 /* LaunchScreen.storyboard in Resources */,
 				41B3E04E20F59C8B00E7D232 /* Assets.xcassets in Resources */,
@@ -454,6 +453,7 @@
 				C4EEC859227E9A910088CB32 /* Ward.swift in Sources */,
 				41867B74228B8D0300B504EE /* ControlPoint.swift in Sources */,
 				41AEB0022112B3B800DF6AE5 /* HostOrJoinViewController.swift in Sources */,
+				C45D3C8F228F44A6002589E3 /* RespawnPoint.swift in Sources */,
 				7D172FC5228353B400DBEB59 /* PlayerDistanceUtil.swift in Sources */,
 				EBA8C3D5228DDB2C0008E38C /* ViewCircleOverlay.swift in Sources */,
 				418C134F20F1B89A00AE16C5 /* StartView.swift in Sources */,

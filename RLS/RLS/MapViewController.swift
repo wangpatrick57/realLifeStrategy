@@ -23,7 +23,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var playerDict: [String: Player] = [myPlayer.getName() : myPlayer] //dictionary of all players
     var deadNames: [String] = [] //list of the names of the dead players on "my" team
     var myPings: [String: Double] = [:] //dict of the names of my pings to their create times. the name is "\(myName)\(pingNum)"
-    var respawnPointCoords: [CLLocationCoordinate2D] = []
+    var respawnPoints: [RespawnPoint] = []
     var pingNum = 0
     var myTeamPings: [Ping] = [] //list of pings to draw
     var once = false
@@ -36,7 +36,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var respawnEnterTime = -1.0
     let deathTime = 5.0
     let tetherDist = 20.0
-    let respawnTime = 2.0
+    let respawnTime = 10.0
     let respawnDist = 30.0
     @IBOutlet weak var gameIDLabel: UILabel!
     var cps = [ControlPoint]() //collection of control points - date retrieve from server
@@ -84,7 +84,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             } else {
                 for document in querySnapshot!.documents {
                     let data = document.data()
-                    self.respawnPointCoords.append(CLLocationCoordinate2D(latitude: data["lat"] as? Double ?? 0, longitude: data["long"] as? Double ?? 0))
+                    let name = document.documentID
+                    let coordinate = CLLocationCoordinate2D(latitude: data["lat"] as? Double ?? 0, longitude: data["long"] as? Double ?? 0)
+                    let point = RespawnPoint(name: name, coordinate: coordinate)
+                    self.respawnPoints.append(point)
+                    self.map.addAnnotation(point)
                 }
             }
         }
@@ -114,7 +118,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             let region:MKCoordinateRegion = MKCoordinateRegion.init(center: myLocation, span: span)
             map.setRegion(region, animated: true)
             print(location.coordinate.latitude, " and ", location.coordinate.longitude)
-            self.map.showsUserLocation = false
+            self.map.showsUserLocation = true
             once = true
         }
         
@@ -484,7 +488,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                 let lon1 = coord.longitude
                 
                 if (!thisPlayer.getDead() && latLongDist(lat1: lat1, lon1: lon1, lat2: lat2, lon2: lon2) < thisPlayer.visionDist) {
-                    return true
+                    //return true
                 }
                 
                 if let ward = thisPlayer.getWard() {
@@ -504,12 +508,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     }
     
     func inRespawnArea() -> Bool {
-        for coord in respawnPointCoords {
+        for point in respawnPoints {
             let myCoord = myPlayer.getCoordinate()
+            let pointCoord = point.getCoordinate()
             let lat1 = myCoord.latitude
             let lon1 = myCoord.longitude
-            let lat2 = coord.latitude
-            let lon2 = coord.longitude
+            let lat2 = pointCoord.latitude
+            let lon2 = pointCoord.longitude
             
             if (latLongDist(lat1: lat1, lon1: lon1, lat2: lat2, lon2: lon2) < respawnDist) {
                 return true
@@ -544,7 +549,7 @@ extension MapViewController: MKMapViewDelegate{
     
     //called when an annotation is added or deleted I think?
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        var annName: String = "can't find name"
+        var annName: String = "you"
         var annTeam: String = "none"
         
         if let annotation = annotation as? Player {
@@ -561,6 +566,10 @@ extension MapViewController: MKMapViewDelegate{
             annTeam = annotation.getTeam()
         }
         
+        if let annotation = annotation as? RespawnPoint {
+            annName = annotation.getName()
+        }
+        
         var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: annName)
         
         if annotationView == nil{
@@ -568,10 +577,6 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         if let annotation = annotation as? Player{
-            print(" ")
-            print("title \(annotation.title)")
-            print("name \(annotation.getName())")
-            
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Player")
                 //annotation.title = annotation.getName()
@@ -596,8 +601,6 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         if let annotation = annotation as? Ward{
-            print("ward")
-            
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Ward")
                 //annotation.title = annotation.getName()
@@ -633,9 +636,16 @@ extension MapViewController: MKMapViewDelegate{
             }
         }
         
-        print("team \(annTeam)")
-        print("title \(annotation.title)")
-        print("name \(annName)")
+        if let annotation = annotation as? RespawnPoint {
+            annotationView?.image = UIImage(named: "Red Player")
+            //annotation.title = annotation.getName()
+            
+            if #available(iOS 11.0, *) {
+                annotationView?.displayPriority = .required
+            } else {
+                // Fallback on earlier versions
+            }
+        }
         
         //add title
         if annotationView?.subviews.isEmpty ?? false{

@@ -25,7 +25,7 @@ class PlayerListView : UIViewController{
     var blueUnselected: UIColor = UIColor(red: 167.0/255.0, green: 177.0/255.0, blue: 247.0/255.0, alpha: 1.0)
     var blueSelected: UIColor = UIColor(red: 73.0/255.0, green: 94.0/255.0, blue: 246.0/255.0, alpha: 1.0)
     var team: String = ""
-    var respawnPointNum: Int = 0
+    var respawnPointNum: Int = 3
     
     @IBAction func redSelected(_ sender: Any) {
         team = "red"
@@ -47,6 +47,10 @@ class PlayerListView : UIViewController{
         idLabel.text = "Game ID: " + gameID
         
         if (nickname == "host") {
+            /*db.document("Games/\(gameID)").setData([
+                "respawnPointNum": 0
+                ])*/
+            
             let docRef = db.collection("Games").document(gameID)
             
             docRef.getDocument { (document, error) in
@@ -54,11 +58,9 @@ class PlayerListView : UIViewController{
                     let data = document.data()
                     
                     if let data = data {
-                        self.respawnPointNum = data["respawnPointNum"] as? Int ?? 0
-                        print("a")
+                        //self.respawnPointNum = data["respawnPointNum"] as? Int ?? 0
                     }
                     
-                    print("b")
                     for i in 0..<self.respawnPointNum {
                         print(i)
                         db.document("Games/\(gameID)/RespawnPoints/point\(i)").setData([
