@@ -129,8 +129,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     }
     
     @IBAction func onReturnPressed(_ sender: Any) {
-        db.document("Games/\(gameID)/Players/\(myPlayer.getName())").delete() { err in
-            print(err)
+        if (!debug) {
+            db.document("Games/\(gameID)/Players/\(myPlayer.getName())").delete() { err in
+                print(err)
+            }
         }
         
         self.performSegue(withIdentifier: "ShowPlayerList", sender: nil)
@@ -151,8 +153,16 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     @IBAction func death(_ sender: Any) {
         if (debug) {
             myPlayer.setDead(dead: !myPlayer.getDead())
+                
+            db.document("Games/" + gameID + "/Players/" + myPlayer.getName()).updateData([
+                "dead": myPlayer.getDead()
+                ])
         } else {
             myPlayer.setDead(dead: true)
+            
+            db.document("Games/" + gameID + "/Players/" + myPlayer.getName()).updateData([
+                "dead": myPlayer.getDead()
+                ])
         }
     }
     
@@ -254,6 +264,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             if (inRespawnArea()) {
                 if (currTime > respawnEnterTime + respawnTime) {
                     myPlayer.setDead(dead: false)
+                    
+                    db.document("Games/" + gameID + "/Players/" + myPlayer.getName()).updateData([
+                        "dead": myPlayer.getDead()
+                        ])
                 }
                 
                 print("in respawn area")
@@ -502,16 +516,37 @@ extension MapViewController: MKMapViewDelegate{
     
     //called when an annotation is added or deleted I think?
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "Entity")
+        var annName: String = "can't find name"
+        var annTeam: String = "none"
+        
+        if let annotation = annotation as? Player {
+            annName = annotation.getName()
+            annTeam = annotation.getTeam()
+        }
+        
+        if let annotation = annotation as? Ward {
+            annName = annotation.getName()
+            annTeam = annotation.getTeam()
+        }
+        
+        if let annotation = annotation as? ControlPoint {
+            annTeam = annotation.getTeam()
+        }
+        
+        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: annName)
         
         if annotationView == nil{
-            annotationView = MKAnnotationView.init(annotation: annotation, reuseIdentifier: "Entity")
+            annotationView = MKAnnotationView.init(annotation: annotation, reuseIdentifier: annName)
         }
         
         if let annotation = annotation as? Player{
+            print(" ")
+            print("title \(annotation.title)")
+            print("name \(annotation.getName())")
+            
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Player")
-                annotation.title = annotation.getName()
+                //annotation.title = annotation.getName()
                 
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
@@ -522,7 +557,7 @@ extension MapViewController: MKMapViewDelegate{
             
             if annotation.getTeam() == "blue" {
                 annotationView?.image = UIImage(named: "Blue Player")
-                annotation.title = annotation.getName()
+                //annotation.title = annotation.getName()
                 
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
@@ -533,9 +568,11 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         if let annotation = annotation as? Ward{
+            print("ward")
+            
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Ward")
-                annotation.title = annotation.getName()
+                //annotation.title = annotation.getName()
                 
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
@@ -546,7 +583,7 @@ extension MapViewController: MKMapViewDelegate{
             
             if annotation.getTeam() == "blue" {
                 annotationView?.image = UIImage(named: "Blue Ward")
-                annotation.title = annotation.getName()
+                //annotation.title = annotation.getName()
                 
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
@@ -568,12 +605,16 @@ extension MapViewController: MKMapViewDelegate{
             }
         }
         
+        print("team \(annTeam)")
+        print("title \(annotation.title)")
+        print("name \(annName)")
+        
         //add title
         if annotationView?.subviews.isEmpty ?? false{
             let name = UILabel(frame: CGRect(x: -19, y: 18, width: 50, height: 12))
             name.textAlignment = .center
             name.font = UIFont(name: font, size: 12)
-            name.text = annotation.title ?? "NameNotFound"
+            name.text = annName
             name.backgroundColor = UIColor(hue: 0, saturation: 0, brightness: 0.8, alpha: 0.5)
             name.adjustsFontSizeToFitWidth = true
             name.minimumScaleFactor = 0.5

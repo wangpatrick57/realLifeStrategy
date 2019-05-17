@@ -32,7 +32,7 @@ class Player: MKPointAnnotation{
         self.dead = false
         super.init()
         self.title = name
-        self.subtitle = team
+        //self.subtitle = team
         self.coordinate=coordinate
     }
     
@@ -42,7 +42,7 @@ class Player: MKPointAnnotation{
         self.dead = dead
         super.init()
         self.title = name
-        self.subtitle = team
+        //self.subtitle = team
         self.coordinate=coordinate
     }
     
@@ -60,7 +60,7 @@ class Player: MKPointAnnotation{
     
     func setTeam(team: String) {
         self.team = team
-        self.subtitle = team
+        //self.subtitle = team
     }
     
     func getTeam() -> String {
@@ -73,10 +73,6 @@ class Player: MKPointAnnotation{
     
     func setDead(dead: Bool) {
         self.dead = dead
-        
-        db.document("Games/" + gameID + "/Players/" + name).updateData([
-            "dead": dead
-            ])
     }
     
     func getConnected() -> Bool {
