@@ -524,7 +524,7 @@ extension MapViewController: MKMapViewDelegate{
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
                 } else {
-                    //do nothing
+                    // Fallback on earlier versions
                 }
             }
             
@@ -576,7 +576,7 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         //add title
-        if (annotation as? UIView)?.subviews.isEmpty ?? false {
+        if annotationView?.subviews.isEmpty ?? false{
             let name = UILabel(frame: CGRect(x: -19, y: 18, width: 50, height: 12))
             name.textAlignment = .center
             name.font = UIFont(name: font, size: 12)
