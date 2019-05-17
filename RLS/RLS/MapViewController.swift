@@ -587,7 +587,6 @@ extension MapViewController: MKMapViewDelegate{
             name.minimumScaleFactor = 0.5
             annotationView?.addSubview(name)
         }
-        
         annotationView?.canShowCallout = true
         return annotationView
     }
