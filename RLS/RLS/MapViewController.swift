@@ -601,27 +601,24 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         if let annotation = annotation as? Ward{
+            let circle = MKCircle(center: annotation.getCoordinate(), radius: 100)
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Ward")
-                //annotation.title = annotation.getName()
-                
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
                 } else {
                     //do nothing
                 }
             }
-            
             if annotation.getTeam() == "blue" {
                 annotationView?.image = UIImage(named: "Blue Ward")
-                //annotation.title = annotation.getName()
-                
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
                 } else {
                     //do nothing
                 }
             }
+            mapView.addOverlay(circle)
         }
         
         if let annotation = annotation as? ControlPoint{
@@ -636,7 +633,7 @@ extension MapViewController: MKMapViewDelegate{
             }
         }
         
-        if let annotation = annotation as? RespawnPoint {
+        if annotation is RespawnPoint {
             annotationView?.image = UIImage(named: "Red Player")
             //annotation.title = annotation.getName()
             
@@ -663,6 +660,13 @@ extension MapViewController: MKMapViewDelegate{
     }
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        if let overlay = overlay as? MKCircle{
+            let render = MKCircleRenderer(circle: overlay)
+            render.strokeColor = UIColor.black
+            render.lineWidth = 1
+            return render
+        }
         return MKOverlayRenderer(overlay: overlay)
     }
+    
 }
