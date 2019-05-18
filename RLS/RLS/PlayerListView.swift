@@ -47,10 +47,6 @@ class PlayerListView : UIViewController{
         idLabel.text = "Game ID: " + gameID
         
         if (nickname == "host") {
-            /*db.document("Games/\(gameID)").setData([
-                "respawnPointNum": 0
-                ])*/
-            
             let docRef = db.collection("Games").document(gameID)
             
             docRef.getDocument { (document, error) in
@@ -58,7 +54,7 @@ class PlayerListView : UIViewController{
                     let data = document.data()
                     
                     if let data = data {
-                        //self.respawnPointNum = data["respawnPointNum"] as? Int ?? 0
+                        self.respawnPointNum = data["respawnPointNum"] as? Int ?? 0
                     }
                     
                     for i in 0..<self.respawnPointNum {

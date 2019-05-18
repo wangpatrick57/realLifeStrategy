@@ -13,7 +13,7 @@ import CoreLocation
 class Ward: MKPointAnnotation{
     private var name: String
     private var team: String
-    let visionDist: Double = 30 //meters
+    let visionDist: Double = 35.0 //meters
     
     init(name:String,team:String,coordinate:CLLocationCoordinate2D){
         self.name=name

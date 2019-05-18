@@ -31,6 +31,10 @@ class NicknameTFView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         gameIDLabel.text = "Game ID: " + gameID
+        
+        db.document("Games/\(gameID)").setData([
+            "respawnPointNum": 0
+            ])
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

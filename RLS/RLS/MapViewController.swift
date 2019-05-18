@@ -36,8 +36,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var respawnEnterTime = -1.0
     let deathTime = 5.0
     let tetherDist = 20.0
-    let respawnTime = 10.0
-    let respawnDist = 30.0
+    let respawnTime = 15.0
+    let respawnDist = 12.0
     @IBOutlet weak var gameIDLabel: UILabel!
     var cps = [ControlPoint]() //collection of control points - date retrieve from server
     
@@ -598,13 +598,13 @@ extension MapViewController: MKMapViewDelegate{
         
         if let annotation = annotation as? ControlPoint{
             if annotation.getTeam() == "neutral" {
-                annotationView?.image = UIImage(named: "Blue Player")
+                annotationView?.image = UIImage(named: "Gray CP")
             }
             if annotation.getTeam() == "red" {
-                annotationView?.image = UIImage(named: "Red Ward") //Need to make icons for control points
+                annotationView?.image = UIImage(named: "Red CP") //Need to make icons for control points
             }
             if annotation.getTeam() == "blue" {
-                annotationView?.image = UIImage(named: "Blue Ward")
+                annotationView?.image = UIImage(named: "Blue CP")
             }
         }
         
