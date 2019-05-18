@@ -362,32 +362,45 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //Check if player is in the CP radius
         for cp in self.cps{
             if cp.inArea(myPlayer: myPlayer) {
-                let ref : DocumentReference = db.document("Games/" + gameID + "/CP/" + cp.getID())
+                let cpRef : DocumentReference = db.document("Games/" + gameID + "/CP/" + cp.getID())
                 //if player is in radius, update number in server
                 if myPlayer.getTeam() == "red"{
                     cp.addNumRed(num: 1)
-                    ref.updateData(["numRed": cp.getNumRed()])
-                    print("updated numRed in server")
+                    cpRef.updateData(["numRed": cp.getNumRed()])
+                    //print("updated numRed in server")
                 } else {
                     cp.addNumBlue(num: 1)
-                    ref.updateData(["numBlue": cp.getNumBlue()])
-                    print("updated numBlue in server")
+                    cpRef.updateData(["numBlue": cp.getNumBlue()])
+                    //print("updated numBlue in server")
                 }
-                ref.updateData(["team" : cp.getTeam()])
+                cpRef.updateData(["team" : cp.getTeam()])
+            }
+            
+            //add points to team: 1 point per second to the team cp belongs to
+            let pointsRedRef : DocumentReference = db.document("Games/" + gameID + "/Points/Red/")
+            let pointsBlueRef : DocumentReference = db.document("Games/" + gameID + "/Points/Blue/")
+            if cp.getTeam() == "red" {
+                pointsRedRef.updateData(["points" : cp.incrementRedPoints(pt: 1)])
+            } else if cp.getTeam() == "blue" {
+                pointsBlueRef.updateData(["points" : cp.incrementBluePoints(pt: 1)])
+            } else {
+                pointsRedRef.updateData(["points" : cp.incrementRedPoints(pt: 0.5)])
+                pointsBlueRef.updateData(["points" : cp.incrementBluePoints(pt: 0.5)])
             }
         }
+        
     }
     
     //retrieve control point from server
     func getCPData(){
-        print("getting CP data from server")
+        //print("getting CP data from server")
         
         //initialize ControlPoint
         db.collection("Games/" + gameID + "/CP").getDocuments() { (querySnapshot, error) in
             if let error = error{
                 print(error)
             } else {
-                print("CP server collection path valid")
+                //print("CP server collection path valid")
                 //this loop is to check for new players and update existing ones
                 //it first updates playerDict, then updates myTeam and otherTeam dicts
                 for document in querySnapshot!.documents {
@@ -406,14 +419,29 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                         newCP.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: data["lat"] as? Double ?? 0, longitude: data["long"] as? Double ?? 0))
                         newCP.setTeam(team: data["team"] as? String ?? "")
                         
+                        //retrieve points for each team
+                        db.collection("Games/" + gameID + "/Points").getDocuments() { (querySnapshot, error) in
+                            if let error = error{
+                                print(error)
+                            } else {
+                                for document in querySnapshot!.documents {
+                                    if document.documentID == "Red"{
+                                        newCP.setRedPoints(point: document.data()["points"] as! Double)
+                                    } else{
+                                        newCP.setBluePoints(point: document.data()["points"] as! Double)
+                                    }
+                                }
+                            }
+                        }
+                        
                         self.cps.append(newCP)
                         
                         //put CP on map
                         newCP.title = newCP.getID()
                         self.map.addAnnotation(newCP)
                         
-                        print("New CP added: " + newCP.getID())
-                        print("new CP location: " + String(newCP.getLocation().latitude))
+                        //print("New CP added: " + newCP.getID())
+                        //print("new CP location: " + String(newCP.getLocation().latitude))
                     }
                 }
             }
@@ -573,27 +601,24 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         if let annotation = annotation as? Ward{
+            let circle = MKCircle(center: annotation.getCoordinate(), radius: 100)
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Ward")
-                //annotation.title = annotation.getName()
-                
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
                 } else {
                     //do nothing
                 }
             }
-            
             if annotation.getTeam() == "blue" {
                 annotationView?.image = UIImage(named: "Blue Ward")
-                //annotation.title = annotation.getName()
-                
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
                 } else {
                     //do nothing
                 }
             }
+            mapView.addOverlay(circle)
         }
         
         if let annotation = annotation as? ControlPoint{
@@ -608,7 +633,7 @@ extension MapViewController: MKMapViewDelegate{
             }
         }
         
-        if let annotation = annotation as? RespawnPoint {
+        if annotation is RespawnPoint {
             annotationView?.image = UIImage(named: "Red Player")
             //annotation.title = annotation.getName()
             
@@ -635,6 +660,13 @@ extension MapViewController: MKMapViewDelegate{
     }
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        if let overlay = overlay as? MKCircle{
+            let render = MKCircleRenderer(circle: overlay)
+            render.strokeColor = UIColor.black
+            render.lineWidth = 1
+            return render
+        }
         return MKOverlayRenderer(overlay: overlay)
     }
+    
 }

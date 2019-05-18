@@ -20,14 +20,18 @@ class ControlPoint : MKPointAnnotation{
     private var id : String
     private var radius : Double
     private var playerStay : Bool //checks if player is staying in CP radius or just entered; true being player is staying in CP
+    private var redPoints : Double
+    private var bluePoints : Double
     
     override init(){
         self.numRed = 0
         self.numBlue = 0
         self.team = "neutral"
         self.id = ""
-        self.radius = 10000000
+        self.radius = 10000
         self.playerStay = false
+        self.redPoints = 0
+        self.bluePoints = 0
         super.init()
         self.title = self.id
         
@@ -82,6 +86,25 @@ class ControlPoint : MKPointAnnotation{
         self.radius = radius
     }
     
+    func setRedPoints(point : Double){
+        redPoints = point
+    }
+    
+    func setBluePoints(point : Double){
+        bluePoints = point
+    }
+    
+    //adds points and returns the updated number of points
+    func incrementRedPoints(pt : Double) -> Double{
+        redPoints = redPoints + pt
+        return redPoints
+    }
+    
+    func incrementBluePoints(pt : Double) -> Double{
+        bluePoints = bluePoints + pt
+        return bluePoints
+    }
+    
     //determines the color of the CP depends on the amount of players on each team in the territory
     func determineColor(){
         if numBlue == numRed{
@@ -112,16 +135,16 @@ class ControlPoint : MKPointAnnotation{
         let lat2 = coordinate.latitude
         let lon2 = coordinate.longitude
         
-        if (latLongDist(lat1: lat1, lon1: lon1, lat2: lat2, lon2: lon2) < radius) {
+        if (latLongDist(lat1: lat1, lon1: lon1, lat2: lat2, lon2: lon2) < radius && myPlayer.getConnected() && !myPlayer.getDead()) {
             if playerStay {
                 return false
             }
-            print("player has entered the CP radius")
+            //print("player has entered the CP radius")
             playerStay = true
             return true
         }
         
-        print("player has left CP radius")
+        //print("player has left CP radius")
         playerStay = false
         return false
     }
