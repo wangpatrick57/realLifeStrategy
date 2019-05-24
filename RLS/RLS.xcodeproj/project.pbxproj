@@ -34,7 +34,7 @@
 		C4C2B3042288C3E600A7D844 /* Ping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C2B3032288C3E600A7D844 /* Ping.swift */; };
 		C4EEC859227E9A910088CB32 /* Ward.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EEC858227E9A910088CB32 /* Ward.swift */; };
 		C4FA0810211404B100DF7FE4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C4FA080F211404B000DF7FE4 /* GoogleService-Info.plist */; };
-		EBA8C3D5228DDB2C0008E38C /* ViewCircleOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA8C3D4228DDB2C0008E38C /* ViewCircleOverlay.swift */; };
+		EB19B1B022985D1900764485 /* ColorCircleOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB19B1AF22985D1900764485 /* ColorCircleOverlay.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -94,7 +94,7 @@
 		C4FA080F211404B000DF7FE4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		DF770C68C7A54E2277520EA0 /* Pods-RLS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RLS/Pods-RLS.debug.xcconfig"; sourceTree = "<group>"; };
 		EA1E1B67838E847E6AAD68CE /* Pods_RLSUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RLSUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		EBA8C3D4228DDB2C0008E38C /* ViewCircleOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewCircleOverlay.swift; sourceTree = "<group>"; };
+		EB19B1AF22985D1900764485 /* ColorCircleOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorCircleOverlay.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -186,7 +186,7 @@
 				7D172FC4228353B400DBEB59 /* PlayerDistanceUtil.swift */,
 				C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */,
 				41867B73228B8D0300B504EE /* ControlPoint.swift */,
-				EBA8C3D4228DDB2C0008E38C /* ViewCircleOverlay.swift */,
+				EB19B1AF22985D1900764485 /* ColorCircleOverlay.swift */,
 			);
 			path = RLS;
 			sourceTree = "<group>";
@@ -452,10 +452,10 @@
 				41AEB0002112AEDF00DF6AE5 /* HostGameIDView.swift in Sources */,
 				C4EEC859227E9A910088CB32 /* Ward.swift in Sources */,
 				41867B74228B8D0300B504EE /* ControlPoint.swift in Sources */,
+				EB19B1B022985D1900764485 /* ColorCircleOverlay.swift in Sources */,
 				41AEB0022112B3B800DF6AE5 /* HostOrJoinViewController.swift in Sources */,
 				C45D3C8F228F44A6002589E3 /* RespawnPoint.swift in Sources */,
 				7D172FC5228353B400DBEB59 /* PlayerDistanceUtil.swift in Sources */,
-				EBA8C3D5228DDB2C0008E38C /* ViewCircleOverlay.swift in Sources */,
 				418C134F20F1B89A00AE16C5 /* StartView.swift in Sources */,
 				418C134D20F1B89A00AE16C5 /* AppDelegate.swift in Sources */,
 				417F570D2112BB3000CE6E4A /* PlayerListView.swift in Sources */,
