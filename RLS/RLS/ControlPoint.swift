@@ -36,7 +36,7 @@ class ControlPoint : MKPointAnnotation{
         self.title = self.id
         
         //write CP data to Firebase
-//        db.document("Games/" + gameID + "/ControlPoints/" + ("CP" + self.location.latitude)).updateData(["lat": location.latitude, "long": location.longitude, "color": color, "numRed": numRed, "numBlue": numBlue,])
+//        db.document("\(gameCol)/\(gameID)/ControlPoints/" + ("CP" + self.location.latitude)).updateData(["lat": location.latitude, "long": location.longitude, "color": color, "numRed": numRed, "numBlue": numBlue,])
     }
     
     func setNumRed(numRed : Int) {

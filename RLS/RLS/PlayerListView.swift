@@ -47,7 +47,7 @@ class PlayerListView : UIViewController{
         idLabel.text = "Game ID: " + gameID
         
         if (nickname == "host") {
-            let docRef = db.collection("Games").document(gameID)
+            let docRef = db.collection(gameCol).document(gameID)
             
             docRef.getDocument { (document, error) in
                 if let document = document, document.exists {
@@ -59,7 +59,7 @@ class PlayerListView : UIViewController{
                     
                     for i in 0..<self.respawnPointNum {
                         print(i)
-                        db.document("Games/\(gameID)/RespawnPoints/point\(i)").setData([
+                        db.document("\(gameCol)/\(gameID)/RespawnPoints/point\(i)").setData([
                             "lat": 0,
                             "long": 0
                             ])
@@ -75,7 +75,7 @@ class PlayerListView : UIViewController{
         if (team != "") {
             myPlayer = Player(name: nickname, team: team, coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
             
-            db.document("Games/" + gameID + "/Players/" + myPlayer.getName()).updateData([
+            db.document("\(gameCol)/\(gameID)/Players/" + myPlayer.getName()).updateData([
                 "team": team
             ]) { err in
                 if let err = err {

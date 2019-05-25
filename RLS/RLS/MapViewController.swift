@@ -38,6 +38,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     let tetherDist = 20.0
     let respawnTime = 15.0
     let respawnDist = 12.0
+    let wardVisionDist = 35.0 //meters
     @IBOutlet weak var gameIDLabel: UILabel!
     var cps = [ControlPoint]() //collection of control points - date retrieve from server
     
@@ -78,7 +79,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
          }]*/
         
         //respawn point array
-        db.collection("Games/\(gameID)/RespawnPoints").getDocuments() { (querySnapshot, error) in
+        db.collection("\(gameCol)/\(gameID)/RespawnPoints").getDocuments() { (querySnapshot, error) in
             if let error = error{
                 print(error)
             } else {
@@ -126,7 +127,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //set coordinates and death status
         myPlayer.setCoordinate(coordinate: location.coordinate)
         
-        db.document("Games/" + gameID + "/Players/" + myPlayer.getName()).updateData([
+        db.document("\(gameCol)/\(gameID)/Players/\(myPlayer.getName())").updateData([
             "lat": myPlayer.getCoordinate().latitude,
             "long": myPlayer.getCoordinate().longitude,
             ])
@@ -134,7 +135,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     
     @IBAction func onReturnPressed(_ sender: Any) {
         if (!debug) {
-            db.document("Games/\(gameID)/Players/\(myPlayer.getName())").delete() { err in
+            db.document("\(gameCol)/\(gameID)/Players/\(myPlayer.getName())").delete() { err in
                 print(err)
             }
         }
@@ -147,7 +148,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             myPlayer.addWard()
             let coordinate = myPlayer.getCoordinate()
             
-            db.document("Games/" + gameID + "/Players/" + myPlayer.getName()).updateData([
+            db.document("\(gameCol)/\(gameID)/Players/\(myPlayer.getName())").updateData([
                 "wardLat": coordinate.latitude,
                 "wardLong": coordinate.longitude
                 ])
@@ -158,13 +159,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         if (debug) {
             myPlayer.setDead(dead: !myPlayer.getDead())
                 
-            db.document("Games/" + gameID + "/Players/" + myPlayer.getName()).updateData([
+            db.document("\(gameCol)/\(gameID)/Players/\(myPlayer.getName())").updateData([
                 "dead": myPlayer.getDead()
                 ])
         } else {
             myPlayer.setDead(dead: true)
             
-            db.document("Games/" + gameID + "/Players/" + myPlayer.getName()).updateData([
+            db.document("\(gameCol)/\(gameID)/Players/\(myPlayer.getName())").updateData([
                 "dead": myPlayer.getDead()
                 ])
         }
@@ -180,7 +181,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             pingNum += 1
             myPings[pingName] = currTime
             
-            /*db.document("Games/" + gameID + "/Pings/" + pingName).updateData([
+            /*db.document("\(gameCol)/\(gameID)/Pings/\(pingName)").updateData([
                 "lat": locationCoordinate.latitude,
                 "long": locationCoordinate.longitude,
                 "team": myPlayer.getTeam()
@@ -198,7 +199,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //eventually make a server app that calculates vision so that the clients don't have access to all the enemies' positions
         
         //get player data
-        db.collection("Games/" + gameID + "/Players").getDocuments() { (querySnapshot, error) in
+        db.collection("\(gameCol)/\(gameID)/Players/").getDocuments() { (querySnapshot, error) in
             if let error = error{
                 print(error)
             } else {
@@ -269,7 +270,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                 if (currTime > respawnEnterTime + respawnTime) {
                     myPlayer.setDead(dead: false)
                     
-                    db.document("Games/" + gameID + "/Players/" + myPlayer.getName()).updateData([
+                    db.document("\(gameCol)/\(gameID)/Players/\(myPlayer.getName())").updateData([
                         "dead": myPlayer.getDead()
                         ])
                 }
@@ -362,7 +363,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //Check if player is in the CP radius
         for cp in self.cps{
             if cp.inArea(myPlayer: myPlayer) {
-                let cpRef : DocumentReference = db.document("Games/" + gameID + "/CP/" + cp.getID())
+                let cpRef : DocumentReference = db.document("\(gameCol)/\(gameID)/CP/\(cp.getID())")
                 //if player is in radius, update number in server
                 if myPlayer.getTeam() == "red"{
                     cp.addNumRed(num: 1)
@@ -377,8 +378,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             }
             
             //add points to team: 1 point per second to the team cp belongs to
-            let pointsRedRef : DocumentReference = db.document("Games/" + gameID + "/Points/Red/")
-            let pointsBlueRef : DocumentReference = db.document("Games/" + gameID + "/Points/Blue/")
+            let pointsRedRef : DocumentReference = db.document("\(gameCol)/\(gameID)/Points/Red/")
+            let pointsBlueRef : DocumentReference = db.document("\(gameCol)/\(gameID)/Points/Blue/")
             if cp.getTeam() == "red" {
                 pointsRedRef.updateData(["points" : cp.incrementRedPoints(pt: 1)])
             } else if cp.getTeam() == "blue" {
@@ -396,7 +397,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //print("getting CP data from server")
         
         //initialize ControlPoint
-        db.collection("Games/" + gameID + "/CP").getDocuments() { (querySnapshot, error) in
+        db.collection("\(gameCol)/\(gameID)/CP").getDocuments() { (querySnapshot, error) in
             if let error = error{
                 print(error)
             } else {
@@ -420,7 +421,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                         newCP.setTeam(team: data["team"] as? String ?? "")
                         
                         //retrieve points for each team
-                        db.collection("Games/" + gameID + "/Points").getDocuments() { (querySnapshot, error) in
+                        db.collection("\(gameCol)/\(gameID)/Points").getDocuments() { (querySnapshot, error) in
                             if let error = error{
                                 print(error)
                             } else {
@@ -497,7 +498,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                     let lat1 = wardCoord.latitude
                     let lon1 = wardCoord.longitude
                     
-                    if (latLongDist(lat1: lat1, lon1: lon1, lat2: lat2, lon2: lon2) < ward.visionDist) {
+                    if (latLongDist(lat1: lat1, lon1: lon1, lat2: lat2, lon2: lon2) < wardVisionDist) {
                         return true
                     }
                 }
@@ -601,7 +602,8 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         if let annotation = annotation as? Ward{
-            let circle = MKCircle(center: annotation.getCoordinate(), radius: 100)
+            let circle = MKCircle(center: annotation.getCoordinate(), radius: wardVisionDist)
+            
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Ward")
                 if #available(iOS 11.0, *) {
@@ -666,6 +668,7 @@ extension MapViewController: MKMapViewDelegate{
             render.lineWidth = 1
             return render
         }
+        
         return MKOverlayRenderer(overlay: overlay)
     }
     
