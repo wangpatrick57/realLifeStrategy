@@ -86,7 +86,9 @@ class PlayerListView : UIViewController{
             }
             
             self.performSegue(withIdentifier: "ShowMap", sender: self)
-        }
+        } //else{
+//            myPlayer = Player(name: nickname, team: "neutral", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
+//        }
     }
     
 //    @IBOutlet weak var redPlayersScroll: UIScrollView!

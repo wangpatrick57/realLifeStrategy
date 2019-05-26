@@ -21,7 +21,9 @@ class NicknameTFView: UIViewController {
         print("Join Button clicked")
         
         if (nicknameTF.text! != "") {
-            checkNameTaken()
+            if !isSpectator(){
+                checkNameTaken()
+            }
         }
         //self.performSegue(withIdentifier: "PlayerListSegue", sender: self)
     }
@@ -67,5 +69,13 @@ class NicknameTFView: UIViewController {
                 }
             }
         }
+    }
+    
+    func isSpectator() -> Bool{
+        if nicknameTF.text == ".SPECTATOR"{
+            self.performSegue(withIdentifier: "spectatorSegue", sender: self)
+            return true
+        }
+        return false
     }
 }

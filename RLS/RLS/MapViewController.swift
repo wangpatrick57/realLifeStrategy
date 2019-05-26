@@ -98,10 +98,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             returnButtonMap.setTitleColor(.red, for : .normal)
             ward.setTitleColor(.red, for : .normal)
             death.setTitleColor(.red, for : .normal)
-        } else{
+        } else if myPlayer.getTeam() == "blue"{
             returnButtonMap.setTitleColor(.blue, for : .normal)
             ward.setTitleColor(.blue, for : .normal)
             death.setTitleColor(.blue, for : .normal)
+        } else{ //a spectator
+            returnButtonMap.setTitleColor(.gray, for : .normal)
+            ward.setTitleColor(.gray, for : .normal)
+            death.setTitleColor(.gray, for : .normal)
         }
         
         //add myPlayer to playerDict
@@ -368,7 +372,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                     cp.addNumRed(num: 1)
                     cpRef.updateData(["numRed": cp.getNumRed()])
                     //print("updated numRed in server")
-                } else {
+                } else if myPlayer.getTeam() == "red"{
                     cp.addNumBlue(num: 1)
                     cpRef.updateData(["numBlue": cp.getNumBlue()])
                     //print("updated numBlue in server")
@@ -418,6 +422,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                         newCP.setID(id: document.documentID)
                         newCP.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: data["lat"] as? Double ?? 0, longitude: data["long"] as? Double ?? 0))
                         newCP.setTeam(team: data["team"] as? String ?? "")
+                        newCP.setName(name: document.documentID)
                         
                         //retrieve points for each team
                         db.collection("Games/" + gameID + "/Points").getDocuments() { (querySnapshot, error) in
@@ -437,7 +442,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                         self.cps.append(newCP)
                         
                         //put CP on map
-                        newCP.title = newCP.getID()
+                        newCP.title = newCP.getName()
                         self.map.addAnnotation(newCP)
                         
                         //print("New CP added: " + newCP.getID())
@@ -590,6 +595,17 @@ extension MapViewController: MKMapViewDelegate{
             
             if annotation.getTeam() == "blue" {
                 annotationView?.image = UIImage(named: "Blue Player")
+                //annotation.title = annotation.getName()
+                
+                if #available(iOS 11.0, *) {
+                    annotationView?.displayPriority = .required
+                } else {
+                    //do nothing
+                }
+            }
+            
+            if annotation.getTeam() == "neutral" {
+                annotationView?.image = UIImage(named: "")
                 //annotation.title = annotation.getName()
                 
                 if #available(iOS 11.0, *) {
