@@ -36,9 +36,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var respawnEnterTime = -1.0
     let deathTime = 5.0
     let tetherDist = 20.0
-    let respawnTime = 15.0
-    let respawnDist = 12.0
-    let wardVisionDist = 35.0 //meters
+    var respawnTime = 15.0 //seconds
+    let respawnDist = 20.0 //meters
+    let cpDist = 50.0 //meters
+    let wardVisionDist = 30.0 //meters
     @IBOutlet weak var gameIDLabel: UILabel!
     var cps = [ControlPoint]() //collection of control points - date retrieve from server
     
@@ -92,6 +93,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                     self.map.addAnnotation(point)
                 }
             }
+        }
+        
+        if (debug) {
+            respawnTime = 1.0
         }
         
         //Change button colors to Player's team color
@@ -564,6 +569,7 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         if let annotation = annotation as? ControlPoint {
+            annName = ""
             annTeam = annotation.getTeam()
         }
         
@@ -602,7 +608,7 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         if let annotation = annotation as? Ward{
-            let circle = ColorCircleOverlay(annotation: annotation, radius: 100, color: UIColor.black)
+            let circle = ColorCircleOverlay(annotation: annotation, radius: wardVisionDist, color: UIColor.black)
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Ward")
                 circle.color = UIColor.red
@@ -625,7 +631,8 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         if let annotation = annotation as? ControlPoint{
-            let circle = ColorCircleOverlay(annotation: annotation, radius: 100, color: UIColor.black)
+            let circle = ColorCircleOverlay(annotation: annotation, radius: cpDist, color: UIColor.black)
+            
             if annotation.getTeam() == "neutral" {
                 annotationView?.image = UIImage(named: "Gray CP")
             }
@@ -637,10 +644,14 @@ extension MapViewController: MKMapViewDelegate{
                 circle.color = UIColor.blue
                 annotationView?.image = UIImage(named: "Blue CP")
             }
+            
+            mapView.addOverlay(circle)
         }
         
-        if annotation is RespawnPoint {
-            annotationView?.image = UIImage(named: "Red Player")
+        if let annotation = annotation as? RespawnPoint {
+            let circle = ColorCircleOverlay(annotation: annotation, radius: respawnDist, color: UIColor.black)
+            
+            annotationView?.image = UIImage(named: "Respawn Point")
             //annotation.title = annotation.getName()
             
             if #available(iOS 11.0, *) {
@@ -648,6 +659,8 @@ extension MapViewController: MKMapViewDelegate{
             } else {
                 // Fallback on earlier versions
             }
+            
+            mapView.addOverlay(circle)
         }
         
         //add title
