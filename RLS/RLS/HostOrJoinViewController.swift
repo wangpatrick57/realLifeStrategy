@@ -9,9 +9,10 @@ import UIKit
 import FirebaseFirestore
 
 var gameID:String = "generating"
+var gameCol = "Games"
 let gameIDLength:Int = 5
 let db = Firestore.firestore()
-let debug = false
+let debug = true
 
 class HostOrJoinViewController : UIViewController {
     @IBAction func HostButton(_ sender: Any) {
@@ -26,6 +27,10 @@ class HostOrJoinViewController : UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if (debug) {
+            gameCol = "TestingGames"
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -35,7 +40,7 @@ class HostOrJoinViewController : UIViewController {
     
     func checkIDTaken() {
         gameID = generateGameID()
-        let docRef:DocumentReference = db.document("Games/" + gameID)
+        let docRef:DocumentReference = db.document("\(gameCol)/\(gameID)")
         
         docRef.getDocument { (document, error) in
             if let document = document {
@@ -43,7 +48,7 @@ class HostOrJoinViewController : UIViewController {
                     print(gameID + " taken")
                     self.checkIDTaken()
                 } else {
-                    db.document("Games/" + gameID).setData([
+                    db.document("\(gameCol)/\(gameID)").setData([
                         "test": "test"
                     ]) { err in
                         if let err = err {

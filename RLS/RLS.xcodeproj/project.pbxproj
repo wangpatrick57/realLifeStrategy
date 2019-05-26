@@ -23,18 +23,29 @@
 		418C138720F1BA7D00AE16C5 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C138620F1BA7D00AE16C5 /* Player.swift */; };
 		41AEAFFC21129BCF00DF6AE5 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 41AEAFF921129BCD00DF6AE5 /* Podfile */; };
 		41AEAFFD21129BCF00DF6AE5 /* Podfile.lock in Resources */ = {isa = PBXBuildFile; fileRef = 41AEAFFA21129BCD00DF6AE5 /* Podfile.lock */; };
-		41AEAFFE21129BCF00DF6AE5 /* Pods in Resources */ = {isa = PBXBuildFile; fileRef = 41AEAFFB21129BCF00DF6AE5 /* Pods */; };
 		41AEB0002112AEDF00DF6AE5 /* HostGameIDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AEAFFF2112AEDF00DF6AE5 /* HostGameIDView.swift */; };
 		41AEB0022112B3B800DF6AE5 /* HostOrJoinViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41AEB0012112B3B800DF6AE5 /* HostOrJoinViewController.swift */; };
 		41B3E04E20F59C8B00E7D232 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 41B3E04D20F59C8B00E7D232 /* Assets.xcassets */; };
 		560815A2AB5B280C3B0D1552 /* Pods_RLS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDB0D880FB5B1DA32DC93FE6 /* Pods_RLS.framework */; };
 		7D172FC5228353B400DBEB59 /* PlayerDistanceUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D172FC4228353B400DBEB59 /* PlayerDistanceUtil.swift */; };
 		9EB423F711536779065E3150 /* Pods_RLSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CD8C69DED8F8FB32199A875 /* Pods_RLSTests.framework */; };
+		C456D02C22933A97005599AF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C456D02B22933A97005599AF /* GoogleService-Info.plist */; };
+		C456D02D22933A97005599AF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C456D02B22933A97005599AF /* GoogleService-Info.plist */; };
+		C456D02E22933A97005599AF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C456D02B22933A97005599AF /* GoogleService-Info.plist */; };
+		C45B61A82295EB5200E4DDEB /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C45B61A72295EB5200E4DDEB /* FirebaseCore.framework */; };
+		C45B61AA2295EB5200E4DDEB /* FirebaseDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C45B61A92295EB5200E4DDEB /* FirebaseDatabase.framework */; };
+		C45B61AC2295EB5200E4DDEB /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C45B61AB2295EB5200E4DDEB /* FirebaseInstanceID.framework */; };
+		C45B61AE2295EB5200E4DDEB /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C45B61AD2295EB5200E4DDEB /* nanopb.framework */; };
+		C45B61B02295FDAC00E4DDEB /* FirebaseFirestore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C45B61AF2295FDAC00E4DDEB /* FirebaseFirestore.framework */; };
 		C45D3C8F228F44A6002589E3 /* RespawnPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */; };
 		C4C2B3042288C3E600A7D844 /* Ping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C2B3032288C3E600A7D844 /* Ping.swift */; };
 		C4EEC859227E9A910088CB32 /* Ward.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EEC858227E9A910088CB32 /* Ward.swift */; };
+
+		EBA8C3D5228DDB2C0008E38C /* ViewCircleOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA8C3D4228DDB2C0008E38C /* ViewCircleOverlay.swift */; };
+
 		C4FA0810211404B100DF7FE4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C4FA080F211404B000DF7FE4 /* GoogleService-Info.plist */; };
 		EB19B1B022985D1900764485 /* ColorCircleOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB19B1AF22985D1900764485 /* ColorCircleOverlay.swift */; };
+
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,10 +99,16 @@
 		B07169557C838AFFEAD4811A /* Pods-RLSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RLSTests/Pods-RLSTests.release.xcconfig"; sourceTree = "<group>"; };
 		BD20F52C6D6CC9A7A53F9DE7 /* Pods-RLSUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLSUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RLSUITests/Pods-RLSUITests.release.xcconfig"; sourceTree = "<group>"; };
 		BDB0D880FB5B1DA32DC93FE6 /* Pods_RLS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RLS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C456D02B22933A97005599AF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		C45B61A52295EA5300E4DDEB /* FirebaseCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C45B61A72295EB5200E4DDEB /* FirebaseCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C45B61A92295EB5200E4DDEB /* FirebaseDatabase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseDatabase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C45B61AB2295EB5200E4DDEB /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C45B61AD2295EB5200E4DDEB /* nanopb.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = nanopb.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C45B61AF2295FDAC00E4DDEB /* FirebaseFirestore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseFirestore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RespawnPoint.swift; sourceTree = "<group>"; };
 		C4C2B3032288C3E600A7D844 /* Ping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ping.swift; sourceTree = "<group>"; };
 		C4EEC858227E9A910088CB32 /* Ward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ward.swift; sourceTree = "<group>"; };
-		C4FA080F211404B000DF7FE4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		DF770C68C7A54E2277520EA0 /* Pods-RLS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RLS/Pods-RLS.debug.xcconfig"; sourceTree = "<group>"; };
 		EA1E1B67838E847E6AAD68CE /* Pods_RLSUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RLSUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB19B1AF22985D1900764485 /* ColorCircleOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorCircleOverlay.swift; sourceTree = "<group>"; };
@@ -103,6 +120,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				560815A2AB5B280C3B0D1552 /* Pods_RLS.framework in Frameworks */,
+				C45B61B02295FDAC00E4DDEB /* FirebaseFirestore.framework in Frameworks */,
+				C45B61A82295EB5200E4DDEB /* FirebaseCore.framework in Frameworks */,
+				C45B61AA2295EB5200E4DDEB /* FirebaseDatabase.framework in Frameworks */,
+				C45B61AC2295EB5200E4DDEB /* FirebaseInstanceID.framework in Frameworks */,
+				C45B61AE2295EB5200E4DDEB /* nanopb.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,10 +194,10 @@
 				418C134C20F1B89A00AE16C5 /* AppDelegate.swift */,
 				418C138420F1BA2C00AE16C5 /* EnterButton.swift */,
 				418C134E20F1B89A00AE16C5 /* StartView.swift */,
-				C4FA080F211404B000DF7FE4 /* GoogleService-Info.plist */,
 				418C135020F1B89A00AE16C5 /* Main.storyboard */,
 				418C135520F1B89B00AE16C5 /* LaunchScreen.storyboard */,
 				418C135820F1B89B00AE16C5 /* Info.plist */,
+				C456D02B22933A97005599AF /* GoogleService-Info.plist */,
 				41B3E04D20F59C8B00E7D232 /* Assets.xcassets */,
 				418C137E20F1B9A800AE16C5 /* NicknameTFView.swift */,
 				418C138220F1BA0E00AE16C5 /* MapViewController.swift */,
@@ -212,6 +234,12 @@
 		450A04AD23FBEE98FF87EDCB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C45B61AF2295FDAC00E4DDEB /* FirebaseFirestore.framework */,
+				C45B61A72295EB5200E4DDEB /* FirebaseCore.framework */,
+				C45B61A92295EB5200E4DDEB /* FirebaseDatabase.framework */,
+				C45B61AB2295EB5200E4DDEB /* FirebaseInstanceID.framework */,
+				C45B61AD2295EB5200E4DDEB /* nanopb.framework */,
+				C45B61A52295EA5300E4DDEB /* FirebaseCore.framework */,
 				BDB0D880FB5B1DA32DC93FE6 /* Pods_RLS.framework */,
 				4CD8C69DED8F8FB32199A875 /* Pods_RLSTests.framework */,
 				EA1E1B67838E847E6AAD68CE /* Pods_RLSUITests.framework */,
@@ -342,12 +370,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				41AEAFFC21129BCF00DF6AE5 /* Podfile in Resources */,
-				C4FA0810211404B100DF7FE4 /* GoogleService-Info.plist in Resources */,
-				41AEAFFE21129BCF00DF6AE5 /* Pods in Resources */,
 				418C135720F1B89B00AE16C5 /* LaunchScreen.storyboard in Resources */,
 				41B3E04E20F59C8B00E7D232 /* Assets.xcassets in Resources */,
 				418C135220F1B89A00AE16C5 /* Main.storyboard in Resources */,
 				41AEAFFD21129BCF00DF6AE5 /* Podfile.lock in Resources */,
+				C456D02C22933A97005599AF /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -355,6 +382,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C456D02D22933A97005599AF /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -362,6 +390,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C456D02E22933A97005599AF /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -637,14 +666,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = C4DN838DRQ;
+				DEVELOPMENT_TEAM = JPY43WAU3K;
 				INFOPLIST_FILE = RLS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Melody-Lee";
+				PRODUCT_BUNDLE_IDENTIFIER = com.elegansoft.RLS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
@@ -659,14 +688,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = C4DN838DRQ;
+				DEVELOPMENT_TEAM = JPY43WAU3K;
 				INFOPLIST_FILE = RLS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Melody-Lee";
+				PRODUCT_BUNDLE_IDENTIFIER = com.elegansoft.RLS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;

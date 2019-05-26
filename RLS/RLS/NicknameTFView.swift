@@ -34,7 +34,7 @@ class NicknameTFView: UIViewController {
         super.viewDidLoad()
         gameIDLabel.text = "Game ID: " + gameID
         
-        db.document("Games/\(gameID)").setData([
+        db.document("\(gameCol)/\(gameID)").setData([
             "respawnPointNum": 0
             ])
     }
@@ -45,14 +45,14 @@ class NicknameTFView: UIViewController {
     func checkNameTaken() {
         nickname = nicknameTF.text ?? ""
         
-        let docRef:DocumentReference = db.document("Games/" + gameID + "/Players/" + nickname)
+        let docRef:DocumentReference = db.document("\(gameCol)/\(gameID)/Players/\(nickname)")
         
         docRef.getDocument { (document, error) in
             if let document = document {
                 if document.exists {
                     print(nickname + " taken")
                 } else {
-                    db.document("Games/" + gameID + "/Players/" + nickname).setData([
+                    db.document("\(gameCol)/\(gameID)/Players/\(nickname)").setData([
                         "lat": 0,
                         "long": 0,
                         "dead": false

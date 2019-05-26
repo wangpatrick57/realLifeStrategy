@@ -20,7 +20,8 @@ class GameIDTF: UIViewController {
     
     func checkGameExists() {
         gameID = idTF.text!
-        let docRef:DocumentReference = db.document("Games/" + gameID)
+        
+        let docRef:DocumentReference = db.document("\(gameCol)/\(gameID)")
         
         docRef.getDocument { (document, error) in
             if let document = document {
