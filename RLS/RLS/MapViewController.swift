@@ -602,10 +602,10 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         if let annotation = annotation as? Ward{
-            let circle = MKCircle(center: annotation.getCoordinate(), radius: wardVisionDist)
-            
+            let circle = ColorCircleOverlay(annotation: annotation, radius: 100, color: UIColor.black)
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Ward")
+                circle.color = UIColor.red
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
                 } else {
@@ -614,6 +614,7 @@ extension MapViewController: MKMapViewDelegate{
             }
             if annotation.getTeam() == "blue" {
                 annotationView?.image = UIImage(named: "Blue Ward")
+                circle.color = UIColor.blue
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
                 } else {
@@ -624,13 +625,16 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         if let annotation = annotation as? ControlPoint{
+            let circle = ColorCircleOverlay(annotation: annotation, radius: 100, color: UIColor.black)
             if annotation.getTeam() == "neutral" {
                 annotationView?.image = UIImage(named: "Gray CP")
             }
             if annotation.getTeam() == "red" {
+                circle.color = UIColor.red
                 annotationView?.image = UIImage(named: "Red CP") //Need to make icons for control points
             }
             if annotation.getTeam() == "blue" {
+                circle.color = UIColor.blue
                 annotationView?.image = UIImage(named: "Blue CP")
             }
         }
@@ -662,10 +666,10 @@ extension MapViewController: MKMapViewDelegate{
     }
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        if let overlay = overlay as? MKCircle{
+        if let overlay = overlay as? ColorCircleOverlay{
             let render = MKCircleRenderer(circle: overlay)
-            render.strokeColor = UIColor.black
-            render.lineWidth = 1
+            render.strokeColor = overlay.color
+            render.lineWidth = 2
             return render
         }
         

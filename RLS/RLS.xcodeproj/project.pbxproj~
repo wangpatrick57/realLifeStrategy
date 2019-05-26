@@ -40,12 +40,12 @@
 		C45D3C8F228F44A6002589E3 /* RespawnPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */; };
 		C4C2B3042288C3E600A7D844 /* Ping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C2B3032288C3E600A7D844 /* Ping.swift */; };
 		C4EEC859227E9A910088CB32 /* Ward.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EEC858227E9A910088CB32 /* Ward.swift */; };
-
+<<<<<<< HEAD
 		EBA8C3D5228DDB2C0008E38C /* ViewCircleOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA8C3D4228DDB2C0008E38C /* ViewCircleOverlay.swift */; };
-
+=======
 		C4FA0810211404B100DF7FE4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C4FA080F211404B000DF7FE4 /* GoogleService-Info.plist */; };
 		EB19B1B022985D1900764485 /* ColorCircleOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB19B1AF22985D1900764485 /* ColorCircleOverlay.swift */; };
-
+>>>>>>> 358a6f8d8aeb3c166238e1d555ed77a2cb84ba5c
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
