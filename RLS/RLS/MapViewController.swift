@@ -429,6 +429,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                         newCP.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: data["lat"] as? Double ?? 0, longitude: data["long"] as? Double ?? 0))
                         newCP.setTeam(team: data["team"] as? String ?? "")
                         newCP.setName(name: document.documentID)
+                        newCP.setRadius(radius: data["radius"] as? Double ?? 0)
                         
                         //retrieve points for each team
                         db.collection("\(gameCol)/\(gameID)/Points").getDocuments() { (querySnapshot, error) in

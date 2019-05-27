@@ -88,6 +88,10 @@ class ControlPoint : MKPointAnnotation{
         self.radius = radius
     }
     
+    func getRadius() -> Double {
+        return radius
+    }
+    
     func setRedPoints(point : Double){
         redPoints = point
     }
