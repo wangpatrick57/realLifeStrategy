@@ -22,6 +22,7 @@ class ControlPoint : MKPointAnnotation{
     private var playerStay : Bool //checks if player is staying in CP radius or just entered; true being player is staying in CP
     private var redPoints : Double
     private var bluePoints : Double
+    private var name : String
     
     override init(){
         self.numRed = 0
@@ -32,6 +33,7 @@ class ControlPoint : MKPointAnnotation{
         self.playerStay = false
         self.redPoints = 0
         self.bluePoints = 0
+        self.name = "point"
         super.init()
         self.title = self.id
         
@@ -86,12 +88,24 @@ class ControlPoint : MKPointAnnotation{
         self.radius = radius
     }
     
+    func getRadius() -> Double {
+        return radius
+    }
+    
     func setRedPoints(point : Double){
         redPoints = point
     }
     
     func setBluePoints(point : Double){
         bluePoints = point
+    }
+    
+    func setName(name : String){
+        self.name = name
+    }
+    
+    func getName() -> String{
+        return name
     }
     
     //adds points and returns the updated number of points
