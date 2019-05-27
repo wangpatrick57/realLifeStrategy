@@ -274,7 +274,6 @@
                                 <state key="normal" title="Join"/>
                                 <connections>
                                     <action selector="JoinButton:" destination="nP5-Pd-5pS" eventType="touchUpInside" id="ecZ-ce-GCQ"/>
-                                    <segue destination="cP6-KO-xW8" kind="show" identifier="spectatorSegue" id="Ujv-bN-pRP"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IOf-cI-32C" userLabel="ReturnButton">
@@ -537,7 +536,6 @@
         <image name="rlsLogo.png" width="306" height="396"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Ujv-bN-pRP"/>
         <segue reference="bSl-fr-Pgx"/>
         <segue reference="v3r-UE-hxb"/>
         <segue reference="i05-3P-dzg"/>

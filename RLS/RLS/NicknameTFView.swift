@@ -21,9 +21,9 @@ class NicknameTFView: UIViewController {
         print("Join Button clicked")
         
         if (nicknameTF.text! != "") {
-            if !isSpectator(){
+           // if !isSpectator(){
                 checkNameTaken()
-            }
+           // }
         }
         //self.performSegue(withIdentifier: "PlayerListSegue", sender: self)
     }
