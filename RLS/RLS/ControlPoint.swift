@@ -108,6 +108,14 @@ class ControlPoint : MKPointAnnotation{
         return name
     }
     
+    func getStay() -> Bool{
+        return playerStay
+    }
+    
+    func setStay(s : Bool){
+        playerStay = s
+    }
+    
     //adds points and returns the updated number of points
     func incrementRedPoints(pt : Double) -> Double{
         redPoints = redPoints + pt
@@ -150,11 +158,11 @@ class ControlPoint : MKPointAnnotation{
         let lon2 = coordinate.longitude
         
         if (latLongDist(lat1: lat1, lon1: lon1, lat2: lat2, lon2: lon2) < radius && myPlayer.getConnected() && !myPlayer.getDead()) {
-            if playerStay {
-                return false
-            }
-            //print("player has entered the CP radius")
-            playerStay = true
+//            if playerStay {
+//                return false
+//            }
+//            //print("player has entered the CP radius")
+//            playerStay = true
             return true
         }
         
