@@ -386,20 +386,27 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         
         //Check if player is in the CP radius
         for cp in self.cps{
-            if cp.inArea(myPlayer: myPlayer) {
-                let cpRef : DocumentReference = db.document("\(gameCol)/\(gameID)/CP/\(cp.getID())")
-                //if player is in radius, update number in server
-                if myPlayer.getTeam() == "red"{
-                    cp.addNumRed(num: 1)
-                    cpRef.updateData(["numRed": cp.getNumRed()])
-                    //print("updated numRed in server")
-                } else if myPlayer.getTeam() == "red"{
-                    cp.addNumBlue(num: 1)
-                    cpRef.updateData(["numBlue": cp.getNumBlue()])
-                    //print("updated numBlue in server")
-                }
-                cpRef.updateData(["team" : cp.getTeam()])
+            var incAmt : Int = 0
+            if cp.inArea(myPlayer: myPlayer) && !cp.getStay(){
+                cp.setStay(s: true) //indicate that the player has already entered the area
+                incAmt = 1
+            } else{
+                incAmt = -1
             }
+            
+            //update number of player in the control point if player leaves or enters the control point
+            let cpRef : DocumentReference = db.document("\(gameCol)/\(gameID)/CP/\(cp.getID())")
+            //if player is in radius, update number in server
+            if myPlayer.getTeam() == "red"{
+                cp.addNumRed(num: incAmt)
+                cpRef.updateData(["numRed": cp.getNumRed()])
+                //print("updated numRed in server")
+            } else if myPlayer.getTeam() == "red"{
+                cp.addNumBlue(num: incAmt)
+                cpRef.updateData(["numBlue": cp.getNumBlue()])
+                //print("updated numBlue in server")
+            }
+            cpRef.updateData(["team" : cp.getTeam()])
             
             //add points to team: 1 point per second to the team cp belongs to
             let pointsRedRef : DocumentReference = db.document("\(gameCol)/\(gameID)/Points/Red/")
