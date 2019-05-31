@@ -102,6 +102,7 @@
 		C45B61AD2295EB5200E4DDEB /* nanopb.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = nanopb.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C45B61AF2295FDAC00E4DDEB /* FirebaseFirestore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseFirestore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RespawnPoint.swift; sourceTree = "<group>"; };
+		C47377A8229C45D2000AD728 /* RLS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RLS.entitlements; sourceTree = "<group>"; };
 		C4C2B3032288C3E600A7D844 /* Ping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ping.swift; sourceTree = "<group>"; };
 		C4EEC858227E9A910088CB32 /* Ward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ward.swift; sourceTree = "<group>"; };
 		DF770C68C7A54E2277520EA0 /* Pods-RLS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RLS/Pods-RLS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -180,6 +181,7 @@
 		418C134B20F1B89A00AE16C5 /* RLS */ = {
 			isa = PBXGroup;
 			children = (
+				C47377A8229C45D2000AD728 /* RLS.entitlements */,
 				41AEB0012112B3B800DF6AE5 /* HostOrJoinViewController.swift */,
 				41AEAFFF2112AEDF00DF6AE5 /* HostGameIDView.swift */,
 				41AEAFF921129BCD00DF6AE5 /* Podfile */,
@@ -323,6 +325,9 @@
 								enabled = 1;
 							};
 							com.apple.InAppPurchase = {
+								enabled = 0;
+							};
+							com.apple.Push = {
 								enabled = 0;
 							};
 						};

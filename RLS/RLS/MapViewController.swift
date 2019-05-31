@@ -42,6 +42,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     let wardVisionDist = 30.0 //meters
     @IBOutlet weak var gameIDLabel: UILabel!
     var cps = [ControlPoint]() //collection of control points - date retrieve from server
+    var isSpec = false
     
     var font : String = "San Francisco"
     
@@ -56,6 +57,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         manager.pausesLocationUpdatesAutomatically = false
         
         map.delegate = self
+        
+        //check if spectator
+        if (myPlayer.getName() == ".SPECTATOR") {
+            isSpec = true
+        }
         
         //retrieve data of control point from server
         getCPData()
@@ -128,13 +134,22 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             let region:MKCoordinateRegion = MKCoordinateRegion.init(center: myLocation, span: span)
             map.setRegion(region, animated: true)
             print(location.coordinate.latitude, " and ", location.coordinate.longitude)
-            self.map.showsUserLocation = true
+            
+            if (!isSpec) {
+                self.map.showsUserLocation = true
+            } else {
+                self.map.showsUserLocation = false
+                myPlayer.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
+            }
+            
             once = true
         }
         
         //write data
         //set coordinates and death status
-        myPlayer.setCoordinate(coordinate: location.coordinate)
+        if (!isSpec) {
+            myPlayer.setCoordinate(coordinate: location.coordinate)
+        }
         
         db.document("\(gameCol)/\(gameID)/Players/\(myPlayer.getName())").updateData([
             "lat": myPlayer.getCoordinate().latitude,
@@ -479,6 +494,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     }
     
     func hasVisionOf(playerToCheck: Player) -> Bool {
+        //if you're the spectator return true
+        if (isSpec) {
+            return true
+        }
+        
         //if they're on your team you can see them
         if (playerToCheck.getTeam() == myPlayer.getTeam()) {
             return true
