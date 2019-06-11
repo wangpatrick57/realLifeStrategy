@@ -19,13 +19,16 @@ class NicknameTFView: UIViewController {
     
     @IBAction func JoinButton(_ sender: Any) {
         print("Join Button clicked")
+        let enteredName = nicknameTF.text ?? ""
         
-        if (nicknameTF.text! != "") {
-           // if !isSpectator(){
-                checkNameTaken()
-           // }
+        if (enteredName != "") {
+            if (networking.checkNameTaken(nameToCheck: enteredName)) {
+                print("\(enteredName) taken")
+            } else {
+                nickname = enteredName
+                self.performSegue(withIdentifier: "PlayerListSegue", sender: self)
+            }
         }
-        //self.performSegue(withIdentifier: "PlayerListSegue", sender: self)
     }
     
     var id = String()

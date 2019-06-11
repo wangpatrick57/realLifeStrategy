@@ -1,0 +1,6 @@
+import "fmt"
+
+type client struct {
+     conn net.Conn
+     name string
+}

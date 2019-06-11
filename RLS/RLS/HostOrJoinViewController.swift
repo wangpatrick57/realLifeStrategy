@@ -17,7 +17,16 @@ let debug = false
 class HostOrJoinViewController : UIViewController {
     @IBAction func HostButton(_ sender: Any) {
         print("Host Button clicked")
-        checkIDTaken()
+        //gameID = generateGameID()
+        gameID = generateGameID()
+        
+        while(networking.checkGameIDTaken(idToCheck: gameID)) {
+            print("\(gameID) taken")
+            gameID = generateGameID()
+        }
+        
+        print("\(gameID) not taken")
+        self.performSegue(withIdentifier: "HostGameIDSegue", sender: self)
     }
     
     @IBAction func JoinButton(_ sender: Any) {
@@ -38,33 +47,6 @@ class HostOrJoinViewController : UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    func checkIDTaken() {
-        gameID = generateGameID()
-        let docRef:DocumentReference = db.document("\(gameCol)/\(gameID)")
-        
-        docRef.getDocument { (document, error) in
-            if let document = document {
-                if document.exists {
-                    print(gameID + " taken")
-                    self.checkIDTaken()
-                } else {
-                    db.document("\(gameCol)/\(gameID)").setData([
-                        "test": "test"
-                    ]) { err in
-                        if let err = err {
-                            print("Error writing document: \(err)")
-                        } else {
-                            print("Document successfully written!")
-                        }
-                    }
-                    
-                    print(gameID + " not taken")
-                    self.performSegue(withIdentifier: "HostGameIDSegue", sender: self)
-                }
-            }
-        }
-    }
-    
     func generateGameID()->String {
         var gameID:String = ""
         let alphabet: [String] = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
@@ -83,5 +65,32 @@ class HostOrJoinViewController : UIViewController {
         }
         
         return gameID
+    }
+    
+    func checkIDTakenFirebase() {
+        gameID = generateGameID()
+        let docRef:DocumentReference = db.document("\(gameCol)/\(gameID)")
+        
+        docRef.getDocument { (document, error) in
+            if let document = document {
+                if document.exists {
+                    print(gameID + " taken")
+                    self.checkIDTakenFirebase()
+                } else {
+                    db.document("\(gameCol)/\(gameID)").setData([
+                        "test": "test"
+                    ]) { err in
+                        if let err = err {
+                            print("Error writing document: \(err)")
+                        } else {
+                            print("Document successfully written!")
+                        }
+                    }
+                    
+                    print(gameID + " not taken")
+                    self.performSegue(withIdentifier: "HostGameIDSegue", sender: self)
+                }
+            }
+        }
     }
 }

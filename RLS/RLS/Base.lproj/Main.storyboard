@@ -13,7 +13,7 @@
         <!--Start-->
         <scene sceneID="nVw-vs-9Ze">
             <objects>
-                <viewController title="Start" id="Ngn-uP-buz" sceneMemberID="viewController">
+                <viewController title="Start" id="Ngn-uP-buz" customClass="StartView" customModule="RLS" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="pea-Nr-zre">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -538,6 +538,6 @@
     <inferredMetricsTieBreakers>
         <segue reference="bSl-fr-Pgx"/>
         <segue reference="v3r-UE-hxb"/>
-        <segue reference="i05-3P-dzg"/>
+        <segue reference="7sF-Wl-NRA"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -74,16 +74,7 @@ class PlayerListView : UIViewController{
     @IBAction func enterGamePressed(_ sender: Any) {
         if (team != "") {
             myPlayer = Player(name: nickname, team: team, coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
-            
-            db.document("\(gameCol)/\(gameID)/Players/" + myPlayer.getName()).updateData([
-                "team": team
-            ]) { err in
-                if let err = err {
-                    print("Error updating document: \(err)")
-                } else {
-                    print("Document successfully updated")
-                }
-            }
+            networking.sendTeam(team: team)
             
             self.performSegue(withIdentifier: "ShowMap", sender: self)
         } //else{

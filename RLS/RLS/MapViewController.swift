@@ -11,6 +11,8 @@ import MapKit
 import CoreLocation
 import Firebase
 
+var mapViewController: MapViewController!
+
 class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureRecognizerDelegate {
     
     //map
@@ -47,7 +49,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var font : String = "San Francisco"
     
     override func viewDidLoad() {
-        //necessary map stuff
+        //necessary stuff
         super.viewDidLoad()
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBest
@@ -55,6 +57,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         manager.startUpdatingLocation()
         manager.allowsBackgroundLocationUpdates = true
         manager.pausesLocationUpdatesAutomatically = false
+        mapViewController = self
         
         map.delegate = self
         
@@ -122,6 +125,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         
         //add myPlayer to playerDict
         playerDict[myPlayer.getName()] = myPlayer
+        
+        //send data
+        networking.sendTeam(team: myPlayer.getTeam())
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -151,10 +157,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             myPlayer.setCoordinate(coordinate: location.coordinate)
         }
         
-        db.document("\(gameCol)/\(gameID)/Players/\(myPlayer.getName())").updateData([
-            "lat": myPlayer.getCoordinate().latitude,
-            "long": myPlayer.getCoordinate().longitude,
-            ])
+        networking.sendLocation(coord: location.coordinate)
     }
     
     @IBAction func onReturnPressed(_ sender: Any) {
@@ -171,28 +174,18 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         if (!myPlayer.getDead()) {
             myPlayer.addWard()
             let coordinate = myPlayer.getCoordinate()
-            
-            db.document("\(gameCol)/\(gameID)/Players/\(myPlayer.getName())").updateData([
-                "wardLat": coordinate.latitude,
-                "wardLong": coordinate.longitude
-                ])
+            networking.sendWardLoc(coord: coordinate)
         }
     }
     
     @IBAction func death(_ sender: Any) {
         if (debug) {
             myPlayer.setDead(dead: !myPlayer.getDead())
-                
-            db.document("\(gameCol)/\(gameID)/Players/\(myPlayer.getName())").updateData([
-                "dead": myPlayer.getDead()
-                ])
         } else {
             myPlayer.setDead(dead: true)
-            
-            db.document("\(gameCol)/\(gameID)/Players/\(myPlayer.getName())").updateData([
-                "dead": myPlayer.getDead()
-                ])
         }
+        
+        networking.sendDead(dead: myPlayer.getDead())
     }
     
     //ping with long press
@@ -204,24 +197,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             let pingName = "\(myPlayer.getName())\(pingNum)"
             pingNum += 1
             myPings[pingName] = currTime
-            
-            /*db.document("\(gameCol)/\(gameID)/Pings/\(pingName)").updateData([
-                "lat": locationCoordinate.latitude,
-                "long": locationCoordinate.longitude,
-                "team": myPlayer.getTeam()
-                ])*/
         }
     }
     
     @objc func handleData() {
-        getData()
-        //sendData()
+        networking.readAllData()
+        step()
     }
     
     //i'm using getData() basically like the update function in unity
-    func getData() {
+    func getDataFirebase() {
         //eventually make a server app that calculates vision so that the clients don't have access to all the enemies' positions
-        
         //get player data
         db.collection("\(gameCol)/\(gameID)/Players/").getDocuments() { (querySnapshot, error) in
             if let error = error{
@@ -286,6 +272,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     }
     
     func step() {
+        //tell server to send
+        networking.sendReceiving()
+        
         //RESPAWN
         let currTime = CACurrentMediaTime()
         
@@ -293,10 +282,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             if (inRespawnArea()) {
                 if (currTime > respawnEnterTime + respawnTime) {
                     myPlayer.setDead(dead: false)
-                    
-                    db.document("\(gameCol)/\(gameID)/Players/\(myPlayer.getName())").updateData([
-                        "dead": myPlayer.getDead()
-                        ])
+                    networking.sendDead(dead: false)
                 }
                 
                 print("in respawn area")
@@ -563,6 +549,39 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         return false
     }
     
+    func addRP(name: String, coordinate: CLLocationCoordinate2D) {
+        let point = RespawnPoint(name: name, coordinate: coordinate)
+        respawnPoints.append(point)
+        map.addAnnotation(point)
+    }
+    
+    func updatePlayerTeam(name: String, team: String) {
+        if let thisPlayer = playerDict[name] {
+            thisPlayer.setTeam(team: team)
+        }
+    }
+    
+    func updatePlayerLoc(name: String, lat: Double, long: Double) {
+        if let thisPlayer = playerDict[name] {
+            thisPlayer.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
+        } else {
+            let newPlayer = Player(name: name, team: "none", coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
+            playerDict[name] = newPlayer
+        }
+    }
+    
+    func updatePlayerDead(name: String, dead: Bool) {
+        if let thisPlayer = playerDict[name] {
+            thisPlayer.setDead(dead: dead)
+        }
+    }
+    
+    func updatePlayerWardLoc(name: String, lat: Double, long: Double) {
+        if let thisPlayer = playerDict[name] {
+            thisPlayer.addWardAt(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
+        }
+    }
+    
     //a function i stole online that tells you the distance in meters between two coordinates
     func latLongDist(lat1: Double, lon1: Double, lat2: Double, lon2: Double) -> Double {
         let R = 6378.137 // Radius of earth in KM
@@ -574,9 +593,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         return d * 1000 // meters
     }
     
-    func setData() {
-    }
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -585,7 +601,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
 
 
 extension MapViewController: MKMapViewDelegate{
-    
     //called when an annotation is added or deleted I think?
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         var annName: String = "you"
@@ -682,7 +697,7 @@ extension MapViewController: MKMapViewDelegate{
             }
             if annotation.getTeam() == "red" {
                 circle.color = UIColor.red
-                annotationView?.image = UIImage(named: "Red CP") //Need to make icons for control points
+                annotationView?.image = UIImage(named: "Red CP")
             }
             if annotation.getTeam() == "blue" {
                 circle.color = UIColor.blue

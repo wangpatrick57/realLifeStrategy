@@ -15,10 +15,16 @@ class GameIDTF: UIViewController {
     
     @IBAction func EnterButton(_ sender: Any) {
         print("Enter Button clicked")
-        checkGameExists()
+        gameID = idTF.text ?? ""
+        
+        if (networking.checkGameIDTaken(idToCheck: gameID)) {
+            self.performSegue(withIdentifier: "JoinEnterNicknameSegue", sender: self)
+        } else {
+            print("\(gameID) doesn't exists")
+        }
     }
     
-    func checkGameExists() {
+    func checkGameExistsFirebase() {
         gameID = idTF.text!
         
         let docRef:DocumentReference = db.document("\(gameCol)/\(gameID)")

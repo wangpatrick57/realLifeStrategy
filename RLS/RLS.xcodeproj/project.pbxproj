@@ -38,6 +38,7 @@
 		C45B61AE2295EB5200E4DDEB /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C45B61AD2295EB5200E4DDEB /* nanopb.framework */; };
 		C45B61B02295FDAC00E4DDEB /* FirebaseFirestore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C45B61AF2295FDAC00E4DDEB /* FirebaseFirestore.framework */; };
 		C45D3C8F228F44A6002589E3 /* RespawnPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */; };
+		C4B06AA622A58C7F00421613 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B06AA522A58C7F00421613 /* Networking.swift */; };
 		C4C2B3042288C3E600A7D844 /* Ping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C2B3032288C3E600A7D844 /* Ping.swift */; };
 		C4EEC859227E9A910088CB32 /* Ward.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EEC858227E9A910088CB32 /* Ward.swift */; };
 		EB19B1B022985D1900764485 /* ColorCircleOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB19B1AF22985D1900764485 /* ColorCircleOverlay.swift */; };
@@ -103,6 +104,7 @@
 		C45B61AF2295FDAC00E4DDEB /* FirebaseFirestore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseFirestore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RespawnPoint.swift; sourceTree = "<group>"; };
 		C47377A8229C45D2000AD728 /* RLS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RLS.entitlements; sourceTree = "<group>"; };
+		C4B06AA522A58C7F00421613 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
 		C4C2B3032288C3E600A7D844 /* Ping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ping.swift; sourceTree = "<group>"; };
 		C4EEC858227E9A910088CB32 /* Ward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ward.swift; sourceTree = "<group>"; };
 		DF770C68C7A54E2277520EA0 /* Pods-RLS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RLS/Pods-RLS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -184,10 +186,12 @@
 				C47377A8229C45D2000AD728 /* RLS.entitlements */,
 				41AEB0012112B3B800DF6AE5 /* HostOrJoinViewController.swift */,
 				41AEAFFF2112AEDF00DF6AE5 /* HostGameIDView.swift */,
+				418C138020F1B9C900AE16C5 /* GameIDTF.swift */,
+				418C137E20F1B9A800AE16C5 /* NicknameTFView.swift */,
+				417F570C2112BB3000CE6E4A /* PlayerListView.swift */,
 				41AEAFF921129BCD00DF6AE5 /* Podfile */,
 				41AEAFFA21129BCD00DF6AE5 /* Podfile.lock */,
 				41AEAFFB21129BCF00DF6AE5 /* Pods */,
-				418C138020F1B9C900AE16C5 /* GameIDTF.swift */,
 				418C134C20F1B89A00AE16C5 /* AppDelegate.swift */,
 				418C138420F1BA2C00AE16C5 /* EnterButton.swift */,
 				418C134E20F1B89A00AE16C5 /* StartView.swift */,
@@ -196,13 +200,12 @@
 				418C135820F1B89B00AE16C5 /* Info.plist */,
 				C456D02B22933A97005599AF /* GoogleService-Info.plist */,
 				41B3E04D20F59C8B00E7D232 /* Assets.xcassets */,
-				418C137E20F1B9A800AE16C5 /* NicknameTFView.swift */,
 				418C138220F1BA0E00AE16C5 /* MapViewController.swift */,
 				418C138620F1BA7D00AE16C5 /* Player.swift */,
 				C4EEC858227E9A910088CB32 /* Ward.swift */,
 				C4C2B3032288C3E600A7D844 /* Ping.swift */,
-				417F570C2112BB3000CE6E4A /* PlayerListView.swift */,
 				7D172FC4228353B400DBEB59 /* PlayerDistanceUtil.swift */,
+				C4B06AA522A58C7F00421613 /* Networking.swift */,
 				C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */,
 				41867B73228B8D0300B504EE /* ControlPoint.swift */,
 				EB19B1AF22985D1900764485 /* ColorCircleOverlay.swift */,
@@ -477,6 +480,7 @@
 			files = (
 				418C138120F1B9C900AE16C5 /* GameIDTF.swift in Sources */,
 				418C138320F1BA0E00AE16C5 /* MapViewController.swift in Sources */,
+				C4B06AA622A58C7F00421613 /* Networking.swift in Sources */,
 				C4C2B3042288C3E600A7D844 /* Ping.swift in Sources */,
 				41AEB0002112AEDF00DF6AE5 /* HostGameIDView.swift in Sources */,
 				C4EEC859227E9A910088CB32 /* Ward.swift in Sources */,
