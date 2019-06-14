@@ -1,0 +1,1 @@
+rsync -avz rls/ local@homes.local:~/rlsServer/

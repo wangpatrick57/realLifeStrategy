@@ -33,7 +33,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var x: Float = 0
     var y: Float = 0
     var timer: Timer!
-    var colRef: CollectionReference!
     var inDangerStartTime = -1.0
     var respawnEnterTime = -1.0
     let deathTime = 5.0
@@ -334,6 +333,15 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                     if let thisWard = thisPlayer.getWard() {
                         map.addAnnotation(thisWard)
                     }
+                } else {
+                    //readding wards to redraw circles. bad code: change later
+                    if let thisWard = thisPlayer.getWard() {
+                        if (thisWard.getLocChanged()) {
+                            map.removeAnnotation(thisWard)
+                            map.addAnnotation(thisWard)
+                            thisWard.setLocChanged(locChanged: false)
+                        }
+                    }
                 }
             }
         }
@@ -381,30 +389,16 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             }
             
             //update number of player in the control point if player leaves or enters the control point
-            let cpRef : DocumentReference = db.document("\(gameCol)/\(gameID)/CP/\(cp.getID())")
             //if player is in radius, update number in server
             if myPlayer.getTeam() == "red"{
                 cp.addNumRed(num: incAmt)
-                cpRef.updateData(["numRed": cp.getNumRed()])
                 //print("updated numRed in server")
             } else if myPlayer.getTeam() == "red"{
                 cp.addNumBlue(num: incAmt)
-                cpRef.updateData(["numBlue": cp.getNumBlue()])
                 //print("updated numBlue in server")
             }
-            cpRef.updateData(["team" : cp.getTeam()])
             
             //add points to team: 1 point per second to the team cp belongs to
-            let pointsRedRef : DocumentReference = db.document("\(gameCol)/\(gameID)/Points/Red/")
-            let pointsBlueRef : DocumentReference = db.document("\(gameCol)/\(gameID)/Points/Blue/")
-            if cp.getTeam() == "red" {
-                pointsRedRef.updateData(["points" : cp.incrementRedPoints(pt: 1)])
-            } else if cp.getTeam() == "blue" {
-                pointsBlueRef.updateData(["points" : cp.incrementBluePoints(pt: 1)])
-            } else {
-                pointsRedRef.updateData(["points" : cp.incrementRedPoints(pt: 0.5)])
-                pointsBlueRef.updateData(["points" : cp.incrementBluePoints(pt: 0.5)])
-            }
         }
         
     }
@@ -667,48 +661,58 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         if let annotation = annotation as? Ward{
-            let circle = ColorCircleOverlay(annotation: annotation, radius: wardVisionDist, color: UIColor.black)
+            //delete old overlay if overlay already exists
+            if let thisWardOverlay = annotation.getOverlay() {
+                mapView.removeOverlay(thisWardOverlay)
+            }
+            
+            let circleOverlay = ColorCircleOverlay(annotation: annotation, radius: wardVisionDist, color: UIColor.black)
+            
+            annotation.setOverlay(circleOverlay: circleOverlay)
+            
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Ward")
-                circle.color = UIColor.red
+                circleOverlay.color = UIColor.red
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
                 } else {
                     //do nothing
                 }
             }
+            
             if annotation.getTeam() == "blue" {
                 annotationView?.image = UIImage(named: "Blue Ward")
-                circle.color = UIColor.blue
+                circleOverlay.color = UIColor.blue
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
                 } else {
                     //do nothing
                 }
             }
-            mapView.addOverlay(circle)
+            
+            mapView.addOverlay(circleOverlay)
         }
         
         if let annotation = annotation as? ControlPoint{
-            let circle = ColorCircleOverlay(annotation: annotation, radius: cpDist, color: UIColor.black)
+            let circleOverlay = ColorCircleOverlay(annotation: annotation, radius: cpDist, color: UIColor.black)
             
             if annotation.getTeam() == "neutral" {
                 annotationView?.image = UIImage(named: "Gray CP")
             }
             if annotation.getTeam() == "red" {
-                circle.color = UIColor.red
+                circleOverlay.color = UIColor.red
                 annotationView?.image = UIImage(named: "Red CP")
             }
             if annotation.getTeam() == "blue" {
-                circle.color = UIColor.blue
+                circleOverlay.color = UIColor.blue
                 annotationView?.image = UIImage(named: "Blue CP")
             }
             
-            mapView.addOverlay(circle)
+            mapView.addOverlay(circleOverlay)
         }
         
         if let annotation = annotation as? RespawnPoint {
-            let circle = ColorCircleOverlay(annotation: annotation, radius: respawnDist, color: UIColor.black)
+            let circleOverlay = ColorCircleOverlay(annotation: annotation, radius: respawnDist, color: UIColor.black)
             
             annotationView?.image = UIImage(named: "Respawn Point")
             //annotation.title = annotation.getName()
@@ -719,7 +723,7 @@ extension MapViewController: MKMapViewDelegate{
                 // Fallback on earlier versions
             }
             
-            mapView.addOverlay(circle)
+            mapView.addOverlay(circleOverlay)
         }
         
         //add title
@@ -747,5 +751,4 @@ extension MapViewController: MKMapViewDelegate{
         
         return MKOverlayRenderer(overlay: overlay)
     }
-    
 }
