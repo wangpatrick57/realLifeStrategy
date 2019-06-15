@@ -16,12 +16,14 @@ class Player: MKPointAnnotation{
     private var ward: Ward?
     private var dead: Bool
     private var connected = true
+    private var teamChanged: Bool
     let visionDist: Double = 20 //meters
     
     override init() {
         self.name = ""
         self.team = ""
         self.dead = false
+        self.teamChanged = false
         super.init()
         self.coordinate = CLLocationCoordinate2D(latitude: 0, longitude: 0)
     }
@@ -30,6 +32,7 @@ class Player: MKPointAnnotation{
         self.name=name
         self.team=team
         self.dead = false
+        self.teamChanged = false
         super.init()
         self.title = name
         //self.subtitle = team
@@ -40,6 +43,7 @@ class Player: MKPointAnnotation{
         self.name=name
         self.team=team
         self.dead = dead
+        self.teamChanged = false
         super.init()
         self.title = name
         //self.subtitle = team
@@ -59,8 +63,11 @@ class Player: MKPointAnnotation{
     }
     
     func setTeam(team: String) {
+        if (team != self.team) {
+            teamChanged = true
+        }
+        
         self.team = team
-        //self.subtitle = team
     }
     
     func getTeam() -> String {
@@ -81,6 +88,14 @@ class Player: MKPointAnnotation{
     
     func setConnected(connected: Bool) {
         self.connected = connected
+    }
+    
+    func getTeamChanged() -> Bool {
+        return teamChanged
+    }
+    
+    func setTeamChanged(teamChanged: Bool) {
+        self.teamChanged = teamChanged
     }
     
     func addWard() {

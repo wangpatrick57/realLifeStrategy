@@ -161,9 +161,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     
     @IBAction func onReturnPressed(_ sender: Any) {
         if (!debug) {
-            db.document("\(gameCol)/\(gameID)/Players/\(myPlayer.getName())").delete() { err in
-                print(err)
-            }
+            //tell server
+            networking.sendWardLoc(coord: CLLocationCoordinate2D(latitude: 0, longitude: 0))
+            networking.sendDead(dead: false)
         }
         
         self.performSegue(withIdentifier: "ShowPlayerList", sender: nil)
@@ -552,6 +552,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     func updatePlayerTeam(name: String, team: String) {
         if let thisPlayer = playerDict[name] {
             thisPlayer.setTeam(team: team)
+            
+            if (thisPlayer.getTeamChanged()) {
+                map.removeAnnotation(thisPlayer)
+                map.addAnnotation(thisPlayer)
+                thisPlayer.setTeamChanged(teamChanged: false)
+            }
         }
     }
     

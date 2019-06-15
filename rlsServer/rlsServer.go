@@ -159,6 +159,8 @@ func handleRequest(conn net.Conn) {
                 } else {
                     fmt.Printf("error updating dead: %v\n", err)
                 }
+            case "ret":
+                //client.getGame().removePlayer(client.getPlayer())
             }
 
             posInSlice += posInc[bufType]
@@ -209,18 +211,19 @@ func broadcast() {
                     } else {
                         writeString = fmt.Sprintf("loc:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getLat(), thisPlayer.getLong())
 
-                        if val, ok := thisPlayer.getSendTo("ward", recPlayer.getName()); ok && val {
-                            writeString += fmt.Sprintf("ward:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getWardLat(), thisPlayer.getWardLong())
-                            thisPlayer.setSendTo("ward", recPlayer.getName(), false)
-                        }
-
+                        //team has to be before ward so the ward is drawn with the team known
                         if val, ok := thisPlayer.getSendTo("team", recPlayer.getName()); ok && val {
                             writeString += fmt.Sprintf("team:%s:%s:", thisPlayer.getName(), thisPlayer.getTeam())
                             thisPlayer.setSendTo("team", recPlayer.getName(), false)
                         }
 
+                        if val, ok := thisPlayer.getSendTo("ward", recPlayer.getName()); ok && val {
+                            writeString += fmt.Sprintf("ward:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getWardLat(), thisPlayer.getWardLong())
+                            thisPlayer.setSendTo("ward", recPlayer.getName(), false)
+                        }
+
                         if val, ok := thisPlayer.getSendTo("dead", recPlayer.getName()); ok && val {
-                            writeString += fmt.Sprintf("dead:%s:%s:", thisPlayer.getName(), thisPlayer.getDead())
+                            writeString += fmt.Sprintf("dead:%s:%t:", thisPlayer.getName(), thisPlayer.getDead())
                             thisPlayer.setSendTo("dead", recPlayer.getName(), false)
                         }
                     }

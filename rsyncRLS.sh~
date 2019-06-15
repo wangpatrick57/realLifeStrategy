@@ -1,1 +1,3 @@
-rsync -avz rls/ local@homes.local:~/rlsServer/
+#!/bin/bash
+
+rsync -avz --progress --port=6789 rlsServer/ local@73.189.41.182:/home/local/rlsServer/
