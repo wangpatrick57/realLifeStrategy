@@ -304,22 +304,45 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                 }
                 
                 var playerOnMap: Bool = false
+                var wardOnMap: Bool = false
                 let thisDead = thisPlayer.getDead()
                 let thisConnected = thisPlayer.getConnected()
-                let visible = self.hasVisionOf(playerToCheck: thisPlayer)
+                let playerVisible = self.hasVisionOf(playerToCheck: thisPlayer)
                 
                 for ann in annArray {
                     if (thisPlayer.title == ann.title) {
                         playerOnMap = true
                     }
+                    
+                    if let thisWard = thisPlayer.getWard() {
+                        if (thisWard.getName() == ann.title) {
+                            wardOnMap = true
+                        }
+                    }
                 }
                 
-                if (thisConnected && !playerOnMap && (!thisDead && visible)) {
+                if (thisConnected && !playerOnMap && (!thisDead && playerVisible)) {
                     map.addAnnotation(thisPlayer)
                 }
                 
-                if (playerOnMap && (thisDead || !visible || !thisConnected)) {
+                if (playerOnMap && (thisDead || !playerVisible || !thisConnected)) {
                     map.removeAnnotation(thisPlayer)
+                }
+                
+                if (isSpec) {
+                    if (!wardOnMap) {
+                        if let thisWard = thisPlayer.getWard() {
+                            map.addAnnotation(thisWard)
+                        }
+                    } else {
+                        if let thisWard = thisPlayer.getWard() {
+                            if (thisWard.getLocChanged()) {
+                                map.removeAnnotation(thisWard)
+                                map.addAnnotation(thisWard)
+                                thisWard.setLocChanged(locChanged: false)
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -80,10 +80,8 @@ class Networking {
     }
     
     func checkIfSendLocation() {
-        let stringArray = read()
-        
-        if (stringArray.count > 1) {
-            doSendRec = true
+        if (inputStream.hasBytesAvailable) {
+            doSendLoc = true
         }
     }
     
