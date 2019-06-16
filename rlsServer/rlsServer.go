@@ -1,3 +1,5 @@
+//stuff to fix: don't create a new game when client tries to join one that doesn't exist
+
 package main
 
 import (
@@ -13,6 +15,7 @@ import (
 
 const (
     HostName = "10.0.1.128"
+    //HostName = "127.0.0.1"
     Port = "8888"
     ConnType = "tcp"
 )
@@ -33,6 +36,7 @@ func main() {
         "loc": 3,
         "ward": 3,
         "dead": 2,
+        "ret": 1,
     }
 
     master = baseMaster()
@@ -96,6 +100,7 @@ func handleRequest(conn net.Conn) {
 
                     if (!idTaken) { //fix this so that a new game isn't created when trying to join
                         thisGame := &Game{}
+                        thisGame.constructor()
                         thisGame.setGameID(readGameID)
                         master.addGame(thisGame)
                         client.setGame(thisGame)
@@ -112,11 +117,12 @@ func handleRequest(conn net.Conn) {
                     nameTaken := client.getGame().checkNameTaken(readName)
 
                     if (!nameTaken) {
-                        client.setPlayer(&(Player{}))
+                        thisPlayer := &(Player{})
+                        client.setPlayer(thisPlayer)
                         thisGame := client.getGame()
-                        client.getPlayer().constructor(thisGame.getPlayers())
-                        thisGame.addPlayer(client.getPlayer())
-                        client.getPlayer().setName(readName)
+                        thisPlayer.constructor(thisGame.getPlayers())
+                        thisPlayer.setName(readName)
+                        thisGame.addPlayer(thisPlayer)
                     }
 
                     writeString = fmt.Sprintf("checkName:%s:%t:", readName, nameTaken)
@@ -124,9 +130,9 @@ func handleRequest(conn net.Conn) {
             case "rec":
                 client.setReceiving(true)
             case "team":
-                client.getPlayer().makeSendTrue("team", client.getGame().getPlayers())
                 var team = info[posInSlice + 1]
                 client.getPlayer().setTeam(team)
+                client.getPlayer().makeSendTrue("team", client.getGame().getPlayers())
             case "loc":
                 lat, err1 := strconv.ParseFloat(info[posInSlice + 1], 64)
                 long, err2 := strconv.ParseFloat(info[posInSlice + 2], 64)
@@ -141,7 +147,6 @@ func handleRequest(conn net.Conn) {
                     fmt.Printf("error updating location. lat %v long %v\n", err1, err2)
                 }
             case "ward":
-                client.getPlayer().makeSendTrue("ward", client.getGame().getPlayers())
                 lat, err1 := strconv.ParseFloat(info[posInSlice + 1], 64)
                 long, err2 := strconv.ParseFloat(info[posInSlice + 2], 64)
 
@@ -150,8 +155,9 @@ func handleRequest(conn net.Conn) {
                 } else {
                     fmt.Printf("error updating ward location. lat %v long %v\n", err1, err2)
                 }
+
+                client.getPlayer().makeSendTrue("ward", client.getGame().getPlayers())
             case "dead":
-                client.getPlayer().makeSendTrue("dead", client.getGame().getPlayers())
                 dead, err := strconv.ParseBool(info[posInSlice + 1])
 
                 if (err == nil) {
@@ -159,12 +165,14 @@ func handleRequest(conn net.Conn) {
                 } else {
                     fmt.Printf("error updating dead: %v\n", err)
                 }
+
+                client.getPlayer().makeSendTrue("dead", client.getGame().getPlayers())
             case "ret":
-                //client.getGame().removePlayer(client.getPlayer())
+                client.getPlayer().setConnected(false)
+                client.getPlayer().makeSendTrue("conn", client.getGame().getPlayers())
             }
 
             posInSlice += posInc[bufType]
-            fmt.Printf("posInSlice: %d, len(info): %d, info: %v\n", posInSlice, len(info), info)
         }
 
         jsonString, _ := json.MarshalIndent(*master, "", " ")
@@ -180,7 +188,7 @@ func handleRequest(conn net.Conn) {
             os.Exit(1)
         }
 
-        time.Sleep(100 * time.Millisecond)
+        time.Sleep(1000 * time.Millisecond)
     }
 
     connToClient[&conn] = nil
@@ -191,16 +199,20 @@ func handleRequest(conn net.Conn) {
 func broadcast() {
     for {
         for recConn, recClient := range connToClient {
-            if !recClient.getReceiving() {
+            if !recClient.getReceiving() || !recClient.getPlayer().getConnected() {
                 continue
+            }
+
+            if (recClient.getReceivingInitial()) {
+                writeString := recClient.getGame().rpString()
+                write(recConn, recClient, writeString)
             }
 
             recPlayer := recClient.getPlayer()
 
             for _, thisPlayer := range recClient.getGame().getPlayers() {
-                if (recClient.getReceivingInitial()) {
-                    writeString := recClient.getGame().rpString()
-                    write(recConn, recClient, writeString)
+                if thisPlayer == recClient.getPlayer() {
+                    continue
                 }
 
                 if thisPlayer.getLat() != 0 && thisPlayer.getLong() != 0 {
@@ -225,6 +237,11 @@ func broadcast() {
                         if val, ok := thisPlayer.getSendTo("dead", recPlayer.getName()); ok && val {
                             writeString += fmt.Sprintf("dead:%s:%t:", thisPlayer.getName(), thisPlayer.getDead())
                             thisPlayer.setSendTo("dead", recPlayer.getName(), false)
+                        }
+
+                        if val, ok := thisPlayer.getSendTo("conn", recPlayer.getName()); ok && val {
+                            writeString += fmt.Sprintf("conn:%s:%t:", thisPlayer.getName(), thisPlayer.getConnected())
+                            thisPlayer.setSendTo("conn", recPlayer.getName(), false)
                         }
                     }
 
@@ -251,9 +268,9 @@ func write(conn *net.Conn, client *Client, writeString string) {
 }
 
 func baseMaster() *Master {
-    return &Master {
-        Games: []*Game {
-            &Game {
+    ret := &Master {
+        Games: map[string]*Game {
+            "Home": &Game {
                 GameID: "Home",
 
                 RespawnPoints: []*RespawnPoint {
@@ -262,7 +279,18 @@ func baseMaster() *Master {
                         Long: -121.98119,
                     },
                 },
+
+                Players: map[string]*Player {},
             },
         },
     }
+
+    blueDummy := &Player{}
+    blueDummy.constructor(ret.getGame("Home").getPlayers())
+    blueDummy.setName("blueDummy")
+    blueDummy.setTeam("blue")
+    blueDummy.setLoc(37.32440, -121.98119)
+    ret.getGame("Home").addPlayer(blueDummy)
+
+    return ret
 }

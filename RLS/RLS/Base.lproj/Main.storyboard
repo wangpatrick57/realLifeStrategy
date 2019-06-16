@@ -467,6 +467,7 @@
                                 <state key="normal" title="Return"/>
                                 <connections>
                                     <action selector="onReturnPressed:" destination="cP6-KO-xW8" eventType="touchUpInside" id="5FF-0R-jxD"/>
+                                    <segue destination="nP5-Pd-5pS" kind="show" identifier="ShowName" id="pDI-Zx-MUr"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="WardButton" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cL8-T9-r7N">
@@ -537,7 +538,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Ln6-5H-nl1"/>
-        <segue reference="v3r-UE-hxb"/>
+        <segue reference="pDI-Zx-MUr"/>
         <segue reference="7sF-Wl-NRA"/>
     </inferredMetricsTieBreakers>
 </document>

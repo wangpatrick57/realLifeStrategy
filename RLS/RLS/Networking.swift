@@ -22,7 +22,8 @@ class Networking {
         "loc": 4,
         "team": 3,
         "dead": 3,
-        "ward": 4
+        "ward": 4,
+        "conn": 3,
     ]
     
     func setupNetworkComms() {
@@ -78,7 +79,21 @@ class Networking {
         }
     }
     
+    func checkIfSendLocation() {
+        let stringArray = read()
+        
+        if (stringArray.count > 1) {
+            doSendRec = true
+        }
+    }
+    
     func sendLocation(coord: CLLocationCoordinate2D) {
+        let state = UIApplication.shared.applicationState
+        
+        if (state == .background || state == .inactive) {
+            checkIfSendLocation()
+        }
+        
         if (doSendLoc) {
             write(str: "loc:\(coord.latitude):\(coord.longitude):")
             doSendLoc = false
@@ -97,14 +112,13 @@ class Networking {
         write(str: "team:\(team):")
     }
     
+    func sendRet() {
+        write(str: "ret:")
+    }
+    
     func readAllData() {
         let stringArray = read()
         print("Read \(stringArray)")
-        
-        if (stringArray.count > 1) {
-            doSendRec = true
-            doSendLoc = true
-        }
         
         var posInArray = 0
         
@@ -116,7 +130,11 @@ class Networking {
                 if let thisLat = Double(stringArray[posInArray + 1]) {
                     if let thisLong = Double(stringArray[posInArray + 2]) {
                         mapViewController.addRP(name: "Respawn Point", coordinate: CLLocationCoordinate2D(latitude: thisLat, longitude: thisLong))
+                    } else {
+                        print("rp long wrong")
                     }
+                } else {
+                    print("rp lat wrong")
                 }
             case "team":
                 let thisName = stringArray[posInArray + 1]
@@ -141,6 +159,12 @@ class Networking {
                         mapViewController.updatePlayerWardLoc(name: thisName, lat: thisLat, long: thisLong)
                     }
                 }
+            case "conn":
+                let thisName = stringArray[posInArray + 1]
+                
+                if let thisConn = Bool(stringArray[posInArray + 2]) {
+                    mapViewController.updatePlayerConn(name: thisName, conn: thisConn)
+                }
             default:
                 _ = 1
             }
@@ -151,6 +175,11 @@ class Networking {
                 print("bufType \(bufType) does not exist")
                 print("buffer that gave error: \(stringArray)")
             }
+        }
+        
+        if (stringArray.count > 1) {
+            doSendRec = true
+            doSendLoc = true
         }
     }
     

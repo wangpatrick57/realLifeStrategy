@@ -7,16 +7,21 @@ import (
 
 type Game struct {
     GameID string
-    Players []*Player
+    Players map[string]*Player
     RespawnPoints []*RespawnPoint
     Mutex sync.Mutex //lock this for actions regarding these vars and arrays
+}
+
+func (game *Game) constructor() {
+    game.mutexLock()
+    game.Players = make(map[string]*Player)
 }
 
 func (game *Game) checkNameTaken(nameToCheck string) bool {
     game.mutexLock()
 
     for _, p := range game.Players {
-        if p.getName() == nameToCheck {
+        if p.getConnected() && p.getName() == nameToCheck {
             return true
         }
     }
@@ -36,28 +41,22 @@ func (game *Game) setGameID(gameID string) {
 
 func (game *Game) getPlayer(name string) *Player {
     game.mutexLock()
-
-    for i := 0; i < len(game.Players); i++ {
-        player := game.Players[i]
-
-        if (player.getName() == name) {
-            return player
-        }
-    }
-
-    fmt.Printf("player %s in game %s doesn't exist\n", name, game.GameID)
-    tmp := Player{}
-    return &tmp
+    return game.Players[name]
 }
 
-func (game *Game) getPlayers() []*Player {
+func (game *Game) getPlayers() map[string]*Player {
     game.mutexLock()
     return game.Players
 }
 
 func (game *Game) addPlayer(player *Player) {
     game.mutexLock()
-    game.Players = append(game.Players, player)
+
+    if (player.getName() == "") {
+        fmt.Printf("player has no name\n")
+    } else {
+        game.Players[player.getName()] = player
+    }
 }
 
 func (game *Game) rpString() string {

@@ -27,6 +27,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var myPings: [String: Double] = [:] //dict of the names of my pings to their create times. the name is "\(myName)\(pingNum)"
     var respawnPoints: [RespawnPoint] = []
     var pingNum = 0
+    var handleDataCounter = 0
     var myTeamPings: [Ping] = [] //list of pings to draw
     var once = false
     var myLocation: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude:0,longitude: 0)
@@ -112,7 +113,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             returnButtonMap.setTitleColor(.red, for : .normal)
             ward.setTitleColor(.red, for : .normal)
             death.setTitleColor(.red, for : .normal)
-        } else if myPlayer.getTeam() == "blue"{
+        } else if myPlayer.getTeam() == "blue" {
             returnButtonMap.setTitleColor(.blue, for : .normal)
             ward.setTitleColor(.blue, for : .normal)
             death.setTitleColor(.blue, for : .normal)
@@ -162,17 +163,16 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     @IBAction func onReturnPressed(_ sender: Any) {
         if (!debug) {
             //tell server
-            networking.sendWardLoc(coord: CLLocationCoordinate2D(latitude: 0, longitude: 0))
-            networking.sendDead(dead: false)
+            networking.sendRet()
         }
         
-        self.performSegue(withIdentifier: "ShowPlayerList", sender: nil)
+        self.performSegue(withIdentifier: "ShowName", sender: nil)
     }
     
     @IBAction func dropWard(_ sender: Any) {
         if (!myPlayer.getDead()) {
-            myPlayer.addWard()
             let coordinate = myPlayer.getCoordinate()
+            myPlayer.addWardAt(coordinate: coordinate)
             networking.sendWardLoc(coord: coordinate)
         }
     }
@@ -200,73 +200,24 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     }
     
     @objc func handleData() {
-        networking.readAllData()
-        step()
-    }
-    
-    //i'm using getData() basically like the update function in unity
-    func getDataFirebase() {
-        //eventually make a server app that calculates vision so that the clients don't have access to all the enemies' positions
-        //get player data
-        db.collection("\(gameCol)/\(gameID)/Players/").getDocuments() { (querySnapshot, error) in
-            if let error = error{
-                print(error)
+        let state = UIApplication.shared.applicationState
+        var callFunctions = false
+        
+        if (state == .active) {
+            callFunctions = true
+        } else {
+            if (handleDataCounter > 8) {
+                callFunctions = true
+                handleDataCounter = 0
             } else {
-                //set all players as disconnected
-                for thisName in self.playerDict.keys {
-                    if let thisPlayer = self.playerDict[thisName] {
-                        if (thisPlayer != myPlayer) {
-                            thisPlayer.setConnected(connected: false)
-                        }
-                    }
-                }
-                
-                //loop to add all the players
-                for document in querySnapshot!.documents {
-                    if (document.documentID != myPlayer.getName()) {
-                        let data = document.data()
-                        
-                        //"this" refers to the current document's location or team, not "this phone's" location or team
-                        let thisName = document.documentID
-                        let thisDead = data["dead"] as? Bool ?? true
-                        let thisCoordinate = CLLocationCoordinate2D(latitude: data["lat"] as? Double ?? 0, longitude: data["long"] as? Double ?? 0)
-                        let thisWardCoordinate = CLLocationCoordinate2D(latitude: data["wardLat"] as? Double ?? 0, longitude: data["wardLong"] as? Double ?? 0)
-                        let thisTeam = data["team"] as? String ?? "none"
-                        
-                        //either updates their data or adds them to the playerDict
-                        if self.playerDict.index(forKey: thisName) != nil {
-                            if let thisPlayer = self.playerDict[thisName] {
-                                thisPlayer.setCoordinate(coordinate: thisCoordinate)
-                                thisPlayer.setTeam(team: thisTeam)
-                                thisPlayer.setDead(dead: thisDead)
-                                
-                                if (thisWardCoordinate.latitude != 0 || thisWardCoordinate.longitude != 0) {
-                                    if (debug) {
-                                        thisPlayer.getWard()?.setCoordinate(coordinate: thisWardCoordinate)
-                                    }
-                                    
-                                    if thisPlayer.getWard() == nil {
-                                        thisPlayer.addWardAt(coordinate: thisWardCoordinate)
-                                    }
-                                }
-                            }
-                        } else {
-                            let playerToAdd = Player(name: thisName, team: data["team"] as? String ?? "none", coordinate: thisCoordinate, dead: thisDead)
-                            
-                            if (thisWardCoordinate.latitude != 0 || thisWardCoordinate.longitude != 0) {
-                                playerToAdd.addWardAt(coordinate: thisWardCoordinate)
-                            }
-                            
-                            self.playerDict[thisName] = playerToAdd
-                        }
-                        
-                        self.playerDict[thisName]?.setConnected(connected: true)
-                    }
-                }
-                
-                //step is in here so it runs AFTER getting all the data
-                self.step()
+                handleDataCounter += 1
             }
+        }
+        
+        if (callFunctions) {
+            networking.readAllData()
+            step()
+            print("handle data called")
         }
     }
     
@@ -334,7 +285,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                         map.addAnnotation(thisWard)
                     }
                 } else {
-                    //readding wards to redraw circles. bad code: change later
                     if let thisWard = thisPlayer.getWard() {
                         if (thisWard.getLocChanged()) {
                             map.removeAnnotation(thisWard)
@@ -554,8 +504,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             thisPlayer.setTeam(team: team)
             
             if (thisPlayer.getTeamChanged()) {
+                if let thisWard = thisPlayer.getWard() {
+                    map.removeAnnotation(thisWard)
+                }
+                
                 map.removeAnnotation(thisPlayer)
-                map.addAnnotation(thisPlayer)
                 thisPlayer.setTeamChanged(teamChanged: false)
             }
         }
@@ -578,7 +531,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     
     func updatePlayerWardLoc(name: String, lat: Double, long: Double) {
         if let thisPlayer = playerDict[name] {
+            if let thisWard = thisPlayer.getWard() {
+                map.removeAnnotation(thisWard)
+            }
+            
             thisPlayer.addWardAt(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
+        }
+    }
+    
+    func updatePlayerConn(name: String, conn: Bool) {
+        if let thisPlayer = playerDict[name] {
+            thisPlayer.setConnected(connected: conn)
         }
     }
     

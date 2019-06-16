@@ -13,10 +13,27 @@ type Player struct {
     WardLong float64
     Team string
     Dead bool
+    Connected bool
     SendWardTo map[string]bool
     SendTeamTo map[string]bool
     SendDeadTo map[string]bool
+    SendConnectedTo map[string]bool
     Mutex sync.Mutex //lock this for actions regarding any of these variables
+}
+
+func (player *Player) constructor(players map[string]*Player) {
+    player.Mutex.Lock()
+    player.Connected = true
+    player.SendWardTo = make(map[string]bool)
+    player.SendTeamTo = make(map[string]bool)
+    player.SendDeadTo = make(map[string]bool)
+    player.SendConnectedTo = make(map[string]bool)
+    player.Mutex.Unlock()
+
+    player.makeSendTrue("ward", players)
+    player.makeSendTrue("team", players)
+    player.makeSendTrue("dead", players)
+    player.makeSendTrue("conn", players)
 }
 
 func (player *Player) getName() string {
@@ -111,6 +128,16 @@ func (player *Player) setDead(dead bool) {
     player.Dead = dead
 }
 
+func (player *Player) getConnected() bool {
+    player.mutexLock()
+    return player.Connected
+}
+
+func (player *Player) setConnected(connected bool) {
+    player.mutexLock()
+    player.Connected = connected
+}
+
 func (player *Player) getSendTo(sendMapString string, name string) (bool, bool) {
     player.mutexLock()
     var sendMap map[string]bool
@@ -121,6 +148,8 @@ func (player *Player) getSendTo(sendMapString string, name string) (bool, bool) 
         sendMap = player.SendTeamTo
     } else if (sendMapString == "dead") {
         sendMap = player.SendDeadTo
+    } else if (sendMapString == "conn") {
+        sendMap = player.SendConnectedTo
     } else {
         fmt.Printf("%s is not a valid sendMap\n", sendMapString)
         return false, false
@@ -139,6 +168,8 @@ func (player *Player) setSendTo(sendMapString string, name string, sendTo bool) 
         sendMap = player.SendTeamTo
     } else if (sendMapString == "dead") {
         sendMap = player.SendDeadTo
+    } else if (sendMapString == "conn") {
+        sendMap = player.SendConnectedTo
     } else {
         fmt.Printf("%s is not a valid sendMap\n", sendMapString)
     }
@@ -146,7 +177,7 @@ func (player *Player) setSendTo(sendMapString string, name string, sendTo bool) 
     sendMap[name] = sendTo
 }
 
-func (player *Player) makeSendTrue(sendMapString string, players []*Player) {
+func (player *Player) makeSendTrue(sendMapString string, players map[string]*Player) {
     player.mutexLock()
     var sendMap map[string]bool
 
@@ -156,37 +187,29 @@ func (player *Player) makeSendTrue(sendMapString string, players []*Player) {
         sendMap = player.SendTeamTo
     } else if (sendMapString == "dead") {
         sendMap = player.SendDeadTo
+    } else if (sendMapString == "conn") {
+        sendMap = player.SendConnectedTo
     } else {
         fmt.Printf("%s is not a valid sendMap\n", sendMapString)
         return
     }
 
     for _, p := range players {
-        if (p != player) { //checking here so that there's no mutex lock within a mutex lock
+        if p != player { //checking p != player so that there's no mutex lock within a mutex lock
             sendMap[p.getName()] = true
         }
     }
 }
 
 func (player *Player) initialPlayerString() string {
-    player.Mutex.Lock()
-    defer player.Mutex.Unlock()
+    player.mutexLock()
+    ret := fmt.Sprintf("loc:%s:%f:%f:team:%s:%s:", player.Name, player.Lat, player.Long, player.Name, player.Team)
 
-    return fmt.Sprintf("loc:%s:%f:%f:team:%s:%s:dead:%s:%t:ward:%s:%f:%f:", player.Name, player.Lat,
-        player.Long, player.Name, player.Team, player.Name, player.Dead, player.Name,
-        player.WardLat, player.WardLong)
-}
+    if (player.WardLat != 0 || player.WardLong != 0) {
+        ret += fmt.Sprintf("ward:%s:%f:%f:", player.Name, player.WardLat, player.WardLong)
+    }
 
-func (player *Player) constructor(players []*Player) {
-    player.Mutex.Lock()
-    player.SendWardTo = make(map[string]bool)
-    player.SendTeamTo = make(map[string]bool)
-    player.SendDeadTo = make(map[string]bool)
-    player.Mutex.Unlock()
-
-    player.makeSendTrue("ward", players)
-    player.makeSendTrue("team", players)
-    player.makeSendTrue("dead", players)
+    return ret
 }
 
 func (player *Player) mutexLock() {

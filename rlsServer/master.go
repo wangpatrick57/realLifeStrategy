@@ -6,32 +6,32 @@ import (
 )
 
 type Master struct {
-    Games []*Game
+    Games map[string]*Game
     Mutex sync.Mutex //lock this for actions regarding the entire Games array
 }
 
-func (master *Master) getGames() []*Game {
+func (master *Master) constructor() {
+    master.Games = make(map[string]*Game)
+}
+
+func (master *Master) getGames() map[string]*Game {
     master.mutexLock()
     return master.Games
 }
 
 func (master *Master) getGame(gameID string) *Game {
     master.mutexLock()
-
-    for _, g := range master.Games {
-        if (g.getGameID() == gameID) {
-            return g
-        }
-    }
-
-    fmt.Printf("game %s doesn't exist\n", gameID)
-    tmp := Game{}
-    return &tmp
+    return master.Games[gameID]
 }
 
 func (master *Master) addGame(game *Game) {
     master.mutexLock()
-    master.Games = append(master.Games, game)
+
+    if (game.getGameID() == "") {
+        fmt.Printf("game has no gameID")
+    } else {
+        master.Games[game.getGameID()] = game
+    }
 }
 
 func (master *Master) checkIDTaken(idToCheck string) bool {

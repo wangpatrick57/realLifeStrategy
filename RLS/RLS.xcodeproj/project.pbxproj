@@ -184,6 +184,10 @@
 			isa = PBXGroup;
 			children = (
 				C47377A8229C45D2000AD728 /* RLS.entitlements */,
+				418C135020F1B89A00AE16C5 /* Main.storyboard */,
+				418C135520F1B89B00AE16C5 /* LaunchScreen.storyboard */,
+				C4B06AA522A58C7F00421613 /* Networking.swift */,
+				418C134E20F1B89A00AE16C5 /* StartView.swift */,
 				41AEB0012112B3B800DF6AE5 /* HostOrJoinViewController.swift */,
 				41AEAFFF2112AEDF00DF6AE5 /* HostGameIDView.swift */,
 				418C138020F1B9C900AE16C5 /* GameIDTF.swift */,
@@ -194,9 +198,6 @@
 				41AEAFFB21129BCF00DF6AE5 /* Pods */,
 				418C134C20F1B89A00AE16C5 /* AppDelegate.swift */,
 				418C138420F1BA2C00AE16C5 /* EnterButton.swift */,
-				418C134E20F1B89A00AE16C5 /* StartView.swift */,
-				418C135020F1B89A00AE16C5 /* Main.storyboard */,
-				418C135520F1B89B00AE16C5 /* LaunchScreen.storyboard */,
 				418C135820F1B89B00AE16C5 /* Info.plist */,
 				C456D02B22933A97005599AF /* GoogleService-Info.plist */,
 				41B3E04D20F59C8B00E7D232 /* Assets.xcassets */,
@@ -205,7 +206,6 @@
 				C4EEC858227E9A910088CB32 /* Ward.swift */,
 				C4C2B3032288C3E600A7D844 /* Ping.swift */,
 				7D172FC4228353B400DBEB59 /* PlayerDistanceUtil.swift */,
-				C4B06AA522A58C7F00421613 /* Networking.swift */,
 				C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */,
 				41867B73228B8D0300B504EE /* ControlPoint.swift */,
 				EB19B1AF22985D1900764485 /* ColorCircleOverlay.swift */,

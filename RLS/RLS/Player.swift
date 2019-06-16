@@ -63,10 +63,6 @@ class Player: MKPointAnnotation{
     }
     
     func setTeam(team: String) {
-        if (team != self.team) {
-            teamChanged = true
-        }
-        
         self.team = team
     }
     
@@ -103,8 +99,9 @@ class Player: MKPointAnnotation{
     }
     
     func addWardAt(coordinate: CLLocationCoordinate2D) {
-        if let myWard = ward {
-            myWard.setCoordinate(coordinate: coordinate)
+        if let thisWard = ward {
+            thisWard.setCoordinate(coordinate: coordinate)
+            thisWard.setTeam(team: team)
         } else {
             ward = Ward(name: name + "'s ward", team: team, coordinate: coordinate)
         }
