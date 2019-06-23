@@ -18,6 +18,7 @@ class Networking {
     var doSendLoc = true
     
     let posInc: [String: Int] = [
+        "bt": 1,
         "rp": 3,
         "loc": 4,
         "team": 3,
@@ -42,8 +43,17 @@ class Networking {
         write(str: "connected:")
     }
     
+    func closeNetworkComms() {
+        inputStream.close()
+        outputStream.close()
+    }
+    
     func write(str: String) {
         outputStream.write(str, maxLength: str.count)
+    }
+    
+    func sendHeartbeat() {
+        write(str: "hrt:")
     }
     
     func checkGameIDTaken(idToCheck: String) -> Bool {
@@ -118,6 +128,11 @@ class Networking {
         let stringArray = read()
         print("Read \(stringArray)")
         
+        if (stringArray.count > 1) {
+            doSendRec = true
+            doSendLoc = true
+        }
+        
         var posInArray = 0
         
         while (posInArray < stringArray.count - 1) {
@@ -173,11 +188,6 @@ class Networking {
                 print("bufType \(bufType) does not exist")
                 print("buffer that gave error: \(stringArray)")
             }
-        }
-        
-        if (stringArray.count > 1) {
-            doSendRec = true
-            doSendLoc = true
         }
     }
     

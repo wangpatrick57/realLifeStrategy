@@ -9,6 +9,7 @@
 import UIKit
 
 let networking = Networking()
+var timer: Timer!
 
 class StartView: UIViewController {
     override func viewDidLoad() {
@@ -17,6 +18,14 @@ class StartView: UIViewController {
         //setup client
         print("networking in start")
         networking.setupNetworkComms()
+        
+        //start step function timer
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(step), userInfo: nil, repeats: true)
+    }
+    
+    @objc func step() {
+        //send heartbeat
+        networking.sendHeartbeat()
     }
 
     override func didReceiveMemoryWarning() {

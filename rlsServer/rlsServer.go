@@ -28,6 +28,7 @@ func main() {
     connToClient = make(map[*net.Conn]*Client)
 
     posInc = map[string]int {
+        "hrt": 1,
         "connected": 1,
         "checkID": 2,
         "checkName": 2,
@@ -75,14 +76,17 @@ func handleRequest(conn net.Conn) {
     for {
         fmt.Printf("\nServing %s\n", conn.RemoteAddr().String())
         buf := make([]byte, 1024)
+        conn.SetReadDeadline(time.Now().Local().Add(time.Second * time.Duration(10)))
         _, err := conn.Read(buf)
         buf = bytes.Trim(buf, "\x00")
 		content := string(buf)
         fmt.Printf("Read %s from %s\n", content, conn.RemoteAddr().String())
 
-		if content == "" {
-			continue
-		}
+        if err != nil {
+            fmt.Printf("Error reading: %v\n", err.Error())
+            //remove player from everything
+            return
+        }
 
 		info := strings.Split(content, ":")
         writeString := "blank"
@@ -92,6 +96,9 @@ func handleRequest(conn net.Conn) {
             bufType := info[posInSlice]
 
             switch bufType {
+            case "hrt":
+                writeString = "bt:"
+            case "connected":
             case "checkID":
                 readGameID := info[posInSlice + 1]
 
@@ -182,13 +189,6 @@ func handleRequest(conn net.Conn) {
             fmt.Printf("Wrote %s\n", writeString)
             conn.Write([]byte(writeString))
         }
-
-        if err != nil {
-            fmt.Printf("Error reading: %v\n", err.Error())
-            os.Exit(1)
-        }
-
-        time.Sleep(1000 * time.Millisecond)
     }
 
     connToClient[&conn] = nil
@@ -270,7 +270,7 @@ func write(conn *net.Conn, client *Client, writeString string) {
 func baseMaster() *Master {
     ret := &Master {
         Games: map[string]*Game {
-            "Home": &Game {
+            /*"Home": &Game {
                 GameID: "Home",
 
                 RespawnPoints: []*RespawnPoint {
@@ -281,16 +281,48 @@ func baseMaster() *Master {
                 },
 
                 Players: map[string]*Player {},
+            },*/
+            "DeAnza": &Game {
+                GameID: "DeAnza",
+
+                RespawnPoints: []*RespawnPoint {
+                    &RespawnPoint {
+                        Lat: 37.32032,
+                        Long: -122.04449,
+                    },
+                    &RespawnPoint {
+                        Lat: 37.32024,
+                        Long: -122.04502,
+                    },
+                    &RespawnPoint {
+                        Lat: 37.31999,
+                        Long: -122.04552,
+                    },
+                    &RespawnPoint {
+                        Lat: 37.32111,
+                        Long: -122.045907,
+                    },
+                    &RespawnPoint {
+                        Lat: 37.32053,
+                        Long: -122.04532,
+                    },
+                    &RespawnPoint {
+                        Lat: 37.32124,
+                        Long: -122.04510,
+                    },
+                },
+
+                Players: map[string]*Player {},
             },
         },
     }
 
-    blueDummy := &Player{}
+    /*blueDummy := &Player{}
     blueDummy.constructor(ret.getGame("Home").getPlayers())
     blueDummy.setName("blueDummy")
     blueDummy.setTeam("blue")
     blueDummy.setLoc(37.32440, -121.98119)
-    ret.getGame("Home").addPlayer(blueDummy)
+    ret.getGame("Home").addPlayer(blueDummy)*/
 
     return ret
 }

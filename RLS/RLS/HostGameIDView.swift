@@ -19,6 +19,15 @@ class HostGameIDView : UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         HostGameID.text = "Game ID: " + gameID
+        
+        //start step function timer
+        timer.invalidate()
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(step), userInfo: nil, repeats: true)
+    }
+    
+    @objc func step() {
+        //send heartbeat
+        networking.sendHeartbeat()
     }
     
     override func didReceiveMemoryWarning() {

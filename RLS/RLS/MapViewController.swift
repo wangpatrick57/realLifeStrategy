@@ -33,7 +33,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var myLocation: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude:0,longitude: 0)
     var x: Float = 0
     var y: Float = 0
-    var timer: Timer!
     var inDangerStartTime = -1.0
     var respawnEnterTime = -1.0
     let deathTime = 5.0
@@ -69,7 +68,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //retrieve data of control point from server
         getCPData()
         
-        //start timer
+        //start step function timer
+        timer.invalidate()
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(handleData), userInfo: nil, repeats: true)
         
         //ping long press gesture recognizer
@@ -201,28 +201,31 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     
     @objc func handleData() {
         let state = UIApplication.shared.applicationState
-        var callFunctions = false
+        var callStep = false
         
         if (state == .active) {
-            callFunctions = true
+            callStep = true
         } else {
             if (handleDataCounter > 8) {
-                callFunctions = true
+                callStep = true
                 handleDataCounter = 0
             } else {
                 handleDataCounter += 1
             }
         }
         
-        if (callFunctions) {
-            networking.readAllData()
+        if (callStep) {
             step()
-            print("handle data called")
+            print("step called")
         }
+        
+        //make sure to send a heartbeat every second regardless
+        networking.sendHeartbeat()
     }
     
     func step() {
-        //tell server to send
+        //server stuff every second
+        networking.readAllData()
         networking.sendReceiving()
         
         //RESPAWN

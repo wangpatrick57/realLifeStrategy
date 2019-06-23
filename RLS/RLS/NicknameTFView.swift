@@ -40,6 +40,15 @@ class NicknameTFView: UIViewController {
         db.document("\(gameCol)/\(gameID)").setData([
             "respawnPointNum": 0
             ])
+        
+        //start step function timer
+        timer.invalidate()
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(step), userInfo: nil, repeats: true)
+    }
+    
+    @objc func step() {
+        //send heartbeat
+        networking.sendHeartbeat()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
