@@ -9,13 +9,14 @@ import (
     "bytes"
     "strings"
     "encoding/json"
+    "io/ioutil"
     "strconv"
     "time"
 )
 
 const (
     HostName = "10.0.1.128"
-    //HostName = "127.0.0.1"
+    //HostName = "10.21.129.1"
     Port = "8888"
     ConnType = "tcp"
 )
@@ -84,7 +85,7 @@ func handleRequest(conn net.Conn) {
 
         if err != nil {
             fmt.Printf("Error reading: %v\n", err.Error())
-            //remove player from everything
+            client.playerDisconnectActions()
             return
         }
 
@@ -175,15 +176,14 @@ func handleRequest(conn net.Conn) {
 
                 client.getPlayer().makeSendTrue("dead", client.getGame().getPlayers())
             case "ret":
-                client.getPlayer().setConnected(false)
-                client.getPlayer().makeSendTrue("conn", client.getGame().getPlayers())
+                client.playerDisconnectActions()
             }
 
             posInSlice += posInc[bufType]
         }
 
-        jsonString, _ := json.MarshalIndent(*master, "", " ")
-        fmt.Printf("%s\n", string(jsonString))
+        jsonFile, _ := json.MarshalIndent(*master, "", " ")
+        _ = ioutil.WriteFile("master.json", jsonFile, 0644)
 
         if (writeString != "blank") {
             fmt.Printf("Wrote %s\n", writeString)
@@ -282,6 +282,7 @@ func baseMaster() *Master {
 
                 Players: map[string]*Player {},
             },*/
+
             "DeAnza": &Game {
                 GameID: "DeAnza",
 

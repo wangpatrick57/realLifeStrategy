@@ -52,6 +52,12 @@ func (client *Client) setReceivingInitial(receivingInitial bool) {
     client.ReceivingInitial = receivingInitial
 }
 
+func (client *Client) playerDisconnectActions() {
+    client.mutexLock()
+    client.Player.setConnected(false)
+    client.Player.makeSendTrue("conn", client.Game.getPlayers())
+}
+
 func (client *Client) mutexLock() {
     client.Mutex.Lock()
     defer client.Mutex.Unlock()

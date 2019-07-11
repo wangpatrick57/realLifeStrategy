@@ -283,7 +283,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                     map.removeAnnotation(thisPlayer)
                 }
                 
-                if (!wardOnMap) {
+                if (!wardOnMap && thisConnected) {
                     if let thisWard = thisPlayer.getWard() {
                         map.addAnnotation(thisWard)
                     }
