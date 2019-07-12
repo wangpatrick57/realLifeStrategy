@@ -31,6 +31,7 @@ func main() {
     posInc = map[string]int {
         "hrt": 1,
         "connected": 1,
+        "disableRDL": 1,
         "checkID": 2,
         "checkName": 2,
         "rec": 1,
@@ -73,11 +74,11 @@ func main() {
 func handleRequest(conn net.Conn) {
     client := &(Client{})
     connToClient[&conn] = client
+    conn.SetReadDeadline(time.Now().Local().Add(time.Second * time.Duration(10)))
 
     for {
         fmt.Printf("\nServing %s\n", conn.RemoteAddr().String())
         buf := make([]byte, 1024)
-        conn.SetReadDeadline(time.Now().Local().Add(time.Second * time.Duration(10)))
         _, err := conn.Read(buf)
         buf = bytes.Trim(buf, "\x00")
 		content := string(buf)
@@ -99,7 +100,9 @@ func handleRequest(conn net.Conn) {
             switch bufType {
             case "hrt":
                 writeString = "bt:"
-            case "connected":
+            case "connected": //why is this here
+            case "disableRDL":
+                conn.SetReadDeadline(time.Time{})
             case "checkID":
                 readGameID := info[posInSlice + 1]
 
