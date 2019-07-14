@@ -498,6 +498,13 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="used for debugging" lineBreakMode="characterWrap" numberOfLines="20" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3KP-CA-cyX">
+                                <rect key="frame" x="16" y="71" width="343" height="454"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
@@ -521,6 +528,7 @@
                     </view>
                     <connections>
                         <outlet property="death" destination="OTz-v7-aHz" id="ARO-Po-zEA"/>
+                        <outlet property="debugLabel" destination="3KP-CA-cyX" id="HZK-h8-rNf"/>
                         <outlet property="gameIDLabel" destination="xtF-th-WhU" id="Eru-1T-uFd"/>
                         <outlet property="map" destination="mND-6A-hkp" id="AJm-3B-oAS"/>
                         <outlet property="returnButtonMap" destination="8jn-Ye-9oO" id="obk-IJ-No3"/>
@@ -530,7 +538,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XVg-IN-cfz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="710" y="2337"/>
+            <point key="canvasLocation" x="709.60000000000002" y="2336.5817091454273"/>
         </scene>
     </scenes>
     <resources>

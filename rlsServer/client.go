@@ -54,8 +54,11 @@ func (client *Client) setReceivingInitial(receivingInitial bool) {
 
 func (client *Client) playerDisconnectActions() {
     client.mutexLock()
-    client.Player.setConnected(false)
-    client.Player.makeSendTrue("conn", client.Game.getPlayers())
+
+    if (client.Player != nil) {
+        client.Player.setConnected(false)
+        client.Player.makeSendTrue("conn", client.Game.getPlayers())
+    }
 }
 
 func (client *Client) mutexLock() {

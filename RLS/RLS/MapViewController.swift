@@ -15,12 +15,14 @@ var mapViewController: MapViewController!
 
 class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureRecognizerDelegate {
     
-    //map
+    //ib outlets
     @IBOutlet weak var map: MKMapView!
     @IBOutlet weak var ward : UIButton!
     @IBOutlet weak var returnButtonMap : UIButton!
     @IBOutlet weak var death : UIButton!
+    @IBOutlet weak var debugLabel: UILabel!
     
+    //other vars
     let manager = CLLocationManager()
     var playerDict: [String: Player] = [myPlayer.getName() : myPlayer] //dictionary of all players
     var deadNames: [String] = [] //list of the names of the dead players on "my" team
@@ -79,8 +81,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         lpgr.delegate = self
         map.addGestureRecognizer(lpgr)
         
-        //gameID label
+        //Labels
         gameIDLabel.text = "Game ID: " + gameID
+        
+        if (!debug) {
+            debugLabel.text = ""
+        }
         
         print("col Ref initialized")
         /*[UIView animateWithDuration:0.3f
@@ -224,6 +230,33 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     }
     
     func step() {
+        //testing/printing
+        if (debug) {
+            var gameStateString = ""
+            
+            for thisName in playerDict.keys {
+                if let thisPlayer = playerDict[thisName] {
+                    let thisCoord = thisPlayer.getCoordinate()
+                    
+                    gameStateString += "\(thisPlayer.getName()) c:\(thisPlayer.getConnected()) \(thisPlayer.getTeam()) d:\(thisPlayer.getDead()) \(String(format: "%.5f", thisCoord.latitude)) \(String(format: "%.5f", thisCoord.longitude))"
+                    
+                    if let thisWard = thisPlayer.getWard() {
+                        let thisWardCoord = thisWard.getCoordinate()
+                        
+                        gameStateString += " \(String(format: "%.5f", thisWardCoord.latitude)) \(String(format: "%.5f", thisWardCoord.longitude))"
+                    } else {
+                        gameStateString += " no ward"
+                    }
+                    
+                    gameStateString += "\n"
+                } else {
+                    print("player of name \(thisName) is not in playerDict")
+                }
+            }
+            
+            debugLabel.text = gameStateString
+        }
+        
         //server stuff every second
         networking.readAllData()
         networking.sendReceiving()
