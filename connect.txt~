@@ -1,0 +1,8 @@
+tmpd=`mktemp -d`
+tmpf="$tmpd"/fifo
+mkfifo "$tmpf"
+printf "%s\n" "$tmpf"
+nc 73.189.41.182 8888 < "$tmpf" &
+ncpid=$!
+exec 3> "$tmpf"
+echo "toggleRDL:" >$3

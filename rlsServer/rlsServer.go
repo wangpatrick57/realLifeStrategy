@@ -96,7 +96,7 @@ func handleRequest(conn net.Conn) {
         }
 
 		info := strings.Split(content, ":")
-        writeString := "blank"
+        writeString := ""
         posInSlice := 0
 
         for ;posInSlice < len(info) - 1; {
@@ -105,7 +105,7 @@ func handleRequest(conn net.Conn) {
             switch bufType {
             case "hrt":
                 writeString = "bt:"
-            case "connected": //why is this here
+            case "connected": //why is connected used
             case "toggleRDL":
                 rdlEnabled = !rdlEnabled
 
@@ -118,7 +118,7 @@ func handleRequest(conn net.Conn) {
                 if (readGameID != "") {
                     idTaken := master.checkIDTaken(readGameID)
 
-                    if (!idTaken) { //fix this so that a new game isn't created when trying to join
+                    if (!idTaken) { //fix this so that a new game isn't created when trying to join a nonexisting game
                         thisGame := &Game{}
                         thisGame.constructor()
                         thisGame.setGameID(readGameID)
@@ -145,7 +145,7 @@ func handleRequest(conn net.Conn) {
                         thisGame.addPlayer(thisPlayer)
                     }
 
-                    writeString = fmt.Sprintf("checkName:%s:%t:", readName, nameTaken)
+                    writeString += fmt.Sprintf("checkName:%s:%t:", readName, nameTaken)
                 }
             case "rec":
                 client.setReceiving(true)
@@ -197,7 +197,7 @@ func handleRequest(conn net.Conn) {
         jsonFile, _ := json.MarshalIndent(*master, "", " ")
         _ = ioutil.WriteFile("master.json", jsonFile, 0644)
 
-        if (writeString != "blank") {
+        if (writeString != "") {
             fmt.Printf("Wrote %s\n", writeString)
             conn.Write([]byte(writeString))
         }

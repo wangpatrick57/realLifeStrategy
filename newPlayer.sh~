@@ -1,0 +1,14 @@
+#!/bin/bash
+if [ "$1" = "" ]; then
+    name="comp1"
+else
+    name=$1
+fi
+
+if [ "$2" = "" ]; then
+    gameID="Home"
+else
+    gameID=$2
+fi
+
+echo "checkID:$2:checkName:$1:loc:1:1:" >&3

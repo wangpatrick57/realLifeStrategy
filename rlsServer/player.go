@@ -22,6 +22,7 @@ type Player struct {
 }
 
 func (player *Player) constructor(players map[string]*Player) {
+    //can't use mutexLock() function because I need to unlock before doing makeSendTrue
     player.Mutex.Lock()
     player.Connected = true
     player.SendWardTo = make(map[string]bool)

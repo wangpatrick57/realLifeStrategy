@@ -11,6 +11,7 @@ type Master struct {
 }
 
 func (master *Master) constructor() {
+    master.mutexLock()
     master.Games = make(map[string]*Game)
 }
 
@@ -35,8 +36,7 @@ func (master *Master) addGame(game *Game) {
 }
 
 func (master *Master) checkIDTaken(idToCheck string) bool {
-    master.Mutex.Lock()
-    defer master.Mutex.Unlock()
+    master.mutexLock()
 
     for _, g := range master.Games {
         if g.getGameID() == idToCheck {
