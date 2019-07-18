@@ -16,12 +16,14 @@ class RespawnPoint: MKPointAnnotation{
     override init() {
         self.name = ""
         super.init()
+        self.title = name
         self.coordinate = coordinate
     }
     
     init(name:String,coordinate:CLLocationCoordinate2D){
         self.name=name
         super.init()
+        self.title = name
         self.coordinate = coordinate
     }
     

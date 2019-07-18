@@ -204,8 +204,9 @@ func (player *Player) makeSendTrue(sendMapString string, players map[string]*Pla
 
 func (player *Player) initialPlayerString() string {
     player.mutexLock()
-    ret := fmt.Sprintf("loc:%s:%f:%f:team:%s:%s:conn:%s:%t:", player.Name, player.Lat, player.Long,
-        player.Name, player.Team, player.Name, player.Connected)
+    //conn has to be before everything and team has to be before ward
+    ret := fmt.Sprintf("loc:%s:%f:%f:conn:%s:%t:team:%s:%s:dead:%s:%t:", player.Name, player.Lat, player.Long,
+        player.Name, player.Connected, player.Name, player.Team, player.Name, player.Dead)
 
     if (player.WardLat != 0 || player.WardLong != 0) {
         ret += fmt.Sprintf("ward:%s:%f:%f:", player.Name, player.WardLat, player.WardLong)

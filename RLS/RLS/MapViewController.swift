@@ -222,7 +222,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         
         if (callStep) {
             step()
-            print("step called")
         }
         
         //make sure to send a heartbeat every second regardless
@@ -282,104 +281,67 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //RAY COMBAT
         
         //ADDING ANNOTATIONS
-        let annArray = map.annotations
+        //fill array of what annotations should be present
+        var targetAnnDict: [String: MKAnnotation] = [:]
         
-        //add myTeam's annotations
+        //objectives
+        for rp in respawnPoints {
+            targetAnnDict[rp.getName()] = rp
+        }
+        
+        //my team
         for thisName in playerDict.keys {
             if let thisPlayer = playerDict[thisName] {
-                if (thisPlayer.getTeam() != myPlayer.getTeam()) {
-                    continue
-                }
-                
-                var playerOnMap: Bool = false
-                var wardOnMap: Bool = false
-                let thisDead = thisPlayer.getDead()
-                let thisConnected = thisPlayer.getConnected()
-                
-                for ann in annArray {
-                    if (thisPlayer.title == ann.title) {
-                        playerOnMap = true
-                    }
+                if (thisPlayer.getConnected() && thisPlayer.getTeam() == myPlayer.getTeam()) {
+                    targetAnnDict[thisName] = thisPlayer
                     
                     if let thisWard = thisPlayer.getWard() {
-                        if (thisWard.getName() == ann.title) {
-                            wardOnMap = true
-                        }
-                    }
-                }
-                
-                if (thisConnected && !playerOnMap && !thisDead) {
-                    map.addAnnotation(thisPlayer)
-                }
-                
-                if (playerOnMap && (thisDead || !thisConnected)) {
-                    map.removeAnnotation(thisPlayer)
-                }
-                
-                if (!wardOnMap && thisConnected) {
-                    if let thisWard = thisPlayer.getWard() {
-                        map.addAnnotation(thisWard)
-                    }
-                } else {
-                    if let thisWard = thisPlayer.getWard() {
-                        if (thisWard.getLocChanged()) {
-                            map.removeAnnotation(thisWard)
-                            map.addAnnotation(thisWard)
-                            thisWard.setLocChanged(locChanged: false)
-                        }
+                        targetAnnDict[thisWard.getName()] = thisWard
                     }
                 }
             }
         }
         
-        //add other team annotations
+        //enemy team
         for thisName in playerDict.keys {
             if let thisPlayer = playerDict[thisName] {
-                if (thisPlayer.getTeam() == myPlayer.getTeam()) {
-                    continue
+                if (thisPlayer.getConnected() && thisPlayer.getTeam() != myPlayer.getTeam() && self.hasVisionOf(playerToCheck: thisPlayer)) {
+                    targetAnnDict[thisName] = thisPlayer
                 }
+            }
+        }
+        
+        //add annotations that aren't currently present but need to be
+        let currAnnArray = map.annotations
+        
+        for thisAnnName in targetAnnDict.keys {
+            if let thisAnn = targetAnnDict[thisAnnName] {
+                var thisAnnCurrPresent = false
                 
-                var playerOnMap: Bool = false
-                var wardOnMap: Bool = false
-                let thisDead = thisPlayer.getDead()
-                let thisConnected = thisPlayer.getConnected()
-                let playerVisible = self.hasVisionOf(playerToCheck: thisPlayer)
-                
-                for ann in annArray {
-                    if (thisPlayer.title == ann.title) {
-                        playerOnMap = true
-                    }
-                    
-                    if let thisWard = thisPlayer.getWard() {
-                        if (thisWard.getName() == ann.title) {
-                            wardOnMap = true
-                        }
+                for ann in currAnnArray {
+                    if (thisAnnName == ann.title) {
+                        thisAnnCurrPresent = true
                     }
                 }
                 
-                if (thisConnected && !playerOnMap && (!thisDead && playerVisible)) {
-                    map.addAnnotation(thisPlayer)
+                if (!thisAnnCurrPresent) {
+                    map.addAnnotation(thisAnn)
                 }
-                
-                if (playerOnMap && (thisDead || !playerVisible || !thisConnected)) {
-                    map.removeAnnotation(thisPlayer)
+            }
+        }
+        
+        //remove annotations that are currently present but shouldn't be
+        for thisAnn in currAnnArray {
+            var thisAnnInTarget = false
+            
+            for annName in targetAnnDict.keys {
+                if (annName == thisAnn.title) {
+                    thisAnnInTarget = true
                 }
-                
-                if (isSpec) {
-                    if (!wardOnMap) {
-                        if let thisWard = thisPlayer.getWard() {
-                            map.addAnnotation(thisWard)
-                        }
-                    } else {
-                        if let thisWard = thisPlayer.getWard() {
-                            if (thisWard.getLocChanged()) {
-                                map.removeAnnotation(thisWard)
-                                map.addAnnotation(thisWard)
-                                thisWard.setLocChanged(locChanged: false)
-                            }
-                        }
-                    }
-                }
+            }
+            
+            if (!thisAnnInTarget) {
+                map.removeAnnotation(thisAnn)
             }
         }
         
@@ -562,23 +524,22 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         if let thisPlayer = playerDict[name] {
             thisPlayer.setTeam(team: team)
             
-            if (thisPlayer.getTeamChanged()) {
+            /*if (thisPlayer.getTeamChanged()) {
                 if let thisWard = thisPlayer.getWard() {
                     map.removeAnnotation(thisWard)
                 }
                 
                 map.removeAnnotation(thisPlayer)
                 thisPlayer.setTeamChanged(teamChanged: false)
-            }
+            }*/
         }
     }
     
     func updatePlayerLoc(name: String, lat: Double, long: Double) {
         if let thisPlayer = playerDict[name] {
-            thisPlayer.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
-        } else {
-            let newPlayer = Player(name: name, team: "none", coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
-            playerDict[name] = newPlayer
+            if (thisPlayer.getConnected()) {
+                thisPlayer.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
+            }
         }
     }
     
@@ -589,10 +550,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     }
     
     func updatePlayerWardLoc(name: String, lat: Double, long: Double) {
+        print("updatePlayerWardLoc called")
+        
         if let thisPlayer = playerDict[name] {
-            if let thisWard = thisPlayer.getWard() {
+            /*if let thisWard = thisPlayer.getWard() {
                 map.removeAnnotation(thisWard)
-            }
+            }*/
             
             thisPlayer.addWardAt(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
         }
@@ -600,7 +563,18 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     
     func updatePlayerConn(name: String, conn: Bool) {
         if let thisPlayer = playerDict[name] {
-            thisPlayer.setConnected(connected: conn)
+            if (!conn) {
+                thisPlayer.setConnected(connected: conn)
+            }
+        }
+        
+        if (conn) {
+            //creating a new player whenever conn is true is fine because in the server i will only send conn as true if it's part of a "new player package". if conn is sent by itself it is always false (i think)
+            ///wrong arguments below
+            //maybe a new player should be created regardless of what conn is, just whenever a conn update is attempted. this is wrong because if conn is false you need to preserve the old player to know that conn is false cuz a new player has a default conn of true
+            //maybe a new player should only be created if conn is changed, either from false to true or true to false. this is wrong because a new player of the same name could've connected within a second of an old one disconnecting, resulting in the server only sending conn true for this player name. in this case, conn stays at true but a new player needs to be created
+            let newPlayer = Player(name: name, team: "none", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
+            playerDict[name] = newPlayer
         }
     }
     
@@ -689,6 +663,8 @@ extension MapViewController: MKMapViewDelegate{
         }
         
         if let annotation = annotation as? Ward{
+            print("\(annotation.getName())")
+            
             //delete old overlay if overlay already exists
             if let thisWardOverlay = annotation.getOverlay() {
                 mapView.removeOverlay(thisWardOverlay)

@@ -173,7 +173,7 @@ func handleRequest(conn net.Conn) {
                 if (err1 == nil && err2 == nil) {
                     client.getPlayer().setWardLoc(lat, long)
                 } else {
-                    fmt.Printf("error updating ward location. lat %v long %v\n", err1, err2)
+                    fmt.Printf("error parsing ward location. lat %v long %v\n", err1, err2)
                 }
 
                 client.getPlayer().makeSendTrue("ward", client.getGame().getPlayers())
@@ -211,7 +211,7 @@ func handleRequest(conn net.Conn) {
 func broadcast() {
     for {
         for recConn, recClient := range connToClient {
-            if !recClient.getReceiving() || !recClient.getPlayer().getConnected() {
+            if !recClient.getReceiving() {
                 continue
             }
 
@@ -223,17 +223,24 @@ func broadcast() {
             recPlayer := recClient.getPlayer()
 
             for _, thisPlayer := range recClient.getGame().getPlayers() {
-                if thisPlayer == recClient.getPlayer() {
-                    continue
-                }
+                //checking that their position isn't 0,0 ensures they are in game
+                if thisPlayer != recClient.getPlayer() && thisPlayer.getLat() != 0 && thisPlayer.getLong() != 0 {
+                    writeString := ""
 
-                if thisPlayer.getLat() != 0 && thisPlayer.getLong() != 0 {
-                    var writeString string
-
+                    //receivingInitial is for players who just joined the game to get the current game state
+                    //sendTo arrays is for players already in the game to broadcast their changed info to all other players
                     if recClient.getReceivingInitial() {
                         writeString = thisPlayer.initialPlayerString()
                     } else {
-                        writeString = fmt.Sprintf("loc:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getLat(), thisPlayer.getLong())
+                        if (thisPlayer.getConnected()) {
+                            writeString += fmt.Sprintf("loc:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getLat(), thisPlayer.getLong())
+                        }
+
+                        //conn has to be before everything because when conn is true the client creates a new player
+                        if val, ok := thisPlayer.getSendTo("conn", recPlayer.getName()); ok && val {
+                            writeString += fmt.Sprintf("conn:%s:%t:", thisPlayer.getName(), thisPlayer.getConnected())
+                            thisPlayer.setSendTo("conn", recPlayer.getName(), false)
+                        }
 
                         //team has to be before ward so the ward is drawn with the team known
                         if val, ok := thisPlayer.getSendTo("team", recPlayer.getName()); ok && val {
@@ -249,11 +256,6 @@ func broadcast() {
                         if val, ok := thisPlayer.getSendTo("dead", recPlayer.getName()); ok && val {
                             writeString += fmt.Sprintf("dead:%s:%t:", thisPlayer.getName(), thisPlayer.getDead())
                             thisPlayer.setSendTo("dead", recPlayer.getName(), false)
-                        }
-
-                        if val, ok := thisPlayer.getSendTo("conn", recPlayer.getName()); ok && val {
-                            writeString += fmt.Sprintf("conn:%s:%t:", thisPlayer.getName(), thisPlayer.getConnected())
-                            thisPlayer.setSendTo("conn", recPlayer.getName(), false)
                         }
                     }
 

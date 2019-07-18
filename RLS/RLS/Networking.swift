@@ -65,7 +65,6 @@ class Networking {
             readArray = self.read()
         } while !(readArray[0] == "checkID" && readArray[1] == idToCheck)
         
-        print("readArray = \(readArray)")
         return readArray[2] == "true" ? true : false
     }
     
@@ -78,7 +77,6 @@ class Networking {
             readArray = self.read()
         } while !(readArray[0] == "checkName" && readArray[1] == nameToCheck)
         
-        print("readArray = \(readArray)")
         return readArray[2] == "true" ? true : false
     }
     
@@ -168,8 +166,10 @@ class Networking {
             case "ward":
                 if let thisLat = Double(stringArray[posInArray + 2]) {
                     if let thisLong = Double(stringArray[posInArray + 3]) {
-                        let thisName = stringArray[posInArray + 1]
-                        mapViewController.updatePlayerWardLoc(name: thisName, lat: thisLat, long: thisLong)
+                        if (thisLat != 0 || thisLong != 0) {
+                            let thisName = stringArray[posInArray + 1]
+                            mapViewController.updatePlayerWardLoc(name: thisName, lat: thisLat, long: thisLong)
+                        }
                     }
                 }
             case "conn":
@@ -207,7 +207,6 @@ class Networking {
                 return [""]
             }
             
-            print("stringArray = \(stringArray)")
             return stringArray
         }
         
