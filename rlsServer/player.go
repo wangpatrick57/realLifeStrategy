@@ -35,6 +35,8 @@ func (player *Player) constructor(players map[string]*Player) {
     player.makeSendTrue("team", players)
     player.makeSendTrue("dead", players)
     player.makeSendTrue("conn", players)
+
+    print("constructor\n")
 }
 
 func (player *Player) getName() string {

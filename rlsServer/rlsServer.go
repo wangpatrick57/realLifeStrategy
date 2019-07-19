@@ -194,12 +194,9 @@ func handleRequest(conn net.Conn) {
             posInSlice += posInc[bufType]
         }
 
-        jsonFile, _ := json.MarshalIndent(*master, "", " ")
-        _ = ioutil.WriteFile("master.json", jsonFile, 0644)
-
         if (writeString != "") {
             fmt.Printf("Wrote %s\n", writeString)
-            conn.Write([]byte(writeString))
+            write(&conn, client, writeString)
         }
     }
 
@@ -267,6 +264,19 @@ func broadcast() {
             recClient.setReceivingInitial(false)
         }
 
+        //writing to json file is here so that it's done regularly regardless of disconnects
+        jsonFile, err := json.MarshalIndent(*master, "", " ")
+
+        if (err == nil) {
+            err = ioutil.WriteFile("master.json", jsonFile, 0644)
+
+            if (err != nil) {
+                fmt.Printf("Error writing json file: %v\n", err)
+            }
+        } else {
+            fmt.Printf("Error converting master to json: %v\n", err)
+        }
+
         time.Sleep(1 * time.Second)
     }
 }
@@ -275,9 +285,17 @@ func write(conn *net.Conn, client *Client, writeString string) {
     _, err := (*conn).Write([]byte(writeString))
 
     if err != nil {
-        fmt.Printf("error writing: %v\n", err)
+        fmt.Printf("Error writing: %v\n", err)
     } else {
-        fmt.Printf("wrote %s to %s\n", writeString, client.getPlayer().getName())
+        var idString string
+
+        if (client.getPlayer() != nil) {
+            idString = client.getPlayer().getName()
+        } else {
+            idString = "unknown"
+        }
+
+        fmt.Printf("Wrote %s to %s\n", writeString, idString)
     }
 }
 
@@ -289,7 +307,7 @@ func baseMaster() *Master {
 
                 RespawnPoints: []*RespawnPoint {
                     &RespawnPoint {
-                        Lat: 37.32410,
+                        Lat: 38.32410,
                         Long: -121.98119,
                     },
                 },

@@ -298,7 +298,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         for thisName in playerDict.keys {
             if let thisPlayer = playerDict[thisName] {
                 if (thisPlayer.getConnected() && thisPlayer.getTeam() == myPlayer.getTeam()) {
-                    targetAnnDict[thisName] = thisPlayer
+                    //getDead is separate because you draw wards of dead players
+                    if (!thisPlayer.getDead()) {
+                        targetAnnDict[thisName] = thisPlayer
+                    }
                     
                     if let thisWard = thisPlayer.getWard() {
                         targetAnnDict[thisWard.getName()] = thisWard
@@ -311,7 +314,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         for thisName in playerDict.keys {
             if let thisPlayer = playerDict[thisName] {
                 if (thisPlayer.getConnected() && thisPlayer.getTeam() != myPlayer.getTeam() && self.hasVisionOf(playerToCheck: thisPlayer)) {
-                    targetAnnDict[thisName] = thisPlayer
+                    //getDead is separate in case we wanna draw enemy wards later on
+                    if (!thisPlayer.getDead()) {
+                        targetAnnDict[thisName] = thisPlayer
+                    }
                 }
             }
         }
