@@ -178,6 +178,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     @IBAction func dropWard(_ sender: Any) {
         if (!myPlayer.getDead()) {
             let coordinate = myPlayer.getCoordinate()
+            
+            if let myWard = myPlayer.getWard() {
+                map.removeAnnotation(myWard)
+            }
+            
             myPlayer.addWardAt(coordinate: coordinate)
             networking.sendWardLoc(coord: coordinate)
         }
@@ -553,9 +558,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         print("updatePlayerWardLoc called")
         
         if let thisPlayer = playerDict[name] {
-            /*if let thisWard = thisPlayer.getWard() {
+            //this annotation needs to be removed here so that a new ward circle is drawn
+            if let thisWard = thisPlayer.getWard() {
                 map.removeAnnotation(thisWard)
-            }*/
+            }
             
             thisPlayer.addWardAt(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
         }
