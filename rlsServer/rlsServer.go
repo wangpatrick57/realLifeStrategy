@@ -12,6 +12,7 @@ import (
     "io/ioutil"
     "strconv"
     "time"
+    "sync"
 )
 
 const (
@@ -24,9 +25,12 @@ const (
 var connToClient map[*net.Conn]*Client
 var master *Master
 var posInc map[string]int
+var mutex sync.Mutex //lock this with actions regarding connToClient
 
 func main() {
+    mutex.Lock()
     connToClient = make(map[*net.Conn]*Client)
+    mutex.Unlock()
 
     posInc = map[string]int {
         "hrt": 1,
@@ -73,7 +77,9 @@ func main() {
 
 func handleRequest(conn net.Conn) {
     client := &(Client{})
+    mutex.Lock()
     connToClient[&conn] = client
+    mutex.Unlock()
     rdlEnabled := true
 
     for {
@@ -200,13 +206,17 @@ func handleRequest(conn net.Conn) {
         }
     }
 
+    mutex.Lock()
     connToClient[&conn] = nil
+    mutex.Unlock()
     conn.Close()
     return
 }
 
 func broadcast() {
     for {
+        mutex.Lock()
+        
         for recConn, recClient := range connToClient {
             if !recClient.getReceiving() {
                 continue
@@ -277,6 +287,7 @@ func broadcast() {
             fmt.Printf("Error converting master to json: %v\n", err)
         }
 
+        mutex.Unlock()
         time.Sleep(1 * time.Second)
     }
 }

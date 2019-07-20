@@ -533,16 +533,22 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     
     func updatePlayerTeam(name: String, team: String) {
         if let thisPlayer = playerDict[name] {
+            let oldTeam = team
             thisPlayer.setTeam(team: team)
             
-            /*if (thisPlayer.getTeamChanged()) {
-                if let thisWard = thisPlayer.getWard() {
-                    map.removeAnnotation(thisWard)
-                }
+            if let thisWard = thisPlayer.getWard() {
+                thisWard.setTeam(team: team)
                 
+                //the old ward circle needs to be removed here because mapView is only called on adding
+                if let thisOverlay = thisWard.getOverlay() {
+                    map.removeOverlay(thisOverlay)
+                }
+            }
+            
+            //have to remove annotation after setting team so the mapView function has the correct info
+            if (team != oldTeam) {
                 map.removeAnnotation(thisPlayer)
-                thisPlayer.setTeamChanged(teamChanged: false)
-            }*/
+            }
         }
     }
     
@@ -567,6 +573,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             //this annotation needs to be removed here so that a new ward circle is drawn
             if let thisWard = thisPlayer.getWard() {
                 map.removeAnnotation(thisWard)
+                
+                //the old ward circle needs to be removed here because mapView is only called on adding
+                if let thisOverlay = thisWard.getOverlay() {
+                    map.removeOverlay(thisOverlay)
+                }
             }
             
             thisPlayer.addWardAt(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))

@@ -11,4 +11,4 @@ else
     gameID=$2
 fi
 
-echo "checkID:$gameID:checkName:$name:loc:1:1:" >&3
+echo "checkID:$gameID:checkName:$name:loc:1:1:team:red:" >&3
