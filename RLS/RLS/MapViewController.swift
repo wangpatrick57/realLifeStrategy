@@ -480,7 +480,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //loops through every player on your team and checks if that teammate or their ward can see the playerToCheck
         for thisName in playerDict.keys {
             if let thisPlayer = playerDict[thisName] {
-                if (thisPlayer.getTeam() != myPlayer.getTeam()) {
+                if (!thisPlayer.getConnected() || thisPlayer.getTeam() != myPlayer.getTeam()) {
                     continue
                 }
                 
@@ -533,7 +533,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     
     func updatePlayerTeam(name: String, team: String) {
         if let thisPlayer = playerDict[name] {
-            let oldTeam = team
+            let oldTeam = thisPlayer.getTeam()
             thisPlayer.setTeam(team: team)
             
             if let thisWard = thisPlayer.getWard() {
@@ -588,6 +588,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         if let thisPlayer = playerDict[name] {
             if (!conn) {
                 thisPlayer.setConnected(connected: conn)
+                
+                if let thisWard = thisPlayer.getWard() {
+                    //the old ward circle needs to be removed here because mapView is only called on adding
+                    if let thisOverlay = thisWard.getOverlay() {
+                        map.removeOverlay(thisOverlay)
+                    }
+                }
             }
         }
         

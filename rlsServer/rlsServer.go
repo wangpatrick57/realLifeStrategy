@@ -156,9 +156,17 @@ func handleRequest(conn net.Conn) {
             case "rec":
                 client.setReceiving(true)
             case "team":
-                var team = info[posInSlice + 1]
-                client.getPlayer().setTeam(team)
-                client.getPlayer().makeSendTrue("team", client.getGame().getPlayers())
+                team := info[posInSlice + 1]
+                thisPlayer := client.getPlayer()
+                players := client.getGame().getPlayers()
+
+                if (team != thisPlayer.getTeam()) {
+                    thisPlayer.setWardLoc(200, 200)
+                    thisPlayer.makeSendTrue("ward", players)
+                }
+
+                thisPlayer.setTeam(team)
+                thisPlayer.makeSendTrue("team", players)
             case "loc":
                 lat, err1 := strconv.ParseFloat(info[posInSlice + 1], 64)
                 long, err2 := strconv.ParseFloat(info[posInSlice + 2], 64)
@@ -216,7 +224,7 @@ func handleRequest(conn net.Conn) {
 func broadcast() {
     for {
         mutex.Lock()
-        
+
         for recConn, recClient := range connToClient {
             if !recClient.getReceiving() {
                 continue
