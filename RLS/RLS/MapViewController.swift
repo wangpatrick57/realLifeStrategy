@@ -111,7 +111,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         }
         
         if (debug) {
-            respawnTime = 1.0
+            respawnTime = 5.0
         }
         
         //Change button colors to Player's team color
@@ -167,7 +167,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     }
     
     @IBAction func onReturnPressed(_ sender: Any) {
-        if (!debug) {
+        if (true || !debug) {
             //tell server
             networking.sendRet()
         }

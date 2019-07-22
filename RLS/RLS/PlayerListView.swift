@@ -27,6 +27,15 @@ class PlayerListView : UIViewController{
     var team: String = ""
     var respawnPointNum: Int = 3
     
+    @IBAction func onReturnPressed(_ sender: Any) {
+        if (true || !debug) {
+            //tell server
+            networking.sendRet()
+        }
+        
+        self.performSegue(withIdentifier: "ShowName", sender: nil)
+    }
+    
     @IBAction func redSelected(_ sender: Any) {
         team = "red"
         redButton.backgroundColor = redSelected

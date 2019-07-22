@@ -25,17 +25,18 @@ const (
 var connToClient map[*net.Conn]*Client
 var master *Master
 var posInc map[string]int
-var mutex sync.Mutex //lock this with actions regarding connToClient
+var mutex sync.Mutex //lock this with actions regarding connToClient or printPeriodicals
+var printPeriodicals bool
 
 func main() {
-    mutex.Lock()
-    connToClient = make(map[*net.Conn]*Client)
-    mutex.Unlock()
+    setConnToClient(make(map[*net.Conn]*Client))
+    setPrintPeriodicals(false)
 
     posInc = map[string]int {
         "hrt": 1,
         "connected": 1,
         "toggleRDL": 1,
+        "togglePP": 1,
         "checkID": 2,
         "checkName": 2,
         "rec": 1,
@@ -77,13 +78,10 @@ func main() {
 
 func handleRequest(conn net.Conn) {
     client := &(Client{})
-    mutex.Lock()
-    connToClient[&conn] = client
-    mutex.Unlock()
+    setClient(&conn, client)
     rdlEnabled := true
 
     for {
-        fmt.Printf("\nServing %s\n", conn.RemoteAddr().String())
         buf := make([]byte, 1024)
 
         if (rdlEnabled) {
@@ -93,7 +91,6 @@ func handleRequest(conn net.Conn) {
         _, err := conn.Read(buf)
         buf = bytes.Trim(buf, "\x00")
 		content := string(buf)
-        fmt.Printf("Read %s from %s\n", content, conn.RemoteAddr().String())
 
         if err != nil {
             fmt.Printf("Error reading: %v\n", err.Error())
@@ -103,14 +100,22 @@ func handleRequest(conn net.Conn) {
 
 		info := strings.Split(content, ":")
         writeString := ""
+        printString := ""
         posInSlice := 0
+        pp := getPrintPeriodicals()
+        printRead(client, info, pp)
 
         for ;posInSlice < len(info) - 1; {
             bufType := info[posInSlice]
 
             switch bufType {
             case "hrt":
-                writeString = "bt:"
+                additionalString := "bt:"
+                writeString += additionalString
+
+                if (pp) {
+                    printString += additionalString
+                }
             case "connected": //why is connected used
             case "toggleRDL":
                 rdlEnabled = !rdlEnabled
@@ -118,6 +123,8 @@ func handleRequest(conn net.Conn) {
                 if (!rdlEnabled) {
                     conn.SetReadDeadline(time.Time{})
                 }
+            case "togglePP":
+                setPrintPeriodicals(!getPrintPeriodicals())
             case "checkID":
                 readGameID := info[posInSlice + 1]
 
@@ -134,7 +141,9 @@ func handleRequest(conn net.Conn) {
                         client.setGame(master.getGame(readGameID))
                     }
 
-                    writeString = fmt.Sprintf("checkID:%s:%t:", readGameID, idTaken)
+                    additionalString := fmt.Sprintf("checkID:%s:%t:", readGameID, idTaken)
+                    writeString += additionalString
+                    printString += additionalString
                 }
             case "checkName":
                 var readName = info[posInSlice + 1]
@@ -151,7 +160,9 @@ func handleRequest(conn net.Conn) {
                         thisGame.addPlayer(thisPlayer)
                     }
 
-                    writeString += fmt.Sprintf("checkName:%s:%t:", readName, nameTaken)
+                    additionalString := fmt.Sprintf("checkName:%s:%t:", readName, nameTaken)
+                    writeString += additionalString
+                    printString += additionalString
                 }
             case "rec":
                 client.setReceiving(true)
@@ -209,23 +220,22 @@ func handleRequest(conn net.Conn) {
         }
 
         if (writeString != "") {
-            fmt.Printf("Wrote %s\n", writeString)
             write(&conn, client, writeString)
+        }
+
+        if (printString != "") {
+            printWrote(client, printString)
         }
     }
 
-    mutex.Lock()
-    connToClient[&conn] = nil
-    mutex.Unlock()
+    deleteConn(&conn)
     conn.Close()
     return
 }
 
 func broadcast() {
     for {
-        mutex.Lock()
-
-        for recConn, recClient := range connToClient {
+        for recConn, recClient := range getConnToClient() {
             if !recClient.getReceiving() {
                 continue
             }
@@ -241,6 +251,8 @@ func broadcast() {
                 //checking that their position isn't 0,0 ensures they are in game
                 if thisPlayer != recClient.getPlayer() && thisPlayer.getLat() != 0 && thisPlayer.getLong() != 0 {
                     writeString := ""
+                    printString := ""
+                    pp := getPrintPeriodicals()
 
                     //receivingInitial is for players who just joined the game to get the current game state
                     //sendTo arrays is for players already in the game to broadcast their changed info to all other players
@@ -248,33 +260,52 @@ func broadcast() {
                         writeString = thisPlayer.initialPlayerString()
                     } else {
                         if (thisPlayer.getConnected()) {
-                            writeString += fmt.Sprintf("loc:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getLat(), thisPlayer.getLong())
+                            additionalString := fmt.Sprintf("loc:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getLat(), thisPlayer.getLong())
+                            writeString += additionalString
+
+                            if (pp) {
+                                printString += additionalString
+                            }
                         }
 
                         //conn has to be before everything because when conn is true the client creates a new player
                         if val, ok := thisPlayer.getSendTo("conn", recPlayer.getName()); ok && val {
-                            writeString += fmt.Sprintf("conn:%s:%t:", thisPlayer.getName(), thisPlayer.getConnected())
+                            additionalString := fmt.Sprintf("conn:%s:%t:", thisPlayer.getName(), thisPlayer.getConnected())
+                            writeString += additionalString
+                            printString += additionalString
                             thisPlayer.setSendTo("conn", recPlayer.getName(), false)
                         }
 
                         //team has to be before ward so the ward is drawn with the team known
                         if val, ok := thisPlayer.getSendTo("team", recPlayer.getName()); ok && val {
-                            writeString += fmt.Sprintf("team:%s:%s:", thisPlayer.getName(), thisPlayer.getTeam())
+                            additionalString := fmt.Sprintf("team:%s:%s:", thisPlayer.getName(), thisPlayer.getTeam())
+                            writeString += additionalString
+                            printString += additionalString
                             thisPlayer.setSendTo("team", recPlayer.getName(), false)
                         }
 
                         if val, ok := thisPlayer.getSendTo("ward", recPlayer.getName()); ok && val {
-                            writeString += fmt.Sprintf("ward:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getWardLat(), thisPlayer.getWardLong())
+                            additionalString := fmt.Sprintf("ward:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getWardLat(), thisPlayer.getWardLong())
+                            writeString += additionalString
+                            printString += additionalString
                             thisPlayer.setSendTo("ward", recPlayer.getName(), false)
                         }
 
                         if val, ok := thisPlayer.getSendTo("dead", recPlayer.getName()); ok && val {
-                            writeString += fmt.Sprintf("dead:%s:%t:", thisPlayer.getName(), thisPlayer.getDead())
+                            additionalString := fmt.Sprintf("dead:%s:%t:", thisPlayer.getName(), thisPlayer.getDead())
+                            writeString += additionalString
+                            printString += additionalString
                             thisPlayer.setSendTo("dead", recPlayer.getName(), false)
                         }
                     }
 
-                    write(recConn, recClient, writeString)
+                    if (writeString != "") {
+                        write(recConn, recClient, writeString)
+                    }
+
+                    if (printString != "") {
+                        printWrote(recClient, printString)
+                    }
                 }
             }
 
@@ -295,7 +326,6 @@ func broadcast() {
             fmt.Printf("Error converting master to json: %v\n", err)
         }
 
-        mutex.Unlock()
         time.Sleep(1 * time.Second)
     }
 }
@@ -305,16 +335,49 @@ func write(conn *net.Conn, client *Client, writeString string) {
 
     if err != nil {
         fmt.Printf("Error writing: %v\n", err)
+    }
+}
+
+func printWrote(client *Client, printString string) {
+    var idString string
+
+    if (client.getPlayer() != nil) {
+        idString = client.getPlayer().getName()
     } else {
+        idString = "no name"
+    }
+
+    fmt.Printf("Wrote %s to %s\n", printString, idString)
+}
+
+//this reuses the entire for loop but I think it's worth rewriting it here so the
+//above for loop isn't clogged up with printing
+func printRead(client *Client, info []string, periodicals bool) {
+    printString := ""
+    posInSlice := 0
+
+    for ;posInSlice < len(info) - 1; {
+        bufType := info[posInSlice]
+
+        if (periodicals || (bufType != "hrt" && bufType != "loc" && bufType != "rec")) {
+            for printPos := posInSlice; printPos < posInSlice + posInc[bufType]; printPos++ {
+                printString += info[printPos] + ":"
+            }
+        }
+
+        posInSlice += posInc[bufType]
+    }
+
+    if (printString != "") {
         var idString string
 
         if (client.getPlayer() != nil) {
             idString = client.getPlayer().getName()
         } else {
-            idString = "unknown"
+            idString = "no name"
         }
 
-        fmt.Printf("Wrote %s to %s\n", writeString, idString)
+        fmt.Printf("Read %s from %s\n", printString, idString)
     }
 }
 
@@ -377,4 +440,39 @@ func baseMaster() *Master {
     ret.getGame("Home").addPlayer(blueDummy)*/
 
     return ret
+}
+
+func getConnToClient() map[*net.Conn]*Client {
+    mutexLock()
+    return connToClient
+}
+
+func setConnToClient(newMap map[*net.Conn]*Client) {
+    mutexLock()
+    connToClient = newMap
+}
+
+func setClient(conn *net.Conn, client *Client) {
+    mutexLock()
+    connToClient[conn] = client
+}
+
+func deleteConn(conn *net.Conn) {
+    mutexLock()
+    delete(connToClient, conn)
+}
+
+func getPrintPeriodicals() bool {
+    mutexLock()
+    return printPeriodicals
+}
+
+func setPrintPeriodicals(val bool) {
+    mutexLock()
+    printPeriodicals = val
+}
+
+func mutexLock() {
+    mutex.Lock()
+    defer mutex.Unlock()
 }

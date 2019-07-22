@@ -381,14 +381,14 @@
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="al2-th-9WW" userLabel="BPlayersScroll">
                                 <rect key="frame" x="189" y="276" width="130" height="289"/>
                             </scrollView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="efo-N2-TfR" userLabel="ReutrnButton">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="efo-N2-TfR" userLabel="ReturnButton" customClass="EnterButton" customModule="RLS">
                                 <rect key="frame" x="104" y="617" width="46" height="30"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
                                 </accessibility>
                                 <state key="normal" title="Return"/>
                                 <connections>
-                                    <segue destination="nP5-Pd-5pS" kind="show" id="v3r-UE-hxb"/>
+                                    <action selector="onReturnPressed:" destination="iCi-CW-8rI" eventType="touchUpInside" id="Tr4-3U-xOa"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ntp-Wa-kkS" userLabel="StartButton">
@@ -438,6 +438,7 @@
                         <outlet property="nicknameLabel" destination="rd7-sb-4SI" id="3Uu-6Q-Azl"/>
                         <outlet property="redButton" destination="oKi-gS-pBB" id="CZq-jq-Afy"/>
                         <segue destination="cP6-KO-xW8" kind="show" identifier="ShowMap" id="0UB-cg-L7h"/>
+                        <segue destination="nP5-Pd-5pS" kind="show" identifier="ShowName" id="ub8-Kz-qGy"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vk9-hP-FSO" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -545,8 +546,9 @@
         <image name="rlsLogo.png" width="306" height="396"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="0UB-cg-L7h"/>
         <segue reference="Ln6-5H-nl1"/>
-        <segue reference="pDI-Zx-MUr"/>
+        <segue reference="ub8-Kz-qGy"/>
         <segue reference="7sF-Wl-NRA"/>
     </inferredMetricsTieBreakers>
 </document>
