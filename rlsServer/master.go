@@ -28,10 +28,19 @@ func (master *Master) getGame(gameID string) *Game {
 func (master *Master) addGame(game *Game) {
     master.mutexLock()
 
-    if (game.getGameID() == "") {
+    if game.getGameID() == "" {
         fmt.Printf("game has no gameID")
     } else {
         master.Games[game.getGameID()] = game
+    }
+}
+
+func (master *Master) removeGame(gameID string) {
+    master.mutexLock()
+    _, ok := master.Games[gameID]
+
+    if ok {
+        delete(master.Games, gameID)
     }
 }
 

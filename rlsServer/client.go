@@ -55,9 +55,14 @@ func (client *Client) setReceivingInitial(receivingInitial bool) {
 func (client *Client) playerDisconnectActions() {
     client.mutexLock()
 
+    //player has to come first because the player has to be dc-ed when trying clean
     if (client.Player != nil) {
         client.Player.setConnected(false)
         client.Player.makeSendTrue("conn", client.Game.getPlayers())
+    }
+
+    if (client.Game != nil) {
+        client.Game.tryClean()
     }
 }
 

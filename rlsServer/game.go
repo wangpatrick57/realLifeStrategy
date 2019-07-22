@@ -70,6 +70,23 @@ func (game *Game) rpString() string {
     return ret
 }
 
+func (game *Game) tryClean() {
+    game.mutexLock()
+
+    for _, p := range game.Players {
+        if (p.getConnected()) {
+            return
+        }
+    }
+
+    //hardcoding special games
+    if (game.GameID == "Home" || game.GameID == "DeAnza") {
+        game.Players = make(map[string]*Player)
+    } else {
+        master.removeGame(game.GameID)
+    }
+}
+
 func (game *Game) mutexLock() {
     game.Mutex.Lock()
     defer game.Mutex.Unlock()
