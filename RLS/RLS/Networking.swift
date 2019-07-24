@@ -19,6 +19,7 @@ class Networking {
     var btReceived = true
     var idExists: Bool? = nil
     var nameExists: Bool? = nil
+    var locPlaces = 5
     
     let posInc: [String: Int] = [
         "bt": 1,
@@ -121,13 +122,13 @@ class Networking {
         }
         
         if (doSendLoc) {
-            write(str: "loc:\(coord.latitude):\(coord.longitude):")
+            write(str: "loc:\(truncate(num: coord.latitude, places: locPlaces)):\(truncate(num: coord.longitude, places: locPlaces)):")
             doSendLoc = false
         }
     }
     
     func sendWardLoc(coord: CLLocationCoordinate2D) {
-        write(str: "ward:\(coord.latitude):\(coord.longitude):")
+        write(str: "ward:\(truncate(num: coord.latitude, places: locPlaces)):\(truncate(num: coord.longitude, places: locPlaces)):")
     }
     
     func sendDead(dead: Bool) {
@@ -246,5 +247,9 @@ class Networking {
         }
         
         return [""]
+    }
+    
+    func truncate(num: Double, places: Int) -> Double {
+        return Double(floor(pow(10.0, Double(places)) * num) / pow(10.0, Double(places)))
     }
 }

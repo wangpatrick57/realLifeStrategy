@@ -59,7 +59,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         manager.allowsBackgroundLocationUpdates = true
         manager.pausesLocationUpdatesAutomatically = false
         mapViewController = self
-        
         map.delegate = self
         
         //check if spectator
@@ -151,7 +150,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                 self.map.showsUserLocation = true
             } else {
                 self.map.showsUserLocation = false
-                myPlayer.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
+                myPlayer.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: 200, longitude: 200))
+                networking.sendLocation(coord: myPlayer.getCoordinate())
             }
             
             once = true
@@ -161,9 +161,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //set coordinates and death status
         if (!isSpec) {
             myPlayer.setCoordinate(coordinate: location.coordinate)
+            networking.sendLocation(coord: myPlayer.getCoordinate())
         }
-        
-        networking.sendLocation(coord: location.coordinate)
     }
     
     @IBAction func onReturnPressed(_ sender: Any) {
@@ -313,10 +312,16 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //enemy team
         for thisName in playerDict.keys {
             if let thisPlayer = playerDict[thisName] {
-                if (thisPlayer.getConnected() && thisPlayer.getTeam() != myPlayer.getTeam() && self.hasVisionOf(playerToCheck: thisPlayer)) {
+                if (thisPlayer.getConnected() && thisPlayer.getTeam() != myPlayer.getTeam() && (hasVisionOf(playerToCheck: thisPlayer) || isSpec)) {
                     //getDead is separate in case we wanna draw enemy wards later on
                     if (!thisPlayer.getDead()) {
                         targetAnnDict[thisName] = thisPlayer
+                    }
+                }
+                
+                if (isSpec) {
+                    if let thisWard = thisPlayer.getWard() {
+                        targetAnnDict[thisWard.getName()] = thisWard
                     }
                 }
             }
