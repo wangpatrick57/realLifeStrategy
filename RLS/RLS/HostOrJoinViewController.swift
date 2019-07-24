@@ -48,6 +48,7 @@ class HostOrJoinViewController : UIViewController {
     
     @objc func step() {
         //send heartbeat
+        networking.readAllData()
         networking.sendHeartbeat()
     }
     

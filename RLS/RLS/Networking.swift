@@ -16,10 +16,15 @@ class Networking {
     var maxReadLength = 1024
     var doSendRec = true
     var doSendLoc = true
+    var btReceived = true
+    var idExists: Bool? = nil
+    var nameExists: Bool? = nil
     
     let posInc: [String: Int] = [
         "bt": 1,
         "rp": 3,
+        "checkID": 2,
+        "checkName": 2,
         "loc": 4,
         "team": 3,
         "dead": 3,
@@ -53,31 +58,46 @@ class Networking {
     }
     
     func sendHeartbeat() {
-        write(str: "hrt:")
+        if (btReceived) {
+            write(str: "hrt:")
+            btReceived = false
+        }
     }
     
     func checkGameIDTaken(idToCheck: String) -> Bool {
         write(str: "checkID:\(idToCheck):")
         print("checking if gameID exists")
-        var readArray: [String]
+        var ret = true
         
-        repeat {
-            readArray = self.read()
-        } while !(readArray[0] == "checkID" && readArray[1] == idToCheck)
+        while (true) {
+            readAllData()
+            
+            if let exists = idExists {
+                ret = exists
+                idExists = nil
+                break
+            }
+        }
         
-        return readArray[2] == "true" ? true : false
+        return ret
     }
     
     func checkNameTaken(nameToCheck: String) -> Bool {
         write(str: "checkName:\(nameToCheck):")
         print("checking if name is taken")
-        var readArray: [String]
+        var ret = true
         
-        repeat {
-            readArray = self.read()
-        } while !(readArray[0] == "checkName" && readArray[1] == nameToCheck)
+        while (true) {
+            readAllData()
+            
+            if let exists = nameExists {
+                ret = exists
+                nameExists = nil
+                break
+            }
+        }
         
-        return readArray[2] == "true" ? true : false
+        return ret
     }
     
     func sendReceiving() {
@@ -137,6 +157,21 @@ class Networking {
             let bufType = stringArray[posInArray]
             
             switch bufType {
+            case "bt":
+                btReceived = true
+                print("got beat")
+            case "checkID":
+                if let exists = Bool(stringArray[posInArray + 1]) {
+                    idExists = exists
+                } else {
+                    print("checkID gave an invalid value")
+                }
+            case "checkName":
+                if let exists = Bool(stringArray[posInArray + 1]) {
+                    nameExists = exists
+                } else {
+                    print("checkName gave an invalid value")
+                }
             case "rp":
                 if let thisLat = Double(stringArray[posInArray + 1]) {
                     if let thisLong = Double(stringArray[posInArray + 2]) {

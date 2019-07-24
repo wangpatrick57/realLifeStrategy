@@ -30,7 +30,7 @@ var printPeriodicals bool
 
 func main() {
     setConnToClient(make(map[*net.Conn]*Client))
-    setPrintPeriodicals(false)
+    setPrintPeriodicals(true)
 
     posInc = map[string]int {
         "hrt": 1,
@@ -85,7 +85,7 @@ func handleRequest(conn net.Conn) {
         buf := make([]byte, 1024)
 
         if (rdlEnabled) {
-            conn.SetReadDeadline(time.Now().Local().Add(time.Second * time.Duration(10)))
+            conn.SetReadDeadline(time.Now().Local().Add(time.Second * time.Duration(30)))
         }
 
         _, err := conn.Read(buf)
@@ -141,7 +141,7 @@ func handleRequest(conn net.Conn) {
                         client.setGame(master.getGame(readGameID))
                     }
 
-                    additionalString := fmt.Sprintf("checkID:%s:%t:", readGameID, idTaken)
+                    additionalString := fmt.Sprintf("checkID:%t:", idTaken)
                     writeString += additionalString
                     printString += additionalString
                 }
@@ -160,7 +160,7 @@ func handleRequest(conn net.Conn) {
                         thisGame.addPlayer(thisPlayer)
                     }
 
-                    additionalString := fmt.Sprintf("checkName:%s:%t:", readName, nameTaken)
+                    additionalString := fmt.Sprintf("checkName:%t:", nameTaken)
                     writeString += additionalString
                     printString += additionalString
                 }

@@ -25,6 +25,7 @@ class StartView: UIViewController {
     
     @objc func step() {
         //send heartbeat
+        networking.readAllData() //read all data to check if bt was received to know whether or not to send hrt
         networking.sendHeartbeat()
     }
 
