@@ -1,5 +1,4 @@
 //stuff to fix: don't create a new game when client tries to join one that doesn't exist
-
 package main
 
 import (
@@ -17,7 +16,7 @@ import (
 
 const (
     HostName = "10.0.1.128"
-    //HostName = "10.21.129.1"
+    //HostName = "127.0.0.1"
     Port = "8888"
     ConnType = "tcp"
 )
@@ -32,7 +31,9 @@ func main() {
     setConnToClient(make(map[*net.Conn]*Client))
     setPrintPeriodicals(true)
 
+    //position increment. the amount of cells to increment in the string array after every command
     posInc = map[string]int {
+        //explanations of commands are in the simulated client guide doc
         "hrt": 1,
         "connected": 1,
         "toggleRDL": 1,
@@ -47,6 +48,7 @@ func main() {
         "ret": 1,
     }
 
+    //sets the default state of the master json
     master = baseMaster()
     l, err := net.Listen(ConnType, HostName + ":" + Port)
 
@@ -69,7 +71,7 @@ func main() {
 
         go handleRequest(conn)
 
-        //write data
+        //write data //CHECK THIS LATER
         go broadcast()
     }
 

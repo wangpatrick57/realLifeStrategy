@@ -37,7 +37,7 @@ class Networking {
         var readStream: Unmanaged<CFReadStream>?
         var writeStream: Unmanaged<CFWriteStream>?
         
-        CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, "73.189.41.182" /*"10.21.129.1"*/ as CFString, 8888, &readStream, &writeStream)
+        CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, "73.189.41.182" /*"127.0.0.1"*/ as CFString, 8888, &readStream, &writeStream)
 
         inputStream = readStream!.takeRetainedValue()
         outputStream = writeStream!.takeRetainedValue()
