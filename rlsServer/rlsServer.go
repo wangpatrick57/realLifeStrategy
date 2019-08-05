@@ -21,14 +21,22 @@ const (
     ConnType = "tcp"
 )
 
+//dictionary of conn objects to client objects
 var connToClient map[*net.Conn]*Client
+//the master json object
 var master *Master
+//this is explained below
 var posInc map[string]int
 var mutex sync.Mutex //lock this with actions regarding connToClient or printPeriodicals
 var printPeriodicals bool
 
 func main() {
+    /*initializes the connToClient array. the design is kinda weird, i basically treat
+    rlsServer itself as its own class with its own getters and setters. this way, i
+    don't forget use mutex before accessing or changing any data since locking the
+    mutex is built in (by the code, not by golang) to all getters and setters*/
     setConnToClient(make(map[*net.Conn]*Client))
+    //sets print periodicals to true. you might want to set this to false by default by preference
     setPrintPeriodicals(true)
 
     //position increment. the amount of cells to increment in the string array after every command
@@ -50,29 +58,34 @@ func main() {
 
     //sets the default state of the master json
     master = baseMaster()
+    //creates the listener (for connections, not for data)
     l, err := net.Listen(ConnType, HostName + ":" + Port)
+    defer l.Close()
 
+    //crashes if there's an error in creating the listener (for example, if another instance of the server is running)
     if err != nil {
         fmt.Printf("Error listening: %v\n", err.Error())
         os.Exit(1)
     }
 
-    defer l.Close()
     fmt.Printf("Listening on %s:%s\n", HostName, Port)
+    //broadcast has its own forever loop so this function only needs to be called once
+    go broadcast()
 
+    //the forever loop that runs the entire server
     for {
-        //read data
+        //check for connections (the code stops here if there are no connections i think)
         conn, err := l.Accept()
+        fmt.Printf("connection detected\n")
 
         if err != nil {
             fmt.Printf("Error accepting: %v\n", err.Error())
+            //think about not exiting for a failed connection
             os.Exit(1)
         }
 
+        //if the connection is successful, create a new routine that listens for data from that connection
         go handleRequest(conn)
-
-        //write data //CHECK THIS LATER
-        go broadcast()
     }
 
     return
@@ -285,13 +298,17 @@ func broadcast() {
                 continue
             }
 
+            //one time things for clients like respawn points, game settings, etc
             if (recClient.getReceivingInitial()) {
                 writeString := recClient.getGame().rpString()
+                printString := writeString
                 write(recConn, recClient, writeString)
+                printWrote(recClient, printString)
             }
 
             recPlayer := recClient.getPlayer()
 
+            //things that have to do with other players
             for _, thisPlayer := range recClient.getGame().getPlayers() {
                 //checking that their position isn't 0,0 ensures they are in game
                 if thisPlayer != recClient.getPlayer() && thisPlayer.getLat() != 0 && thisPlayer.getLong() != 0 {
@@ -303,6 +320,7 @@ func broadcast() {
                     //sendTo arrays is for players already in the game to broadcast their changed info to all other players
                     if recClient.getReceivingInitial() {
                         writeString = thisPlayer.initialPlayerString()
+                        printString = writeString
                     } else {
                         if (thisPlayer.getConnected()) {
                             additionalString := fmt.Sprintf("loc:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getLat(), thisPlayer.getLong())
@@ -354,8 +372,8 @@ func broadcast() {
                 }
             }
 
-            recClient.setReceiving(false)
             recClient.setReceivingInitial(false)
+            recClient.setReceiving(false)
         }
 
         //writing to json file is here so that it's done regularly regardless of disconnects
