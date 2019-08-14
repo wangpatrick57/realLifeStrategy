@@ -21,6 +21,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     @IBOutlet weak var returnButtonMap : UIButton!
     @IBOutlet weak var death : UIButton!
     @IBOutlet weak var debugLabel: UILabel!
+    @IBOutlet weak var redPtLabel: UILabel!
+    @IBOutlet weak var bluePtLabel: UILabel!
     
     //other vars
     let manager = CLLocationManager()
@@ -82,6 +84,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         
         //Labels
         gameIDLabel.text = "Game ID: " + gameID
+        redPtLabel.text = "red: 0"
+        bluePtLabel.text = "blue: 0"
         
         if (!debug) {
             debugLabel.text = ""
@@ -379,9 +383,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             //if player is in radius, update number in server
             if myPlayer.getTeam() == "red"{
                 cp.addNumRed(num: incAmt)
+                redPtLabel.text = "red: " + cp.getRedPoints()   //update red points on mapView
                 //print("updated numRed in server")
             } else if myPlayer.getTeam() == "red"{
                 cp.addNumBlue(num: incAmt)
+                bluePtLabel.text = "blue: " + cp.getBluePoints()   //update blue points on mapView
                 //print("updated numBlue in server")
             }
             
