@@ -20,6 +20,7 @@ class Networking {
     var idExists: Bool? = nil
     var nameExists: Bool? = nil
     var locPlaces = 5
+    var controlPoint: ControlPoint
     
     let posInc: [String: Int] = [
         "bt": 1,
@@ -143,6 +144,18 @@ class Networking {
         write(str: "ret:")
     }
     
+    func sendRedPoint(point: Double) {
+        write(str: "redPoint:\(point):")
+    }
+    
+    func sendBluePoint(point: Double) {
+        write(str: "bluePoint:\(point):")
+    }
+    
+    func sendCP(numRed: Int, numBlue: Int) {
+        write(str: "cp:\(controlPoint.getLocation().latitude):\(controlPoint.getLocation().longitude):\(numRed):\(numBlue):")
+    }
+    
     func readAllData() {
         let stringArray = read()
         print("Read \(stringArray)")
@@ -208,6 +221,14 @@ class Networking {
                         }
                     }
                 }
+            case "redPoint":
+                controlPoint.setRedPoints(point: Double(stringArray[posInArray + 1]))
+            case "bluePoint":
+                controlPoint.setBluePoints(point: Double(stringArray[posInArray + 1]))
+            case "cp":
+                controlPoint.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: stringArray[posInArray + 1], longitude: stringArray[posInArray + 2]))
+                controlPoint.setNumRed(numRed: stringArray[posInArray + 3])
+                controlPoint.setNumRed(numRed: stringArray[posInArray + 4])
             case "conn":
                 let thisName = stringArray[posInArray + 1]
                 
