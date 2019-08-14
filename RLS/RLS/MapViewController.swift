@@ -373,10 +373,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         for cp in self.cps{
             if !cp.getStay() {      //skip section if player is staying in a control point
                 var incAmt : Int = 0
-                if cp.inArea(myPlayer: myPlayer){
+                if cp.inArea(myPlayer: myPlayer) && !myPlayer.getDead(){
                     cp.setStay(s: true) //indicate that the player has already entered the area
                     incAmt = 1
-                } else{
+                } else{ //if player left the cp or is dead
                     incAmt = -1
                 }
                 
