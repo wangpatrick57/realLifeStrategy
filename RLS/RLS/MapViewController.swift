@@ -50,6 +50,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var font : String = "San Francisco"
     
     override func viewDidLoad() {
+        //test stuff
+        let border = BorderOverlay(trash: 1)
+        map.addOverlay(border)
+        
         //necessary stuff
         super.viewDidLoad()
         manager.delegate = self
@@ -711,7 +715,7 @@ extension MapViewController: MKMapViewDelegate{
             
             if annotation.getTeam() == "red" {
                 annotationView?.image = UIImage(named: "Red Ward")
-                circleOverlay.color = UIColor.red
+                circleOverlay.setColor(color: UIColor.red)
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
                 } else {
@@ -721,7 +725,7 @@ extension MapViewController: MKMapViewDelegate{
             
             if annotation.getTeam() == "blue" {
                 annotationView?.image = UIImage(named: "Blue Ward")
-                circleOverlay.color = UIColor.blue
+                circleOverlay.setColor(color: UIColor.blue)
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
                 } else {
@@ -739,11 +743,11 @@ extension MapViewController: MKMapViewDelegate{
                 annotationView?.image = UIImage(named: "Gray CP")
             }
             if annotation.getTeam() == "red" {
-                circleOverlay.color = UIColor.red
+                circleOverlay.setColor(color: UIColor.red)
                 annotationView?.image = UIImage(named: "Red CP")
             }
             if annotation.getTeam() == "blue" {
-                circleOverlay.color = UIColor.blue
+                circleOverlay.setColor(color: UIColor.blue)
                 annotationView?.image = UIImage(named: "Blue CP")
             }
             
@@ -781,12 +785,21 @@ extension MapViewController: MKMapViewDelegate{
     }
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        if let overlay = overlay as? ColorCircleOverlay{
-            let render = MKCircleRenderer(circle: overlay)
-            render.strokeColor = overlay.color
-            render.lineWidth = 2
-            return render
+        if let overlay = overlay as? ColorCircleOverlay {
+            let renderer = MKCircleRenderer(circle: overlay)
+            renderer.strokeColor = overlay.getColor()
+            renderer.fillColor = overlay.getColor().withAlphaComponent(0.2)
+            renderer.lineWidth = 2
+            return renderer
+        } else if let overlay = overlay as? BorderOverlay {
+            let renderer = MKPolygonRenderer(overlay: overlay)
+            //renderer.strokeColor = overlay.getColor()
+            renderer.strokeColor = overlay.getColor()
+            renderer.lineWidth = 4
+            return renderer
         }
+        
+        //if let overlay = overlay as?
         
         return MKOverlayRenderer(overlay: overlay)
     }

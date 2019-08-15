@@ -38,6 +38,7 @@
 		C45B61AE2295EB5200E4DDEB /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C45B61AD2295EB5200E4DDEB /* nanopb.framework */; };
 		C45B61B02295FDAC00E4DDEB /* FirebaseFirestore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C45B61AF2295FDAC00E4DDEB /* FirebaseFirestore.framework */; };
 		C45D3C8F228F44A6002589E3 /* RespawnPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */; };
+		C4A8BE5222FA933900FA2A92 /* BorderOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4A8BE5122FA933900FA2A92 /* BorderOverlay.swift */; };
 		C4B06AA622A58C7F00421613 /* Networking.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B06AA522A58C7F00421613 /* Networking.swift */; };
 		C4C2B3042288C3E600A7D844 /* Ping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C2B3032288C3E600A7D844 /* Ping.swift */; };
 		C4EEC859227E9A910088CB32 /* Ward.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4EEC858227E9A910088CB32 /* Ward.swift */; };
@@ -104,6 +105,7 @@
 		C45B61AF2295FDAC00E4DDEB /* FirebaseFirestore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseFirestore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RespawnPoint.swift; sourceTree = "<group>"; };
 		C47377A8229C45D2000AD728 /* RLS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RLS.entitlements; sourceTree = "<group>"; };
+		C4A8BE5122FA933900FA2A92 /* BorderOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderOverlay.swift; sourceTree = "<group>"; };
 		C4B06AA522A58C7F00421613 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
 		C4C2B3032288C3E600A7D844 /* Ping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ping.swift; sourceTree = "<group>"; };
 		C4EEC858227E9A910088CB32 /* Ward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ward.swift; sourceTree = "<group>"; };
@@ -209,6 +211,7 @@
 				C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */,
 				41867B73228B8D0300B504EE /* ControlPoint.swift */,
 				EB19B1AF22985D1900764485 /* ColorCircleOverlay.swift */,
+				C4A8BE5122FA933900FA2A92 /* BorderOverlay.swift */,
 			);
 			path = RLS;
 			sourceTree = "<group>";
@@ -478,6 +481,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4A8BE5222FA933900FA2A92 /* BorderOverlay.swift in Sources */,
 				418C138120F1B9C900AE16C5 /* GameIDTF.swift in Sources */,
 				418C138320F1BA0E00AE16C5 /* MapViewController.swift in Sources */,
 				C4B06AA622A58C7F00421613 /* Networking.swift in Sources */,
