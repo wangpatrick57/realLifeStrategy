@@ -11,7 +11,7 @@ import MapKit
 import UIKit
 
 class ColorCircleOverlay: MKCircle{
-    var color: UIColor
+    private var color: UIColor
     
     convenience init(annotation: MKAnnotation, radius: CLLocationDistance, color: UIColor){
         self.init(center: annotation.coordinate, radius: radius)
@@ -23,5 +23,12 @@ class ColorCircleOverlay: MKCircle{
         super.init()
     }
     
+    func setColor(color: UIColor) {
+        self.color = color
+    }
+    
+    func getColor() -> UIColor {
+        return self.color
+    }
 }
 
