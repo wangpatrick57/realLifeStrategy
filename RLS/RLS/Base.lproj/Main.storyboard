@@ -506,6 +506,22 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Blue Team's Point" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="usr-h5-Nvq">
+                                <rect key="frame" x="254" y="71" width="101" height="15"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.62745281257285468" green="0.62549144264632461" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Red Team's Point" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lKI-mR-Z5L">
+                                <rect key="frame" x="255" y="48" width="98" height="15"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="1" green="0.64785701618357261" blue="0.5906614437696599" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
@@ -528,10 +544,12 @@
                         <viewLayoutGuide key="safeArea" id="RCF-qP-fri"/>
                     </view>
                     <connections>
+                        <outlet property="bluePtLabel" destination="usr-h5-Nvq" id="f2w-ZZ-Skx"/>
                         <outlet property="death" destination="OTz-v7-aHz" id="ARO-Po-zEA"/>
                         <outlet property="debugLabel" destination="3KP-CA-cyX" id="HZK-h8-rNf"/>
                         <outlet property="gameIDLabel" destination="xtF-th-WhU" id="Eru-1T-uFd"/>
                         <outlet property="map" destination="mND-6A-hkp" id="AJm-3B-oAS"/>
+                        <outlet property="redPtLabel" destination="lKI-mR-Z5L" id="X7I-v0-2PJ"/>
                         <outlet property="returnButtonMap" destination="8jn-Ye-9oO" id="obk-IJ-No3"/>
                         <outlet property="ward" destination="cL8-T9-r7N" id="Opn-1e-Vbi"/>
                         <segue destination="iCi-CW-8rI" kind="show" identifier="ShowPlayerList" id="Ln6-5H-nl1"/>

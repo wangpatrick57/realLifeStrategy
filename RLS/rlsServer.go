@@ -33,6 +33,9 @@ func main() {
         "loc": 3,
         "ward": 3,
         "dead": 2,
+        "redPoint": 2,
+        "bluePoint": 2,
+        "cp": 5,  //cp:lat:long:numRed:numBlue
     }
 
     master = baseMaster()
