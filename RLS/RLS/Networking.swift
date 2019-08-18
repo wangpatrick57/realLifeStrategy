@@ -34,6 +34,10 @@ class Networking {
         "conn": 3,
     ]
     
+    init(){
+        
+    }
+    
     func setupNetworkComms() {
         var readStream: Unmanaged<CFReadStream>?
         var writeStream: Unmanaged<CFWriteStream>?
@@ -222,13 +226,26 @@ class Networking {
                     }
                 }
             case "redPoint":
-                controlPoint.setRedPoints(point: Double(stringArray[posInArray + 1]))
+                if let p = Double(stringArray[posInArray + 1]){
+                    controlPoint.setRedPoints(point: p)
+                }
             case "bluePoint":
-                controlPoint.setBluePoints(point: Double(stringArray[posInArray + 1]))
+                if let p = Double(stringArray[posInArray + 1]){
+                    controlPoint.setBluePoints(point: p)
+                }
             case "cp":
-                controlPoint.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: stringArray[posInArray + 1], longitude: stringArray[posInArray + 2]))
-                controlPoint.setNumRed(numRed: stringArray[posInArray + 3])
-                controlPoint.setNumRed(numRed: stringArray[posInArray + 4])
+                if let lat = Double(stringArray[posInArray + 1]){
+                    if let long = Double(stringArray[posInArray + 2]){
+                        controlPoint.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
+                    }
+                }
+                if let nr = Int(stringArray[posInArray + 3]) {
+                    controlPoint.setNumRed(numRed: nr)
+                }
+                if let nb = Int(stringArray[posInArray + 4]) {
+                    controlPoint.setNumRed(numRed: nb)
+                }
+                
             case "conn":
                 let thisName = stringArray[posInArray + 1]
                 

@@ -388,12 +388,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                 //if player is in radius, update number in server
                 if myPlayer.getTeam() == "red"{
                     cp.addNumRed(num: incAmt)
-                    redPtLabel.text = "red: " + cp.getRedPoints()   //update red points on mapView
+                    redPtLabel.text = "red: " + String(cp.getRedPoints())   //update red points on mapView
                     networking.sendRedPoint(point: cp.getRedPoints())
                     //print("updated numRed in server")
                 } else if myPlayer.getTeam() == "red"{
                     cp.addNumBlue(num: incAmt)
-                    bluePtLabel.text = "blue: " + cp.getBluePoints()   //update blue points on mapView
+                    bluePtLabel.text = "blue: " + String(cp.getBluePoints())   //update blue points on mapView
                     networking.sendBluePoint(point: cp.getBluePoints())
                     //print("updated numBlue in server")
                 }
@@ -407,15 +407,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     //retrieve control point from server
     func getCPData(){
         //print("getting CP data from server")
-        for cp in self.cps {
-            
-            //put CP on map
-            newCP.title = newCP.getName()
-            self.map.addAnnotation(newCP)
-            
-            //print("New CP added: " + newCP.getID())
-            //print("new CP location: " + String(newCP.getLocation().latitude))
-        }
+        
 /* firebase code
         //initialize ControlPoint
         db.collection("\(gameCol)/\(gameID)/CP").getDocuments() { (querySnapshot, error) in
@@ -462,7 +454,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                         
                         //put CP on map
                         newCP.title = newCP.getName()
-                        self.map.addAnnotation(newCP)
+                         
                         
                         //print("New CP added: " + newCP.getID())
                         //print("new CP location: " + String(newCP.getLocation().latitude))
