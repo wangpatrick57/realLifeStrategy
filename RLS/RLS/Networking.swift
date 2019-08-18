@@ -20,7 +20,7 @@ class Networking {
     var idExists: Bool? = nil
     var nameExists: Bool? = nil
     var locPlaces = 5
-    var controlPoint: ControlPoint
+    var controlPoint: ControlPoint? = nil
     
     let posInc: [String: Int] = [
         "bt": 1,
@@ -33,10 +33,6 @@ class Networking {
         "ward": 4,
         "conn": 3,
     ]
-    
-    init(){
-        
-    }
     
     func setupNetworkComms() {
         var readStream: Unmanaged<CFReadStream>?
@@ -157,7 +153,9 @@ class Networking {
     }
     
     func sendCP(numRed: Int, numBlue: Int) {
-        write(str: "cp:\(controlPoint.getLocation().latitude):\(controlPoint.getLocation().longitude):\(numRed):\(numBlue):")
+        if let cp = controlPoint {
+            write(str: "cp:\(cp.getLocation().latitude):\(cp.getLocation().longitude):\(numRed):\(numBlue):")
+        }
     }
     
     func readAllData() {
@@ -227,23 +225,29 @@ class Networking {
                 }
             case "redPoint":
                 if let p = Double(stringArray[posInArray + 1]){
-                    controlPoint.setRedPoints(point: p)
-                }
-            case "bluePoint":
-                if let p = Double(stringArray[posInArray + 1]){
-                    controlPoint.setBluePoints(point: p)
-                }
-            case "cp":
-                if let lat = Double(stringArray[posInArray + 1]){
-                    if let long = Double(stringArray[posInArray + 2]){
-                        controlPoint.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
+                    if let cp = controlPoint {
+                        cp.setRedPoints(point: p)
                     }
                 }
-                if let nr = Int(stringArray[posInArray + 3]) {
-                    controlPoint.setNumRed(numRed: nr)
+            case "bluePoint":
+                if let cp = controlPoint {
+                    if let p = Double(stringArray[posInArray + 1]){
+                        cp.setBluePoints(point: p)
+                    }
                 }
-                if let nb = Int(stringArray[posInArray + 4]) {
-                    controlPoint.setNumRed(numRed: nb)
+            case "cp":
+                if let cp = controlPoint {
+                    if let lat = Double(stringArray[posInArray + 1]){
+                        if let long = Double(stringArray[posInArray + 2]){
+                            cp.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
+                        }
+                    }
+                    if let nr = Int(stringArray[posInArray + 3]) {
+                        cp.setNumRed(numRed: nr)
+                    }
+                    if let nb = Int(stringArray[posInArray + 4]) {
+                        cp.setNumRed(numRed: nb)
+                    }
                 }
                 
             case "conn":
