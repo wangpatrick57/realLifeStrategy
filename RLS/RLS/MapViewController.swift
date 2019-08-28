@@ -30,6 +30,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var deadNames: [String] = [] //list of the names of the dead players on "my" team
     var myPings: [String: Double] = [:] //dict of the names of my pings to their create times. the name is "\(myName)\(pingNum)"
     var respawnPoints: [RespawnPoint] = []
+    var border: BorderOverlay = BorderOverlay()
+    var boords: [CLLocation] = []
     var pingNum = 0
     var handleDataCounter = 0
     var myTeamPings: [Ping] = [] //list of pings to draw
@@ -39,25 +41,15 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var y: Float = 0
     var inDangerStartTime = -1.0
     var respawnEnterTime = -1.0
-    let deathTime = 5.0
-    let tetherDist = 20.0
-    var respawnTime = 15.0 //seconds
-    let respawnDist = 20.0 //meters
-    let cpDist = 50.0 //meters
-    let wardVisionDist = 30.0 //meters
     @IBOutlet weak var gameIDLabel: UILabel!
     var cps = [ControlPoint]() //collection of control points - date retrieve from server
     var isSpec = false
-    
-    var font : String = "San Francisco"
+    let mapViewDelegate = MapViewDelegate()
     
     override func viewDidLoad() {
-        //test stuff
-        let border = BorderOverlay(trash: 1)
-        map.addOverlay(border)
-        
-        //necessary stuff
         super.viewDidLoad()
+        
+        //map stuff
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBest
         manager.requestWhenInUseAuthorization()
@@ -65,7 +57,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         manager.allowsBackgroundLocationUpdates = true
         manager.pausesLocationUpdatesAutomatically = false
         mapViewController = self
-        map.delegate = self
+        map.delegate = mapViewDelegate
         
         //check if spectator
         if (myPlayer.getName() == ".SPECTATOR") {
@@ -130,7 +122,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             returnButtonMap.setTitleColor(.blue, for : .normal)
             ward.setTitleColor(.blue, for : .normal)
             death.setTitleColor(.blue, for : .normal)
-        } else{ //a spectator
+        } else { //a spectator
             returnButtonMap.setTitleColor(.gray, for : .normal)
             ward.setTitleColor(.gray, for : .normal)
             death.setTitleColor(.gray, for : .normal)
@@ -546,6 +538,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         return false
     }
     
+    //a new borderOverlay has to be created everytime because you can't add new points to an mkpolygon. also, the boords have to be sent individually because if they were all sent as once as a list of coordinates after "boords" we don't know how much to increment when receiving "boords". even if we have a length value right after boords like "boords:5:[coordinates]", it would crash if there is no integer right after boords
+    func addBoord(boord: CLLocation) {
+        map.removeOverlay(border)
+        boords.append(boord)
+        border = BorderOverlay(vertices: boords)
+        map.addOverlay(border)
+    }
+    
     func addRP(name: String, coordinate: CLLocationCoordinate2D) {
         let point = RespawnPoint(name: name, coordinate: coordinate)
         respawnPoints.append(point)
@@ -644,175 +644,4 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         super.didReceiveMemoryWarning()
     }
     
-}
-
-
-extension MapViewController: MKMapViewDelegate{
-    //called when an annotation is added or deleted I think?
-    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        var annName: String = "you"
-        var annTeam: String = "none"
-        
-        if let annotation = annotation as? Player {
-            annName = annotation.getName()
-            annTeam = annotation.getTeam()
-        }
-        
-        if let annotation = annotation as? Ward {
-            annName = annotation.getName()
-            annTeam = annotation.getTeam()
-        }
-        
-        if let annotation = annotation as? ControlPoint {
-            annName = ""
-            annTeam = annotation.getTeam()
-        }
-        
-        if let annotation = annotation as? RespawnPoint {
-            annName = annotation.getName()
-        }
-        
-        var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: annName)
-        
-        if annotationView == nil{
-            annotationView = MKAnnotationView.init(annotation: annotation, reuseIdentifier: annName)
-        }
-        
-        if let annotation = annotation as? Player{
-            if annotation.getTeam() == "red" {
-                annotationView?.image = UIImage(named: "Red Player")
-                //annotation.title = annotation.getName()
-                
-                if #available(iOS 11.0, *) {
-                    annotationView?.displayPriority = .required
-                } else {
-                    // Fallback on earlier versions
-                }
-            }
-            
-            if annotation.getTeam() == "blue" {
-                annotationView?.image = UIImage(named: "Blue Player")
-                //annotation.title = annotation.getName()
-                
-                if #available(iOS 11.0, *) {
-                    annotationView?.displayPriority = .required
-                } else {
-                    //do nothing
-                }
-            }
-            
-            if annotation.getTeam() == "neutral" {
-                annotationView?.image = UIImage(named: "")
-                //annotation.title = annotation.getName()
-                
-                if #available(iOS 11.0, *) {
-                    annotationView?.displayPriority = .required
-                } else {
-                    //do nothing
-                }
-            }
-        }
-        
-        if let annotation = annotation as? Ward{
-            print("\(annotation.getName())")
-            
-            //delete old overlay if overlay already exists
-            if let thisWardOverlay = annotation.getOverlay() {
-                mapView.removeOverlay(thisWardOverlay)
-            }
-            
-            let circleOverlay = ColorCircleOverlay(annotation: annotation, radius: wardVisionDist, color: UIColor.black)
-            
-            annotation.setOverlay(circleOverlay: circleOverlay)
-            
-            if annotation.getTeam() == "red" {
-                annotationView?.image = UIImage(named: "Red Ward")
-                circleOverlay.setColor(color: UIColor.red)
-                if #available(iOS 11.0, *) {
-                    annotationView?.displayPriority = .required
-                } else {
-                    //do nothing
-                }
-            }
-            
-            if annotation.getTeam() == "blue" {
-                annotationView?.image = UIImage(named: "Blue Ward")
-                circleOverlay.setColor(color: UIColor.blue)
-                if #available(iOS 11.0, *) {
-                    annotationView?.displayPriority = .required
-                } else {
-                    //do nothing
-                }
-            }
-            
-            mapView.addOverlay(circleOverlay)
-        }
-        
-        if let annotation = annotation as? ControlPoint{
-            let circleOverlay = ColorCircleOverlay(annotation: annotation, radius: cpDist, color: UIColor.black)
-            
-            if annotation.getTeam() == "neutral" {
-                annotationView?.image = UIImage(named: "Gray CP")
-            }
-            if annotation.getTeam() == "red" {
-                circleOverlay.setColor(color: UIColor.red)
-                annotationView?.image = UIImage(named: "Red CP")
-            }
-            if annotation.getTeam() == "blue" {
-                circleOverlay.setColor(color: UIColor.blue)
-                annotationView?.image = UIImage(named: "Blue CP")
-            }
-            
-            mapView.addOverlay(circleOverlay)
-        }
-        
-        if let annotation = annotation as? RespawnPoint {
-            let circleOverlay = ColorCircleOverlay(annotation: annotation, radius: respawnDist, color: UIColor.black)
-            
-            annotationView?.image = UIImage(named: "Respawn Point")
-            //annotation.title = annotation.getName()
-            
-            if #available(iOS 11.0, *) {
-                annotationView?.displayPriority = .required
-            } else {
-                // Fallback on earlier versions
-            }
-            
-            mapView.addOverlay(circleOverlay)
-        }
-        
-        //add title
-        if annotationView?.subviews.isEmpty ?? false{
-            let name = UILabel(frame: CGRect(x: -19, y: 18, width: 50, height: 12))
-            name.textAlignment = .center
-            name.font = UIFont(name: font, size: 12)
-            name.text = annName
-            name.backgroundColor = UIColor(hue: 0, saturation: 0, brightness: 0.8, alpha: 0.5)
-            name.adjustsFontSizeToFitWidth = true
-            name.minimumScaleFactor = 0.5
-            annotationView?.addSubview(name)
-        }
-        annotationView?.canShowCallout = true
-        return annotationView
-    }
-    
-    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        if let overlay = overlay as? ColorCircleOverlay {
-            let renderer = MKCircleRenderer(circle: overlay)
-            renderer.strokeColor = overlay.getColor()
-            renderer.fillColor = overlay.getColor().withAlphaComponent(0.2)
-            renderer.lineWidth = 2
-            return renderer
-        } else if let overlay = overlay as? BorderOverlay {
-            let renderer = MKPolygonRenderer(overlay: overlay)
-            //renderer.strokeColor = overlay.getColor()
-            renderer.strokeColor = overlay.getColor()
-            renderer.lineWidth = 4
-            return renderer
-        }
-        
-        //if let overlay = overlay as?
-        
-        return MKOverlayRenderer(overlay: overlay)
-    }
 }

@@ -29,6 +29,7 @@
 		560815A2AB5B280C3B0D1552 /* Pods_RLS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDB0D880FB5B1DA32DC93FE6 /* Pods_RLS.framework */; };
 		7D172FC5228353B400DBEB59 /* PlayerDistanceUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D172FC4228353B400DBEB59 /* PlayerDistanceUtil.swift */; };
 		9EB423F711536779065E3150 /* Pods_RLSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CD8C69DED8F8FB32199A875 /* Pods_RLSTests.framework */; };
+		C42516FE2313679C00E7655D /* MapViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C42516FD2313679C00E7655D /* MapViewDelegate.swift */; };
 		C456D02C22933A97005599AF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C456D02B22933A97005599AF /* GoogleService-Info.plist */; };
 		C456D02D22933A97005599AF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C456D02B22933A97005599AF /* GoogleService-Info.plist */; };
 		C456D02E22933A97005599AF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C456D02B22933A97005599AF /* GoogleService-Info.plist */; };
@@ -96,6 +97,7 @@
 		B07169557C838AFFEAD4811A /* Pods-RLSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RLSTests/Pods-RLSTests.release.xcconfig"; sourceTree = "<group>"; };
 		BD20F52C6D6CC9A7A53F9DE7 /* Pods-RLSUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLSUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RLSUITests/Pods-RLSUITests.release.xcconfig"; sourceTree = "<group>"; };
 		BDB0D880FB5B1DA32DC93FE6 /* Pods_RLS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RLS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C42516FD2313679C00E7655D /* MapViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewDelegate.swift; sourceTree = "<group>"; };
 		C456D02B22933A97005599AF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C45B61A52295EA5300E4DDEB /* FirebaseCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C45B61A72295EB5200E4DDEB /* FirebaseCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -189,6 +191,7 @@
 				418C135020F1B89A00AE16C5 /* Main.storyboard */,
 				418C135520F1B89B00AE16C5 /* LaunchScreen.storyboard */,
 				C4B06AA522A58C7F00421613 /* Networking.swift */,
+				C42516FD2313679C00E7655D /* MapViewDelegate.swift */,
 				418C134E20F1B89A00AE16C5 /* StartView.swift */,
 				41AEB0012112B3B800DF6AE5 /* HostOrJoinViewController.swift */,
 				41AEAFFF2112AEDF00DF6AE5 /* HostGameIDView.swift */,
@@ -499,6 +502,7 @@
 				418C138720F1BA7D00AE16C5 /* Player.swift in Sources */,
 				418C138520F1BA2C00AE16C5 /* EnterButton.swift in Sources */,
 				418C137F20F1B9A800AE16C5 /* NicknameTFView.swift in Sources */,
+				C42516FE2313679C00E7655D /* MapViewDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -604,7 +608,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -658,7 +662,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -676,7 +680,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = JPY43WAU3K;
 				INFOPLIST_FILE = RLS/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -698,7 +702,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = JPY43WAU3K;
 				INFOPLIST_FILE = RLS/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

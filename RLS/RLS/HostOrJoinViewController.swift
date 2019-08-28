@@ -61,7 +61,7 @@ class HostOrJoinViewController : UIViewController {
         var gameID:String = ""
         let alphabet: [String] = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
         
-        for i in 1...gameIDLength {
+        for _ in 1...gameIDLength {
             let rand:Int = Int(arc4random_uniform(36))
             var add:String
             
