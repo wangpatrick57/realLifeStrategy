@@ -92,16 +92,8 @@ class ControlPoint : MKPointAnnotation{
         return radius
     }
     
-    func getRedPoints() -> Double {
-        return redPoints
-    }
-    
     func setRedPoints(point : Double){
         redPoints = point
-    }
-    
-    func getBluePoints() -> Double {
-        return bluePoints
     }
     
     func setBluePoints(point : Double){

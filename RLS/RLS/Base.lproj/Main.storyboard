@@ -631,14 +631,8 @@
         <image name="rlsLogo.png" width="306" height="396"/>
     </resources>
     <inferredMetricsTieBreakers>
-<<<<<<< HEAD
-        <segue reference="bSl-fr-Pgx"/>
-        <segue reference="o00-Hm-eEq"/>
-        <segue reference="i05-3P-dzg"/>
-=======
         <segue reference="Ln6-5H-nl1"/>
-        <segue reference="pDI-Zx-MUr"/>
+        <segue reference="o00-Hm-eEq"/>
         <segue reference="7sF-Wl-NRA"/>
->>>>>>> 8e0fbd7018572486e0071886a1e15ed6420a7c2b
     </inferredMetricsTieBreakers>
 </document>

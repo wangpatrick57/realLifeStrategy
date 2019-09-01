@@ -37,6 +37,11 @@ class Networking {
     func setupNetworkComms() {
         var readStream: Unmanaged<CFReadStream>?
         var writeStream: Unmanaged<CFWriteStream>?
+        var portNum: UInt32 = 8888
+        
+        if (debug) {
+            portNum = 8889
+        }
         
         CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, "73.189.41.182" /*"127.0.0.1"*/ as CFString, 8888, &readStream, &writeStream)
 
@@ -152,15 +157,8 @@ class Networking {
         write(str: "bluePoint:\(point):")
     }
     
-//<<<<<<< HEAD
-//    func sendCPNums(numRed: Int, numBlue: Int) {
-//        if let cp = controlPoint {
-//            write(str: "cp:\(cp.getLocation().latitude):\(cp.getLocation().longitude):\(numRed):\(numBlue):")
-//        }
-//=======
     func sendCPNums(numRed: Int, numBlue: Int) {
         write(str: "cp:\( controlPoint?.getLocation().latitude):\(controlPoint?.getLocation().longitude):\(numRed):\(numBlue):")
-//>>>>>>> parent of b0ace87... fixed small bug
     }
     
     func sendCPLoc(lat: Double, long: Double) {
@@ -234,6 +232,7 @@ class Networking {
                         }
                     }
                 }
+                
             case "redPoint":
                 if let p = Double(stringArray[posInArray + 1]){
                     controlPoint?.setRedPoints(point: p)
