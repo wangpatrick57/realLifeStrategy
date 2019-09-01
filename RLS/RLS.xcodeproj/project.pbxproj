@@ -13,7 +13,6 @@
 		41867B74228B8D0300B504EE /* ControlPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41867B73228B8D0300B504EE /* ControlPoint.swift */; };
 		418C134D20F1B89A00AE16C5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C134C20F1B89A00AE16C5 /* AppDelegate.swift */; };
 		418C134F20F1B89A00AE16C5 /* StartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C134E20F1B89A00AE16C5 /* StartView.swift */; };
-		418C135220F1B89A00AE16C5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418C135020F1B89A00AE16C5 /* Main.storyboard */; settings = {ASSET_TAGS = (MapButton, ); }; };
 		418C135720F1B89B00AE16C5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418C135520F1B89B00AE16C5 /* LaunchScreen.storyboard */; };
 		418C136220F1B89B00AE16C5 /* RLSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C136120F1B89B00AE16C5 /* RLSTests.swift */; };
 		418C136D20F1B89B00AE16C5 /* RLSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C136C20F1B89B00AE16C5 /* RLSUITests.swift */; };
@@ -71,7 +70,6 @@
 		418C134920F1B89A00AE16C5 /* RLS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RLS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		418C134C20F1B89A00AE16C5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		418C134E20F1B89A00AE16C5 /* StartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartView.swift; sourceTree = "<group>"; };
-		418C135120F1B89A00AE16C5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		418C135620F1B89B00AE16C5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		418C135820F1B89B00AE16C5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		418C135D20F1B89B00AE16C5 /* RLSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RLSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -188,7 +186,6 @@
 			isa = PBXGroup;
 			children = (
 				C47377A8229C45D2000AD728 /* RLS.entitlements */,
-				418C135020F1B89A00AE16C5 /* Main.storyboard */,
 				418C135520F1B89B00AE16C5 /* LaunchScreen.storyboard */,
 				C4B06AA522A58C7F00421613 /* Networking.swift */,
 				418C134E20F1B89A00AE16C5 /* StartView.swift */,
@@ -381,7 +378,6 @@
 				41AEAFFC21129BCF00DF6AE5 /* Podfile in Resources */,
 				418C135720F1B89B00AE16C5 /* LaunchScreen.storyboard in Resources */,
 				41B3E04E20F59C8B00E7D232 /* Assets.xcassets in Resources */,
-				418C135220F1B89A00AE16C5 /* Main.storyboard in Resources */,
 				41AEAFFD21129BCF00DF6AE5 /* Podfile.lock in Resources */,
 				C456D02C22933A97005599AF /* GoogleService-Info.plist in Resources */,
 			);
@@ -538,14 +534,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		418C135020F1B89A00AE16C5 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				418C135120F1B89A00AE16C5 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		418C135520F1B89B00AE16C5 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
