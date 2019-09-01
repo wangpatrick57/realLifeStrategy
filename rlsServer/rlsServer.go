@@ -54,6 +54,8 @@ func main() {
         "ward": 3,
         "dead": 2,
         "ret": 1,
+        "reset": 1,
+        "boord": 3,
     }
 
     //sets the default state of the master json
@@ -263,6 +265,24 @@ func handleRequest(conn net.Conn) {
                 }
             case "ret":
                 client.playerDisconnectActions()
+            case "reset":
+                client.getGame().resetSettings()
+            case "boord":
+                lat, err1 := strconv.ParseFloat(info[posInSlice + 1], 64)
+                long, err2 := strconv.ParseFloat(info[posInSlice + 2], 64)
+
+                if (err1 == nil && err2 == nil) {
+                    if (client.getGame() != nil) {
+                        client.getGame().addBoord(lat, long)
+                    } else {
+                        fmt.Printf("A client without a game is trying to add a boord\n")
+                    }
+                } else {
+                    fmt.Printf("Error parsing boord location. Lat error: %v; long error: %v\n", err1, err2)
+                    //setting validBuffer on a failed parse makes sure any commands after loc are kept
+                    //for example, if loc:ward:1:1: is sent
+                    validBuffer = false
+                }
             default:
                 //protects against invalid types
                 fmt.Printf("Read invalid type: %s\n", bufType)
@@ -308,7 +328,7 @@ func broadcast() {
 
             recPlayer := recClient.getPlayer()
 
-            //things that have to do with other players
+            //looping through all the sendPlayers
             for _, thisPlayer := range recClient.getGame().getPlayers() {
                 //checking that their position isn't 0,0 ensures they are in game
                 if thisPlayer != recClient.getPlayer() && thisPlayer.getLat() != 0 && thisPlayer.getLong() != 0 {
