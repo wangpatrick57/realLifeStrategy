@@ -10,13 +10,6 @@ import UIKit
 
 let networking = Networking()
 var timer: Timer!
-let deathTime = 5.0
-let tetherDist = 20.0
-var respawnTime = 15.0 //seconds
-let respawnDist = 20.0 //meters
-let cpDist = 50.0 //meters
-let wardVisionDist = 30.0 //meters
-let font : String = "San Francisco"
 
 class StartView: UIViewController {
     override func viewDidLoad() {

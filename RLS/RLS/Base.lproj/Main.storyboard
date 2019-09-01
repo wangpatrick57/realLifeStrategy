@@ -150,10 +150,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="eoO-gA-cfy">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </mapView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Game ID: " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q39-cs-X8Z">
                                 <rect key="frame" x="41" y="44" width="293" height="50"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -185,7 +181,6 @@
                     </view>
                     <connections>
                         <outlet property="HostGameID" destination="Q39-cs-X8Z" id="YJU-Uj-Jhd"/>
-                        <outlet property="mapView" destination="eoO-gA-cfy" id="KhD-dX-Nnq"/>
                         <segue destination="nP5-Pd-5pS" kind="show" identifier="EnterNicknameSegue" id="33A-tr-XmC"/>
                     </connections>
                 </viewController>
@@ -642,7 +637,7 @@
         <segue reference="i05-3P-dzg"/>
 =======
         <segue reference="Ln6-5H-nl1"/>
-        <segue reference="33A-tr-XmC"/>
+        <segue reference="pDI-Zx-MUr"/>
         <segue reference="7sF-Wl-NRA"/>
 >>>>>>> 8e0fbd7018572486e0071886a1e15ed6420a7c2b
     </inferredMetricsTieBreakers>
