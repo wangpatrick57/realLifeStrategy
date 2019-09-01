@@ -152,10 +152,15 @@ class Networking {
         write(str: "bluePoint:\(point):")
     }
     
+//<<<<<<< HEAD
+//    func sendCPNums(numRed: Int, numBlue: Int) {
+//        if let cp = controlPoint {
+//            write(str: "cp:\(cp.getLocation().latitude):\(cp.getLocation().longitude):\(numRed):\(numBlue):")
+//        }
+//=======
     func sendCPNums(numRed: Int, numBlue: Int) {
-        if let cp = controlPoint {
-            write(str: "cp:\(cp.getLocation().latitude):\(cp.getLocation().longitude):\(numRed):\(numBlue):")
-        }
+        write(str: "cp:\( controlPoint?.getLocation().latitude):\(controlPoint?.getLocation().longitude):\(numRed):\(numBlue):")
+//>>>>>>> parent of b0ace87... fixed small bug
     }
     
     func sendCPLoc(lat: Double, long: Double) {
@@ -231,29 +236,23 @@ class Networking {
                 }
             case "redPoint":
                 if let p = Double(stringArray[posInArray + 1]){
-                    if let cp = controlPoint {
-                        cp.setRedPoints(point: p)
-                    }
+                    controlPoint?.setRedPoints(point: p)
                 }
             case "bluePoint":
-                if let cp = controlPoint {
-                    if let p = Double(stringArray[posInArray + 1]){
-                        cp.setBluePoints(point: p)
-                    }
+                if let p = Double(stringArray[posInArray + 1]){
+                    controlPoint?.setBluePoints(point: p)
                 }
             case "cp":
-                if let cp = controlPoint {
-                    if let lat = Double(stringArray[posInArray + 1]){
-                        if let long = Double(stringArray[posInArray + 2]){
-                            cp.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
-                        }
+                if let lat = Double(stringArray[posInArray + 1]){
+                    if let long = Double(stringArray[posInArray + 2]){
+                        controlPoint?.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
                     }
-                    if let nr = Int(stringArray[posInArray + 3]) {
-                        cp.setNumRed(numRed: nr)
-                    }
-                    if let nb = Int(stringArray[posInArray + 4]) {
-                        cp.setNumRed(numRed: nb)
-                    }
+                }
+                if let nr = Int(stringArray[posInArray + 3]) {
+                    controlPoint?.setNumRed(numRed: nr)
+                }
+                if let nb = Int(stringArray[posInArray + 4]) {
+                    controlPoint?.setNumRed(numRed: nb)
                 }
                 
             case "conn":
