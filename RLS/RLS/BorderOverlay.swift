@@ -14,7 +14,8 @@ class BorderOverlay: MKPolygon {
     private var vertices: [CLLocation]
     private var color: UIColor
     
-    convenience init(vertices: [CLLocation]) {
+    convenience init(trash: Int) {
+        let vertices = [CLLocation(latitude: -10, longitude: -10), CLLocation(latitude: 10, longitude: 10), CLLocation(latitude: -10, longitude: 10), CLLocation(latitude: 10, longitude: -10)]
         var unsafeVertices = vertices.map({ (location: CLLocation!) -> CLLocationCoordinate2D in return location.coordinate })
         self.init(coordinates: &unsafeVertices, count: vertices.count)
         self.color = UIColor.black

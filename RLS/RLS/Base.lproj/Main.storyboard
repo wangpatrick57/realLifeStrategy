@@ -150,10 +150,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="eoO-gA-cfy">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </mapView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Game ID: " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q39-cs-X8Z">
                                 <rect key="frame" x="41" y="44" width="293" height="50"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -185,7 +181,6 @@
                     </view>
                     <connections>
                         <outlet property="HostGameID" destination="Q39-cs-X8Z" id="YJU-Uj-Jhd"/>
-                        <outlet property="mapView" destination="eoO-gA-cfy" id="KhD-dX-Nnq"/>
                         <segue destination="nP5-Pd-5pS" kind="show" identifier="EnterNicknameSegue" id="33A-tr-XmC"/>
                     </connections>
                 </viewController>
@@ -253,65 +248,6 @@
             </objects>
             <point key="canvasLocation" x="225" y="877"/>
         </scene>
-        <!--Manage Control Point View-->
-        <scene sceneID="btg-Is-A6E">
-            <objects>
-                <viewController id="Ldk-oG-FW6" customClass="ManageControlPointView" customModule="RLS" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="nKJ-ze-hth">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Lat" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lGY-Zx-8ox">
-                                <rect key="frame" x="60" y="189" width="97" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
-                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Long" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="WXL-YY-8NJ">
-                                <rect key="frame" x="60" y="240" width="97" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <nil key="textColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gez-9U-6wp">
-                                <rect key="frame" x="60" y="308" width="37" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Enter"/>
-                                <connections>
-                                    <action selector="EnterButton:" destination="Ldk-oG-FW6" eventType="touchUpInside" id="wtu-bb-Prp"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KVV-wh-Yhl">
-                                <rect key="frame" x="164" y="518" width="46" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Return"/>
-                                <connections>
-                                    <segue destination="nP5-Pd-5pS" kind="show" id="o00-Hm-eEq"/>
-                                </connections>
-                            </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Manage Control Point" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZU2-gp-zkb">
-                                <rect key="frame" x="60" y="147" width="166" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="T7L-nC-8Kk"/>
-                    </view>
-                    <connections>
-                        <outlet property="Enter" destination="Gez-9U-6wp" id="qWr-ho-iAX"/>
-                        <outlet property="Lat" destination="lGY-Zx-8ox" id="QIr-vx-EkA"/>
-                        <outlet property="Long" destination="WXL-YY-8NJ" id="mZy-BB-0h4"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="lHw-hR-zYl" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-1430" y="1539"/>
-        </scene>
         <!--EnterNickname-->
         <scene sceneID="HBM-6J-Xfg">
             <objects>
@@ -359,14 +295,6 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nAS-ma-2qj">
-                                <rect key="frame" x="114" y="394" width="148" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Manage Control Point"/>
-                                <connections>
-                                    <segue destination="Ldk-oG-FW6" kind="show" id="zL0-JF-A0a"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -636,14 +564,8 @@
         <image name="rlsLogo.png" width="306" height="396"/>
     </resources>
     <inferredMetricsTieBreakers>
-<<<<<<< HEAD
-        <segue reference="bSl-fr-Pgx"/>
-        <segue reference="o00-Hm-eEq"/>
-        <segue reference="i05-3P-dzg"/>
-=======
         <segue reference="Ln6-5H-nl1"/>
-        <segue reference="33A-tr-XmC"/>
+        <segue reference="pDI-Zx-MUr"/>
         <segue reference="7sF-Wl-NRA"/>
->>>>>>> 8e0fbd7018572486e0071886a1e15ed6420a7c2b
     </inferredMetricsTieBreakers>
 </document>

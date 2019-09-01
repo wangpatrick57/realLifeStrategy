@@ -25,7 +25,6 @@ class Networking {
     let posInc: [String: Int] = [
         "bt": 1,
         "rp": 3,
-        "brd": 3,
         "checkID": 2,
         "checkName": 2,
         "loc": 4,
@@ -153,15 +152,9 @@ class Networking {
         write(str: "bluePoint:\(point):")
     }
     
-    func sendCPNums(numRed: Int, numBlue: Int) {
+    func sendCP(numRed: Int, numBlue: Int) {
         if let cp = controlPoint {
             write(str: "cp:\(cp.getLocation().latitude):\(cp.getLocation().longitude):\(numRed):\(numBlue):")
-        }
-    }
-    
-    func sendCPLoc(lat: Double, long: Double) {
-        if let cp = controlPoint {
-            write(str: "cp:\(lat):\(long):\(cp.getNumRed()):\(cp.getNumBlue()):")
         }
     }
     
@@ -256,17 +249,12 @@ class Networking {
                         cp.setNumRed(numRed: nb)
                     }
                 }
+                
             case "conn":
                 let thisName = stringArray[posInArray + 1]
                 
                 if let thisConn = Bool(stringArray[posInArray + 2]) {
                     mapViewController.updatePlayerConn(name: thisName, conn: thisConn)
-                }
-            case "brd":
-                if let thisLat = Double(stringArray[posInArray + 1]) {
-                    if let thisLong = Double(stringArray[posInArray + 2]) {
-                        mapViewController.addBoord(boord: CLLocation(latitude: thisLat, longitude: thisLong))
-                    }
                 }
             default:
                 _ = 1

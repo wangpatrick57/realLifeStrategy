@@ -9,12 +9,15 @@ type Game struct {
     GameID string
     Players map[string]*Player
     RespawnPoints []*RespawnPoint
+    Boords []*Coord //short for border coords
     Mutex sync.Mutex //lock this for actions regarding these vars and arrays
 }
 
 func (game *Game) constructor() {
     game.mutexLock()
     game.Players = make(map[string]*Player)
+    game.RespawnPoints = make([]*RespawnPoint, 0)
+    game.Boords = make([]*Coord, 0)
 }
 
 func (game *Game) checkNameTaken(nameToCheck string) bool {
@@ -59,6 +62,12 @@ func (game *Game) addPlayer(player *Player) {
     }
 }
 
+func (game *Game) addBoord(lat float64, long float64) {
+    game.mutexLock()
+    boord := Coord {Lat: lat, Long: long}
+    game.Boords = append(game.Boords, &boord)
+}
+
 func (game *Game) rpString() string {
     game.mutexLock()
     ret := ""
@@ -70,6 +79,19 @@ func (game *Game) rpString() string {
     return ret
 }
 
+func (game *Game) boordString() string {
+    game.mutexLock()
+    ret := ""
+
+    for _, coord := range game.Boords {
+        ret += fmt.Sprintf("crd:%f:%f:", coord.getLat(), coord.getLong())
+    }
+
+    return ret
+}
+
+//cleans the players in a game but not the settings for hardcoded games
+//for user created games it deletes the game when it is empty
 func (game *Game) tryClean() {
     game.mutexLock()
 
@@ -79,12 +101,19 @@ func (game *Game) tryClean() {
         }
     }
 
-    //hardcoding special games
+    //hardcoded games
     if (game.GameID == "Home" || game.GameID == "DeAnza") {
         game.Players = make(map[string]*Player)
     } else {
         master.removeGame(game.GameID)
     }
+}
+
+//resets the settings, but doesn't clean players or try to delete the game
+func (game *Game) resetSettings() {
+    game.mutexLock()
+    game.RespawnPoints = make([]*RespawnPoint, 0)
+    game.Boords = make([]*Coord, 0)
 }
 
 func (game *Game) mutexLock() {
