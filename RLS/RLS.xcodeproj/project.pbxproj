@@ -29,6 +29,8 @@
 		560815A2AB5B280C3B0D1552 /* Pods_RLS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDB0D880FB5B1DA32DC93FE6 /* Pods_RLS.framework */; };
 		7D172FC5228353B400DBEB59 /* PlayerDistanceUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D172FC4228353B400DBEB59 /* PlayerDistanceUtil.swift */; };
 		9EB423F711536779065E3150 /* Pods_RLSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CD8C69DED8F8FB32199A875 /* Pods_RLSTests.framework */; };
+		C42BDA17231CC8430081F1C5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C42BDA15231CC8430081F1C5 /* Main.storyboard */; };
+		C42BDA19231CC9F40081F1C5 /* MapViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C42BDA18231CC9F40081F1C5 /* MapViewDelegate.swift */; };
 		C456D02C22933A97005599AF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C456D02B22933A97005599AF /* GoogleService-Info.plist */; };
 		C456D02D22933A97005599AF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C456D02B22933A97005599AF /* GoogleService-Info.plist */; };
 		C456D02E22933A97005599AF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C456D02B22933A97005599AF /* GoogleService-Info.plist */; };
@@ -96,6 +98,8 @@
 		B07169557C838AFFEAD4811A /* Pods-RLSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RLSTests/Pods-RLSTests.release.xcconfig"; sourceTree = "<group>"; };
 		BD20F52C6D6CC9A7A53F9DE7 /* Pods-RLSUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLSUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RLSUITests/Pods-RLSUITests.release.xcconfig"; sourceTree = "<group>"; };
 		BDB0D880FB5B1DA32DC93FE6 /* Pods_RLS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RLS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C42BDA16231CC8430081F1C5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		C42BDA18231CC9F40081F1C5 /* MapViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewDelegate.swift; sourceTree = "<group>"; };
 		C456D02B22933A97005599AF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C45B61A52295EA5300E4DDEB /* FirebaseCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C45B61A72295EB5200E4DDEB /* FirebaseCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -187,7 +191,9 @@
 			children = (
 				C47377A8229C45D2000AD728 /* RLS.entitlements */,
 				418C135520F1B89B00AE16C5 /* LaunchScreen.storyboard */,
+				C42BDA15231CC8430081F1C5 /* Main.storyboard */,
 				C4B06AA522A58C7F00421613 /* Networking.swift */,
+				C42BDA18231CC9F40081F1C5 /* MapViewDelegate.swift */,
 				418C134E20F1B89A00AE16C5 /* StartView.swift */,
 				41AEB0012112B3B800DF6AE5 /* HostOrJoinViewController.swift */,
 				41AEAFFF2112AEDF00DF6AE5 /* HostGameIDView.swift */,
@@ -378,6 +384,7 @@
 				41AEAFFC21129BCF00DF6AE5 /* Podfile in Resources */,
 				418C135720F1B89B00AE16C5 /* LaunchScreen.storyboard in Resources */,
 				41B3E04E20F59C8B00E7D232 /* Assets.xcassets in Resources */,
+				C42BDA17231CC8430081F1C5 /* Main.storyboard in Resources */,
 				41AEAFFD21129BCF00DF6AE5 /* Podfile.lock in Resources */,
 				C456D02C22933A97005599AF /* GoogleService-Info.plist in Resources */,
 			);
@@ -496,6 +503,7 @@
 				418C134D20F1B89A00AE16C5 /* AppDelegate.swift in Sources */,
 				413897B0230A515C00BFB0EC /* ManageControlPointView.swift in Sources */,
 				417F570D2112BB3000CE6E4A /* PlayerListView.swift in Sources */,
+				C42BDA19231CC9F40081F1C5 /* MapViewDelegate.swift in Sources */,
 				418C138720F1BA7D00AE16C5 /* Player.swift in Sources */,
 				418C138520F1BA2C00AE16C5 /* EnterButton.swift in Sources */,
 				418C137F20F1B9A800AE16C5 /* NicknameTFView.swift in Sources */,
@@ -540,6 +548,14 @@
 				418C135620F1B89B00AE16C5 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		C42BDA15231CC8430081F1C5 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C42BDA16231CC8430081F1C5 /* Base */,
+			);
+			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

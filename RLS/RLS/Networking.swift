@@ -38,13 +38,6 @@ class Networking {
         var readStream: Unmanaged<CFReadStream>?
         var writeStream: Unmanaged<CFWriteStream>?
         var portNum: UInt32 = 8888
-<<<<<<< HEAD
-=======
-        
-        if (debug) {
-            portNum = 8889
-        }
->>>>>>> refs/remotes/origin/master
         
         if (debug) {
             portNum = 8889
