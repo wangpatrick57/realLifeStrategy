@@ -17,7 +17,7 @@ import (
 const (
     HostName = "10.0.1.128"
     //HostName = "127.0.0.1"
-    Port = "8888"
+    Port = "8889" //8888 is for stable server. 8889 is for test server. in the future we may need different ports for each person
     ConnType = "tcp"
 )
 
@@ -55,20 +55,21 @@ func main() {
         "dead": 2,
         "ret": 1,
         "reset": 1,
-        "boord": 3,
+        "brd": 3,
     }
 
     //sets the default state of the master json
     master = baseMaster()
     //creates the listener (for connections, not for data)
     l, err := net.Listen(ConnType, HostName + ":" + Port)
-    defer l.Close()
 
     //crashes if there's an error in creating the listener (for example, if another instance of the server is running)
     if err != nil {
         fmt.Printf("Error listening: %v\n", err.Error())
         os.Exit(1)
     }
+
+    defer l.Close()
 
     fmt.Printf("Listening on %s:%s\n", HostName, Port)
     //broadcast has its own forever loop so this function only needs to be called once
@@ -267,7 +268,7 @@ func handleRequest(conn net.Conn) {
                 client.playerDisconnectActions()
             case "reset":
                 client.getGame().resetSettings()
-            case "boord":
+            case "brd":
                 lat, err1 := strconv.ParseFloat(info[posInSlice + 1], 64)
                 long, err2 := strconv.ParseFloat(info[posInSlice + 2], 64)
 

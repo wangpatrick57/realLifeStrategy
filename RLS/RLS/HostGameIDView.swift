@@ -71,6 +71,15 @@ class HostGameIDView : UIViewController, CLLocationManagerDelegate, UIGestureRec
     
     @IBAction func NextButton(_ sender: Any) {
         print("Next Button clicked")
+        //stop the location manager
+        manager.stopUpdatingLocation()
+        //send game data like rp and boords
+        for boord in boords {
+            //make boord object later
+            networking.sendBoord(boord: boord)
+        }
+        
+        //go to nickname view
         self.performSegue(withIdentifier: "EnterNicknameSegue", sender: self)
     }
     

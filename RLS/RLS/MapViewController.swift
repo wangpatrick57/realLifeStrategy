@@ -69,7 +69,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         
         //start step function timer
         timer.invalidate()
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(handleData), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(step), userInfo: nil, repeats: true)
         
         //ping long press gesture recognizer
         let lpgr = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(gestureRecognizer:)))
@@ -166,11 +166,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     }
     
     @IBAction func onReturnPressed(_ sender: Any) {
-        if (true || !debug) {
+        if (true/*!debug*/) {
             //tell server
             networking.sendRet()
         }
         
+        manager.stopUpdatingLocation()
         self.performSegue(withIdentifier: "ShowName", sender: nil)
     }
     
@@ -209,30 +210,30 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         }
     }
     
-    @objc func handleData() {
+    @objc func step() {
         let state = UIApplication.shared.applicationState
-        var callStep = false
+        var callStepActions = false
         
         if (state == .active) {
-            callStep = true
+            callStepActions = true
         } else {
             if (handleDataCounter > 8) {
-                callStep = true
+                callStepActions = true
                 handleDataCounter = 0
             } else {
                 handleDataCounter += 1
             }
         }
         
-        if (callStep) {
-            step()
+        if (callStepActions) {
+            stepActions()
         }
         
         //make sure to send a heartbeat every second regardless
         networking.sendHeartbeat()
     }
     
-    func step() {
+    func stepActions() {
         //testing/printing
         if (debug) {
             var gameStateString = ""

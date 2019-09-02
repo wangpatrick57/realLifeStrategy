@@ -38,8 +38,13 @@ class Networking {
     func setupNetworkComms() {
         var readStream: Unmanaged<CFReadStream>?
         var writeStream: Unmanaged<CFWriteStream>?
+        var portNum: UInt32 = 8888
         
-        CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, "73.189.41.182" /*"127.0.0.1"*/ as CFString, 8888, &readStream, &writeStream)
+        if (debug) {
+            portNum = 8889
+        }
+        
+        CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, "73.189.41.182" /*"127.0.0.1"*/ as CFString, 8889, &readStream, &writeStream)
 
         inputStream = readStream!.takeRetainedValue()
         outputStream = writeStream!.takeRetainedValue()
@@ -157,6 +162,12 @@ class Networking {
         if let cp = controlPoint {
             write(str: "cp:\(cp.getLocation().latitude):\(cp.getLocation().longitude):\(numRed):\(numBlue):")
         }
+    }
+    
+    func sendBoord(boord: CLLocation) {
+        let lat = truncate(num: boord.coordinate.latitude, places: locPlaces)
+        let long = truncate(num: boord.coordinate.longitude, places: locPlaces)
+        write(str: "brd:\(lat):\(long):")
     }
     
     func readAllData() {
