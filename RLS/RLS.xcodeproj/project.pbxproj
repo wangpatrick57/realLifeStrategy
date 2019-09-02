@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		1911425C6CCA30A01546F241 /* Pods_RLSUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EA1E1B67838E847E6AAD68CE /* Pods_RLSUITests.framework */; };
+		413897B0230A515C00BFB0EC /* ManageControlPointView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413897AF230A515C00BFB0EC /* ManageControlPointView.swift */; };
 		417F570D2112BB3000CE6E4A /* PlayerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417F570C2112BB3000CE6E4A /* PlayerListView.swift */; };
 		41867B74228B8D0300B504EE /* ControlPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41867B73228B8D0300B504EE /* ControlPoint.swift */; };
 		418C134D20F1B89A00AE16C5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C134C20F1B89A00AE16C5 /* AppDelegate.swift */; };
 		418C134F20F1B89A00AE16C5 /* StartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C134E20F1B89A00AE16C5 /* StartView.swift */; };
-		418C135220F1B89A00AE16C5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418C135020F1B89A00AE16C5 /* Main.storyboard */; settings = {ASSET_TAGS = (MapButton, ); }; };
 		418C135720F1B89B00AE16C5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 418C135520F1B89B00AE16C5 /* LaunchScreen.storyboard */; };
 		418C136220F1B89B00AE16C5 /* RLSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C136120F1B89B00AE16C5 /* RLSTests.swift */; };
 		418C136D20F1B89B00AE16C5 /* RLSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418C136C20F1B89B00AE16C5 /* RLSUITests.swift */; };
@@ -29,7 +29,6 @@
 		560815A2AB5B280C3B0D1552 /* Pods_RLS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDB0D880FB5B1DA32DC93FE6 /* Pods_RLS.framework */; };
 		7D172FC5228353B400DBEB59 /* PlayerDistanceUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D172FC4228353B400DBEB59 /* PlayerDistanceUtil.swift */; };
 		9EB423F711536779065E3150 /* Pods_RLSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CD8C69DED8F8FB32199A875 /* Pods_RLSTests.framework */; };
-		C42516FE2313679C00E7655D /* MapViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C42516FD2313679C00E7655D /* MapViewDelegate.swift */; };
 		C456D02C22933A97005599AF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C456D02B22933A97005599AF /* GoogleService-Info.plist */; };
 		C456D02D22933A97005599AF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C456D02B22933A97005599AF /* GoogleService-Info.plist */; };
 		C456D02E22933A97005599AF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C456D02B22933A97005599AF /* GoogleService-Info.plist */; };
@@ -65,12 +64,12 @@
 
 /* Begin PBXFileReference section */
 		0BF4B5F19F6E53416261CE16 /* Pods-RLSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RLSTests/Pods-RLSTests.debug.xcconfig"; sourceTree = "<group>"; };
+		413897AF230A515C00BFB0EC /* ManageControlPointView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageControlPointView.swift; sourceTree = "<group>"; };
 		417F570C2112BB3000CE6E4A /* PlayerListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerListView.swift; sourceTree = "<group>"; };
 		41867B73228B8D0300B504EE /* ControlPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlPoint.swift; sourceTree = "<group>"; };
 		418C134920F1B89A00AE16C5 /* RLS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RLS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		418C134C20F1B89A00AE16C5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		418C134E20F1B89A00AE16C5 /* StartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartView.swift; sourceTree = "<group>"; };
-		418C135120F1B89A00AE16C5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		418C135620F1B89B00AE16C5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		418C135820F1B89B00AE16C5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		418C135D20F1B89B00AE16C5 /* RLSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RLSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -97,7 +96,6 @@
 		B07169557C838AFFEAD4811A /* Pods-RLSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RLSTests/Pods-RLSTests.release.xcconfig"; sourceTree = "<group>"; };
 		BD20F52C6D6CC9A7A53F9DE7 /* Pods-RLSUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RLSUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RLSUITests/Pods-RLSUITests.release.xcconfig"; sourceTree = "<group>"; };
 		BDB0D880FB5B1DA32DC93FE6 /* Pods_RLS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RLS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C42516FD2313679C00E7655D /* MapViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewDelegate.swift; sourceTree = "<group>"; };
 		C456D02B22933A97005599AF /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C45B61A52295EA5300E4DDEB /* FirebaseCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C45B61A72295EB5200E4DDEB /* FirebaseCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -188,10 +186,8 @@
 			isa = PBXGroup;
 			children = (
 				C47377A8229C45D2000AD728 /* RLS.entitlements */,
-				418C135020F1B89A00AE16C5 /* Main.storyboard */,
 				418C135520F1B89B00AE16C5 /* LaunchScreen.storyboard */,
 				C4B06AA522A58C7F00421613 /* Networking.swift */,
-				C42516FD2313679C00E7655D /* MapViewDelegate.swift */,
 				418C134E20F1B89A00AE16C5 /* StartView.swift */,
 				41AEB0012112B3B800DF6AE5 /* HostOrJoinViewController.swift */,
 				41AEAFFF2112AEDF00DF6AE5 /* HostGameIDView.swift */,
@@ -213,6 +209,7 @@
 				7D172FC4228353B400DBEB59 /* PlayerDistanceUtil.swift */,
 				C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */,
 				41867B73228B8D0300B504EE /* ControlPoint.swift */,
+				413897AF230A515C00BFB0EC /* ManageControlPointView.swift */,
 				EB19B1AF22985D1900764485 /* ColorCircleOverlay.swift */,
 				C4A8BE5122FA933900FA2A92 /* BorderOverlay.swift */,
 			);
@@ -381,7 +378,6 @@
 				41AEAFFC21129BCF00DF6AE5 /* Podfile in Resources */,
 				418C135720F1B89B00AE16C5 /* LaunchScreen.storyboard in Resources */,
 				41B3E04E20F59C8B00E7D232 /* Assets.xcassets in Resources */,
-				418C135220F1B89A00AE16C5 /* Main.storyboard in Resources */,
 				41AEAFFD21129BCF00DF6AE5 /* Podfile.lock in Resources */,
 				C456D02C22933A97005599AF /* GoogleService-Info.plist in Resources */,
 			);
@@ -498,11 +494,11 @@
 				7D172FC5228353B400DBEB59 /* PlayerDistanceUtil.swift in Sources */,
 				418C134F20F1B89A00AE16C5 /* StartView.swift in Sources */,
 				418C134D20F1B89A00AE16C5 /* AppDelegate.swift in Sources */,
+				413897B0230A515C00BFB0EC /* ManageControlPointView.swift in Sources */,
 				417F570D2112BB3000CE6E4A /* PlayerListView.swift in Sources */,
 				418C138720F1BA7D00AE16C5 /* Player.swift in Sources */,
 				418C138520F1BA2C00AE16C5 /* EnterButton.swift in Sources */,
 				418C137F20F1B9A800AE16C5 /* NicknameTFView.swift in Sources */,
-				C42516FE2313679C00E7655D /* MapViewDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -538,14 +534,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		418C135020F1B89A00AE16C5 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				418C135120F1B89A00AE16C5 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		418C135520F1B89B00AE16C5 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -608,7 +596,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -662,7 +650,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -680,7 +668,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = JPY43WAU3K;
 				INFOPLIST_FILE = RLS/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -702,7 +690,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = JPY43WAU3K;
 				INFOPLIST_FILE = RLS/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

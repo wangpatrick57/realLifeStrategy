@@ -17,7 +17,7 @@ import (
 const (
     HostName = "10.0.1.128"
     //HostName = "127.0.0.1"
-    Port = "8888"
+    Port = "8889" //8888 is for stable server. 8889 is for test server. in the future we may need different ports for each person
     ConnType = "tcp"
 )
 
@@ -54,19 +54,22 @@ func main() {
         "ward": 3,
         "dead": 2,
         "ret": 1,
+        "reset": 1,
+        "brd": 3,
     }
 
     //sets the default state of the master json
     master = baseMaster()
     //creates the listener (for connections, not for data)
     l, err := net.Listen(ConnType, HostName + ":" + Port)
-    defer l.Close()
 
     //crashes if there's an error in creating the listener (for example, if another instance of the server is running)
     if err != nil {
         fmt.Printf("Error listening: %v\n", err.Error())
         os.Exit(1)
     }
+
+    defer l.Close()
 
     fmt.Printf("Listening on %s:%s\n", HostName, Port)
     //broadcast has its own forever loop so this function only needs to be called once
@@ -263,6 +266,24 @@ func handleRequest(conn net.Conn) {
                 }
             case "ret":
                 client.playerDisconnectActions()
+            case "reset":
+                client.getGame().resetSettings()
+            case "brd":
+                lat, err1 := strconv.ParseFloat(info[posInSlice + 1], 64)
+                long, err2 := strconv.ParseFloat(info[posInSlice + 2], 64)
+
+                if (err1 == nil && err2 == nil) {
+                    if (client.getGame() != nil) {
+                        client.getGame().addBoord(lat, long)
+                    } else {
+                        fmt.Printf("A client without a game is trying to add a boord\n")
+                    }
+                } else {
+                    fmt.Printf("Error parsing boord location. Lat error: %v; long error: %v\n", err1, err2)
+                    //setting validBuffer on a failed parse makes sure any commands after loc are kept
+                    //for example, if loc:ward:1:1: is sent
+                    validBuffer = false
+                }
             default:
                 //protects against invalid types
                 fmt.Printf("Read invalid type: %s\n", bufType)
@@ -308,7 +329,7 @@ func broadcast() {
 
             recPlayer := recClient.getPlayer()
 
-            //things that have to do with other players
+            //looping through all the sendPlayers
             for _, thisPlayer := range recClient.getGame().getPlayers() {
                 //checking that their position isn't 0,0 ensures they are in game
                 if thisPlayer != recClient.getPlayer() && thisPlayer.getLat() != 0 && thisPlayer.getLong() != 0 {
