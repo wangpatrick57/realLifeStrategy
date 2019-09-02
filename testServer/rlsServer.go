@@ -18,7 +18,7 @@ const (
     HostName = "10.0.1.128"
     //HostName = "127.0.0.1"
     Port = "8889" //8888 is for stable server. 8889 is for test server. in the future we may need different ports for each person
-    ConnType = "tcp"
+    ConnType = "udp"
 )
 
 //dictionary of conn objects to client objects
@@ -36,7 +36,8 @@ func main() {
     don't forget use mutex before accessing or changing any data since locking the
     mutex is built in (by the code, not by golang) to all getters and setters*/
     setConnToClient(make(map[*net.Conn]*Client))
-    //sets print periodicals to true. you might want to set this to false by default by preference
+
+    //sets print periodicals to true. you might prefer to set this to false by default
     setPrintPeriodicals(true)
 
     //position increment. the amount of cells to increment in the string array after every command
@@ -60,35 +61,47 @@ func main() {
 
     //sets the default state of the master json
     master = baseMaster()
+
+    //broadcast is a single forever loop that takes care of all the writes
+    go broadcast()
+
+    //send data through a channel based on the data's address for another goroutine to process the data
+
     //creates the listener (for connections, not for data)
-    l, err := net.Listen(ConnType, HostName + ":" + Port)
+    pc, err := net.ListenPacket(ConnType, HostName + ":" + Port)
 
     //crashes if there's an error in creating the listener (for example, if another instance of the server is running)
     if err != nil {
         fmt.Printf("Error listening: %v\n", err.Error())
         os.Exit(1)
+    } else {
+        fmt.Printf("Listening on %s:%s\n", HostName, Port)
     }
 
-    defer l.Close()
+    defer pc.Close()
 
-    fmt.Printf("Listening on %s:%s\n", HostName, Port)
-    //broadcast has its own forever loop so this function only needs to be called once
-    go broadcast()
-
-    //the forever loop that runs the entire server
+    //the forever loop that reads
     for {
-        //check for connections (the code stops here if there are no connections i think)
-        conn, err := l.Accept()
-        fmt.Printf("connection detected\n")
+        //read for data
+        buf := make([]byte, 1024)
+        n, addr, err := pc.ReadFrom(buf)
+        buf = bytes.Trim(buf, "\x00")
+        content := string(buf)
+        fmt.Printf("Read %d bytes: %s from %s\n", n, content, addr)
+
+        for i := 0; i < 5; i++ {
+            pc.WriteTo([]byte("bt:"), addr)
+            fmt.Printf("wrote bt:\n")
+        }
 
         if err != nil {
-            fmt.Printf("Error accepting: %v\n", err.Error())
+            fmt.Printf("Error reading: %v\n", err.Error())
             //think about not exiting for a failed connection
             os.Exit(1)
         }
 
         //if the connection is successful, create a new routine that listens for data from that connection
-        go handleRequest(conn)
+        //go handleRequest(conn)
     }
 
     return
@@ -98,17 +111,14 @@ func handleRequest(conn net.Conn) {
     client := &(Client{})
     setClient(&conn, client)
     rdlEnabled := true
+    buf := make([]byte, 1024)
 
     for {
-        buf := make([]byte, 1024)
-
         if (rdlEnabled) {
             conn.SetReadDeadline(time.Now().Local().Add(time.Second * time.Duration(30)))
         }
 
         _, err := conn.Read(buf)
-        buf = bytes.Trim(buf, "\x00")
-		content := string(buf)
 
         if err != nil {
             fmt.Printf("Error reading: %v\n", err.Error())
@@ -116,6 +126,8 @@ func handleRequest(conn net.Conn) {
             return
         }
 
+        buf = bytes.Trim(buf, "\x00")
+        content := string(buf)
 		info := strings.Split(content, ":")
         writeString := ""
         printString := ""

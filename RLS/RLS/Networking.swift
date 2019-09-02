@@ -8,6 +8,7 @@
 
 import Foundation
 import MapKit
+import Network
 
 class Networking {
     var inputStream: InputStream!
@@ -21,6 +22,9 @@ class Networking {
     var nameExists: Bool? = nil
     var locPlaces = 5
     var controlPoint: ControlPoint? = nil
+    var connection: NWConnection?
+    let hostUDP: NWEndpoint.Host = "73.189.41.182"
+    var portUDP: NWEndpoint.Port = 8888
     
     let posInc: [String: Int] = [
         "bt": 1,
@@ -36,24 +40,37 @@ class Networking {
     ]
     
     func setupNetworkComms() {
-        var readStream: Unmanaged<CFReadStream>?
-        var writeStream: Unmanaged<CFWriteStream>?
-        var portNum: UInt32 = 8888
-        
         if (debug) {
-            portNum = 8889
+            portUDP = 8889
         }
         
-        CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, "73.189.41.182" /*"127.0.0.1"*/ as CFString, portNum, &readStream, &writeStream)
-
-        inputStream = readStream!.takeRetainedValue()
-        outputStream = writeStream!.takeRetainedValue()
-        inputStream.schedule(in: .current, forMode: RunLoop.Mode.common)
-        outputStream.schedule(in: .current, forMode: RunLoop.Mode.common)
-        inputStream.open()
-        outputStream.open()
+        connection = NWConnection(host: hostUDP, port: portUDP, using: .udp)
         
-        write(str: "connected:")
+        self.connection?.stateUpdateHandler = { (newState) in
+            print("This is stateUpdateHandler:")
+            switch (newState) {
+            case .ready:
+                print("State: Ready\n")
+                
+                for _ in 1...5 {
+                    self.sendUDP("connected:")
+                }
+                
+                while (true) {
+                    self.receiveUDP()
+                }
+            case .setup:
+                print("State: Setup\n")
+            case .cancelled:
+                print("State: Cancelled\n")
+            case .preparing:
+                print("State: Preparing\n")
+            default:
+                print("ERROR! State not defined!\n")
+            }
+        }
+        
+        self.connection?.start(queue: .global())
     }
     
     func closeNetworkComms() {
@@ -61,9 +78,18 @@ class Networking {
         outputStream.close()
     }
     
-    func write(str: String) {
-        outputStream.write(str, maxLength: str.count)
+    func sendUDP(_ content: String) {
+        let contentToSendUDP = content.data(using: String.Encoding.utf8)
+        self.connection?.send(content: contentToSendUDP, completion: NWConnection.SendCompletion.contentProcessed(({ (NWError) in
+            if (NWError == nil) {
+                print("Data was sent to UDP")
+            } else {
+                print("ERROR! Error when data (Type: Data) sending. NWError: \n \(NWError!)")
+            }
+        })))
     }
+    
+    func write(str: String) {}
     
     func sendHeartbeat() {
         if (btReceived) {
@@ -306,6 +332,20 @@ class Networking {
         }
         
         return [""]
+    }
+    
+    func receiveUDP() {
+        self.connection?.receiveMessage { (data, context, isComplete, error) in
+            if (isComplete) {
+                print("Receive is complete")
+                if (data != nil) {
+                    let backToString = String(decoding: data!, as: UTF8.self)
+                    print("Received message: \(backToString)")
+                } else {
+                    print("Data == nil")
+                }
+            }
+        }
     }
     
     func truncate(num: Double, places: Int) -> Double {
