@@ -367,7 +367,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //draw circles around each player and ward in myTeamDict for vision OR just wards if we're doing that
         
         //Check if player is in the CP radius
-        for cp in self.cps{
+        /*for cp in self.cps{
             if !cp.getStay() {      //skip section if player is staying in a control point
                 var incAmt : Int = 0
                 if cp.inArea(myPlayer: myPlayer) && !myPlayer.getDead(){
@@ -394,7 +394,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                 
                 //add points to team: 1 point per second to the team cp belongs to
             }
-        }
+        }*/
     }
     
     //retrieve control point from server

@@ -25,6 +25,7 @@ class Networking {
     let posInc: [String: Int] = [
         "bt": 1,
         "rp": 3,
+        "brd": 3,
         "checkID": 2,
         "checkName": 2,
         "loc": 4,
@@ -43,7 +44,7 @@ class Networking {
             portNum = 8889
         }
         
-        CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, "73.189.41.182" /*"127.0.0.1"*/ as CFString, 8889, &readStream, &writeStream)
+        CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, "73.189.41.182" /*"127.0.0.1"*/ as CFString, portNum, &readStream, &writeStream)
 
         inputStream = readStream!.takeRetainedValue()
         outputStream = writeStream!.takeRetainedValue()
@@ -265,6 +266,12 @@ class Networking {
                 
                 if let thisConn = Bool(stringArray[posInArray + 2]) {
                     mapViewController.updatePlayerConn(name: thisName, conn: thisConn)
+                }
+            case "brd":
+                if let thisLat = Double(stringArray[posInArray + 1]) {
+                    if let thisLong = Double(stringArray[posInArray + 2]) {
+                        mapViewController.addBoord(boord: CLLocation(latitude: thisLat, longitude: thisLong))
+                    }
                 }
             default:
                 _ = 1
