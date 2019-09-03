@@ -96,8 +96,17 @@ class ControlPoint : MKPointAnnotation{
         redPoints = point
     }
     
+    func getRedPoints() -> Double {
+        return redPoints
+    }
+    
+    
     func setBluePoints(point : Double){
         bluePoints = point
+    }
+    
+    func getBluePoints() -> Double {
+        return bluePoints
     }
     
     func setName(name : String){
