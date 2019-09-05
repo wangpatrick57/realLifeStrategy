@@ -17,25 +17,26 @@ import (
 const (
     HostName = "10.0.1.128"
     //HostName = "127.0.0.1"
-    Port = "8889" //8888 is for stable server. 8889 is for test server. in the future we may need different ports for each person
+    Port = "8890" //8888 is for stable server. 8889 is for test server. in the future we may need different ports for each person
     ConnType = "udp"
 )
 
 //dictionary of conn objects to client objects
-var connToClient map[*net.Conn]*Client
+var addrToClient map[string]*Client
 //the master json object
 var master *Master
 //this is explained below
 var posInc map[string]int
 var mutex sync.Mutex //lock this with actions regarding connToClient or printPeriodicals
 var printPeriodicals bool
+var packetConn net.PacketConn
 
 func main() {
-    /*initializes the connToClient array. the design is kinda weird, i basically treat
+    /*initializes the addrToClient array. the design is kinda weird, i basically treat
     rlsServer itself as its own class with its own getters and setters. this way, i
     don't forget use mutex before accessing or changing any data since locking the
     mutex is built in (by the code, not by golang) to all getters and setters*/
-    setConnToClient(make(map[*net.Conn]*Client))
+    setAddrToClient(make(map[string]*Client))
 
     //sets print periodicals to true. you might prefer to set this to false by default
     setPrintPeriodicals(true)
@@ -68,7 +69,9 @@ func main() {
     //send data through a channel based on the data's address for another goroutine to process the data
 
     //creates the listener (for connections, not for data)
-    pc, err := net.ListenPacket(ConnType, HostName + ":" + Port)
+    //err has to be initialized instead of using := notation because packetConn is a globalvar
+    var err error
+    packetConn, err = net.ListenPacket(ConnType, HostName + ":" + Port)
 
     //crashes if there's an error in creating the listener (for example, if another instance of the server is running)
     if err != nil {
@@ -78,20 +81,29 @@ func main() {
         fmt.Printf("Listening on %s:%s\n", HostName, Port)
     }
 
-    defer pc.Close()
+    defer packetConn.Close()
 
     //the forever loop that reads
     for {
         //read for data
+        /*create the buffer here instead of just once outside the loop because
+            otherwise it doesn't clear*/
         buf := make([]byte, 1024)
-        n, addr, err := pc.ReadFrom(buf)
-        buf = bytes.Trim(buf, "\x00")
-        content := string(buf)
-        fmt.Printf("Read %d bytes: %s from %s\n", n, content, addr)
+        _, addrObject, err := packetConn.ReadFrom(buf)
+        addr := addrObject.String()
+        bufString := string(bytes.Trim(buf, "\x00"))
+        client, ok := getClient(addr)
 
-        for i := 0; i < 5; i++ {
-            pc.WriteTo([]byte("bt:"), addr)
-            fmt.Printf("wrote bt:\n")
+        if (!ok) {
+            client := &(Client{})
+            setClient(addr, client)
+            channel := make(chan string)
+            client.setChannel(channel)
+
+            //if this is a new address, create a new routine that listens for data from that connection
+            go processData(addr)
+        } else {
+            client.getChannel() <- bufString
         }
 
         if err != nil {
@@ -99,35 +111,18 @@ func main() {
             //think about not exiting for a failed connection
             os.Exit(1)
         }
-
-        //if the connection is successful, create a new routine that listens for data from that connection
-        //go handleRequest(conn)
     }
 
     return
 }
 
-func handleRequest(conn net.Conn) {
-    client := &(Client{})
-    setClient(&conn, client)
+func processData(addr string) {
     rdlEnabled := true
-    buf := make([]byte, 1024)
+    client, _ := getClient(addr)
+    channel := client.getChannel()
 
     for {
-        if (rdlEnabled) {
-            conn.SetReadDeadline(time.Now().Local().Add(time.Second * time.Duration(30)))
-        }
-
-        _, err := conn.Read(buf)
-
-        if err != nil {
-            fmt.Printf("Error reading: %v\n", err.Error())
-            client.playerDisconnectActions()
-            return
-        }
-
-        buf = bytes.Trim(buf, "\x00")
-        content := string(buf)
+        content := <-channel
 		info := strings.Split(content, ":")
         writeString := ""
         printString := ""
@@ -161,7 +156,7 @@ func handleRequest(conn net.Conn) {
                 rdlEnabled = !rdlEnabled
 
                 if (!rdlEnabled) {
-                    conn.SetReadDeadline(time.Time{})
+                    //conn.SetReadDeadline(time.Time{})
                 }
             case "togglePP":
                 setPrintPeriodicals(!getPrintPeriodicals())
@@ -311,7 +306,7 @@ func handleRequest(conn net.Conn) {
         }
 
         if (writeString != "") {
-            write(&conn, client, writeString)
+            write(addr, writeString)
         }
 
         if (printString != "") {
@@ -319,14 +314,13 @@ func handleRequest(conn net.Conn) {
         }
     }
 
-    deleteConn(&conn)
-    conn.Close()
+    deleteAddr(addr)
     return
 }
 
 func broadcast() {
     for {
-        for recConn, recClient := range getConnToClient() {
+        for recAddr, recClient := range getAddrToClient() {
             if !recClient.getReceiving() || recClient.getGame() == nil || recClient.getPlayer() == nil {
                 continue
             }
@@ -337,7 +331,7 @@ func broadcast() {
                 writeString += recClient.getGame().rpString()
                 writeString += recClient.getGame().boordString()
                 printString := writeString
-                write(recConn, recClient, writeString)
+                write(recAddr, writeString)
                 printWrote(recClient, printString)
             }
 
@@ -398,7 +392,7 @@ func broadcast() {
                     }
 
                     if (writeString != "") {
-                        write(recConn, recClient, writeString)
+                        write(recAddr, writeString)
                     }
 
                     if (printString != "") {
@@ -428,11 +422,17 @@ func broadcast() {
     }
 }
 
-func write(conn *net.Conn, client *Client, writeString string) {
-    _, err := (*conn).Write([]byte(writeString))
+func write(addr string, writeString string) {
+    addrObject, err := net.ResolveUDPAddr("udp", addr)
 
     if err != nil {
-        fmt.Printf("Error writing: %v\n", err)
+        fmt.Printf("Error resolving udp address: %v\n", err)
+    } else {
+        _, err := packetConn.WriteTo([]byte(writeString), addrObject)
+
+        if err != nil {
+            fmt.Printf("Error writing: %v\n", err)
+        }
     }
 }
 
@@ -563,24 +563,30 @@ func baseMaster() *Master {
     return ret
 }
 
-func getConnToClient() map[*net.Conn]*Client {
+func getAddrToClient() map[string]*Client {
     mutexLock()
-    return connToClient
+    return addrToClient
 }
 
-func setConnToClient(newMap map[*net.Conn]*Client) {
+func setAddrToClient(newMap map[string]*Client) {
     mutexLock()
-    connToClient = newMap
+    addrToClient = newMap
 }
 
-func setClient(conn *net.Conn, client *Client) {
+func setClient(addr string, client *Client) {
     mutexLock()
-    connToClient[conn] = client
+    addrToClient[addr] = client
 }
 
-func deleteConn(conn *net.Conn) {
+func getClient(addr string) (*Client, bool) {
     mutexLock()
-    delete(connToClient, conn)
+    client, ok := addrToClient[addr]
+    return client, ok
+}
+
+func deleteAddr(addr string) {
+    mutexLock()
+    delete(addrToClient, addr)
 }
 
 func getPrintPeriodicals() bool {

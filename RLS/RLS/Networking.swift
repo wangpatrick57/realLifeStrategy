@@ -15,11 +15,9 @@ class Networking {
     var outputStream: OutputStream!
     var username = ""
     var maxReadLength = 1024
-    var doSendRec = true
-    var doSendLoc = true
-    var btReceived = true
     var idExists: Bool? = nil
     var nameExists: Bool? = nil
+    var dataString = ""
     var locPlaces = 5
     var controlPoint: ControlPoint? = nil
     var connection: NWConnection?
@@ -51,14 +49,7 @@ class Networking {
             switch (newState) {
             case .ready:
                 print("State: Ready\n")
-                
-                for _ in 1...5 {
-                    self.sendUDP("connected:")
-                }
-                
-                while (true) {
-                    self.receiveUDP()
-                }
+                self.write("connected:")
             case .setup:
                 print("State: Setup\n")
             case .cancelled:
@@ -73,142 +64,9 @@ class Networking {
         self.connection?.start(queue: .global())
     }
     
-    func closeNetworkComms() {
-        inputStream.close()
-        outputStream.close()
-    }
-    
-    func sendUDP(_ content: String) {
-        let contentToSendUDP = content.data(using: String.Encoding.utf8)
-        self.connection?.send(content: contentToSendUDP, completion: NWConnection.SendCompletion.contentProcessed(({ (NWError) in
-            if (NWError == nil) {
-                print("Data was sent to UDP")
-            } else {
-                print("ERROR! Error when data (Type: Data) sending. NWError: \n \(NWError!)")
-            }
-        })))
-    }
-    
-    func write(str: String) {}
-    
-    func sendHeartbeat() {
-        if (btReceived) {
-            write(str: "hrt:")
-            btReceived = false
-        }
-    }
-    
-    func checkGameIDTaken(idToCheck: String) -> Bool {
-        write(str: "checkID:\(idToCheck):")
-        print("checking if gameID exists")
-        var ret = true
-        
-        while (true) {
-            readAllData()
-            
-            if let exists = idExists {
-                ret = exists
-                idExists = nil
-                break
-            }
-        }
-        
-        return ret
-    }
-    
-    func checkNameTaken(nameToCheck: String) -> Bool {
-        write(str: "checkName:\(nameToCheck):")
-        print("checking if name is taken")
-        var ret = true
-        
-        while (true) {
-            readAllData()
-            
-            if let exists = nameExists {
-                ret = exists
-                nameExists = nil
-                break
-            }
-        }
-        
-        return ret
-    }
-    
-    func sendReceiving() {
-        if (doSendRec) {
-            write(str: "rec:")
-            doSendRec = false
-        }
-    }
-    
-    func checkIfSendLocation() {
-        if (inputStream.hasBytesAvailable) {
-            doSendLoc = true
-        }
-    }
-    
-    func sendLocation(coord: CLLocationCoordinate2D) {
-        let state = UIApplication.shared.applicationState
-        
-        if (state == .background || state == .inactive) {
-            checkIfSendLocation()
-        }
-        
-        if (doSendLoc) {
-            write(str: "loc:\(truncate(num: coord.latitude, places: locPlaces)):\(truncate(num: coord.longitude, places: locPlaces)):")
-            doSendLoc = false
-        }
-    }
-    
-    func sendWardLoc(coord: CLLocationCoordinate2D) {
-        write(str: "ward:\(truncate(num: coord.latitude, places: locPlaces)):\(truncate(num: coord.longitude, places: locPlaces)):")
-    }
-    
-    func sendDead(dead: Bool) {
-        write(str: "dead:\(dead):")
-    }
-    
-    func sendTeam(team: String) {
-        write(str: "team:\(team):")
-    }
-    
-    func sendRet() {
-        write(str: "ret:")
-    }
-    
-    func sendRedPoint(point: Double) {
-        write(str: "redPoint:\(point):")
-    }
-    
-    func sendBluePoint(point: Double) {
-        write(str: "bluePoint:\(point):")
-    }
-    
-    func sendCPNums(numRed: Int, numBlue: Int) {
-        write(str: "cp:\( controlPoint?.getLocation().latitude):\(controlPoint?.getLocation().longitude):\(numRed):\(numBlue):")
-    }
-    
-    func sendCPLoc(lat: Double, long: Double) {
-        if let cp = controlPoint {
-            write(str: "cp:\(lat):\(long):\(cp.getNumRed()):\(cp.getNumBlue()):")
-        }
-    }
-    
-    func sendBoord(boord: CLLocation) {
-        let lat = truncate(num: boord.coordinate.latitude, places: locPlaces)
-        let long = truncate(num: boord.coordinate.longitude, places: locPlaces)
-        write(str: "brd:\(lat):\(long):")
-    }
-    
     func readAllData() {
         let stringArray = read()
-        print("Read \(stringArray)")
-        
-        if (stringArray.count > 1) {
-            doSendRec = true
-            doSendLoc = true
-        }
-        
+        print("rad stringArray = \(stringArray)")
         var posInArray = 0
         
         while (posInArray < stringArray.count - 1) {
@@ -216,7 +74,6 @@ class Networking {
             
             switch bufType {
             case "bt":
-                btReceived = true
                 print("got beat")
             case "checkID":
                 if let exists = Bool(stringArray[posInArray + 1]) {
@@ -312,40 +169,131 @@ class Networking {
         }
     }
     
-    func read() -> [String] {
-        let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: maxReadLength)
-        
-        while inputStream.hasBytesAvailable {
-            let numberOfBytesRead = inputStream.read(buffer, maxLength: maxReadLength)
-            
-            if (numberOfBytesRead < 0) {
-                if let _ = inputStream.streamError {
-                    break
-                }
-            }
-            
-            guard let stringArray = String(bytesNoCopy: buffer, length: numberOfBytesRead, encoding: .ascii, freeWhenDone: true)?.components(separatedBy: ":") else {
-                return [""]
-            }
-            
-            return stringArray
-        }
-        
-        return [""]
+    func closeNetworkComms() {
+        inputStream.close()
+        outputStream.close()
     }
     
-    func receiveUDP() {
+    func read() -> [String] {
         self.connection?.receiveMessage { (data, context, isComplete, error) in
             if (isComplete) {
-                print("Receive is complete")
                 if (data != nil) {
-                    let backToString = String(decoding: data!, as: UTF8.self)
-                    print("Received message: \(backToString)")
+                    self.dataString = String(decoding: data!, as: UTF8.self)
+                    print("Read \(self.dataString)")
                 } else {
-                    print("Data == nil")
+                    print("Data is nil")
                 }
             }
         }
+        
+        let stringArray = dataString.components(separatedBy: ":")
+        return stringArray
+    }
+    
+    func write(_ content: String) {
+        let contentToSendUDP = content.data(using: String.Encoding.utf8)
+        self.connection?.send(content: contentToSendUDP, completion: NWConnection.SendCompletion.contentProcessed(({ (NWError) in
+            if (NWError == nil) {
+                print("Wrote \(content)")
+            } else {
+                print("ERROR! Error when data (Type: Data) sending. NWError: \n \(NWError!)")
+            }
+        })))
+    }
+    
+    func sendHeartbeat() {
+        write("hrt:")
+    }
+    
+    func checkGameIDTaken(idToCheck: String) -> Bool {
+        write("checkID:\(idToCheck):")
+        print("checking if gameID exists")
+        var ret = true
+        
+        while (true) {
+            readAllData()
+            
+            if let exists = idExists {
+                print("idExists = \(exists)")
+                ret = exists
+                idExists = nil
+                break
+            } else {
+                print("idExists is nil")
+            }
+            
+            usleep(100000)
+        }
+        
+        return ret
+    }
+    
+    func checkNameTaken(nameToCheck: String) -> Bool {
+        write("checkName:\(nameToCheck):")
+        print("checking if name is taken")
+        var ret = true
+        
+        while (true) {
+            readAllData()
+            
+            if let exists = nameExists {
+                ret = exists
+                nameExists = nil
+                break
+            }
+            
+            usleep(100000)
+        }
+        
+        return ret
+    }
+    
+    func sendReceiving() {
+        write("rec:")
+    }
+    
+    func sendLocation(coord: CLLocationCoordinate2D) {
+        write("loc:\(truncate(num: coord.latitude, places: locPlaces)):\(truncate(num: coord.longitude, places: locPlaces)):")
+    }
+    
+    func sendWardLoc(coord: CLLocationCoordinate2D) {
+        write("ward:\(truncate(num: coord.latitude, places: locPlaces)):\(truncate(num: coord.longitude, places: locPlaces)):")
+    }
+    
+    func sendDead(dead: Bool) {
+        write("dead:\(dead):")
+    }
+    
+    func sendTeam(team: String) {
+        write("team:\(team):")
+    }
+    
+    func sendRet() {
+        write("ret:")
+    }
+    
+    func sendRedPoint(point: Double) {
+        write("redPoint:\(point):")
+    }
+    
+    func sendBluePoint(point: Double) {
+        write("bluePoint:\(point):")
+    }
+    
+    func sendCPNums(numRed: Int, numBlue: Int) {
+        write("cp:\( controlPoint?.getLocation().latitude):\(controlPoint?.getLocation().longitude):\(numRed):\(numBlue):")
+    }
+    
+    func sendCPLoc(lat: Double, long: Double) {
+        if let cp = controlPoint {
+            write("cp:\(lat):\(long):\(cp.getNumRed()):\(cp.getNumBlue()):")
+        }
+    }
+    
+    func sendBoord(boord: CLLocation) {
+        let lat = truncate(num: boord.coordinate.latitude, places: locPlaces)
+        let long = truncate(num: boord.coordinate.longitude, places: locPlaces)
+        write("brd:\(lat):\(long):")
     }
     
     func truncate(num: Double, places: Int) -> Double {

@@ -27,7 +27,7 @@ class StartView: UIViewController {
         networking.setupNetworkComms()
         
         //start step function timer
-        //timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(step), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(step), userInfo: nil, repeats: true)
     }
     
     @objc func step() {
