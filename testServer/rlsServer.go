@@ -17,7 +17,7 @@ import (
 const (
     HostName = "10.0.1.128"
     //HostName = "127.0.0.1"
-    Port = "8890" //8888 is for stable server. 8889 is for test server. in the future we may need different ports for each person
+    Port = "8889" //8888 is for stable server. 8889 is for test server. in the future we may need different ports for each person
     ConnType = "udp"
 )
 
