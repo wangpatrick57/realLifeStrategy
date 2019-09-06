@@ -38,7 +38,7 @@ class Networking {
     ]
     
     func setupNetworkComms() {
-        if (debug) {
+        if (true || debug) {
             portUDP = 8889
         }
         
@@ -87,38 +87,28 @@ class Networking {
                 } else {
                     print("checkName gave an invalid value")
                 }
-            case "rp":
-                if let thisLat = Double(stringArray[posInArray + 1]) {
-                    if let thisLong = Double(stringArray[posInArray + 2]) {
-                        mapViewController.addRP(name: "Respawn Point", coordinate: CLLocationCoordinate2D(latitude: thisLat, longitude: thisLong))
-                    } else {
-                        print("rp long wrong")
-                    }
-                } else {
-                    print("rp lat wrong")
-                }
             case "team":
                 let thisName = stringArray[posInArray + 1]
                 let thisTeam = stringArray[posInArray + 2]
-                mapViewController.updatePlayerTeam(name: thisName, team: thisTeam)
+                mapViewController?.updatePlayerTeam(name: thisName, team: thisTeam)
             case "loc":
                 if let thisLat = Double(stringArray[posInArray + 2]) {
                     if let thisLong = Double(stringArray[posInArray + 3]) {
                         let thisName = stringArray[posInArray + 1]
-                        mapViewController.updatePlayerLoc(name: thisName, lat: thisLat, long: thisLong)
+                        mapViewController?.updatePlayerLoc(name: thisName, lat: thisLat, long: thisLong)
                     }
                 }
             case "dead":
                 if let thisDead = Bool(stringArray[posInArray + 2]) {
                     let thisName = stringArray[posInArray + 1]
-                    mapViewController.updatePlayerDead(name: thisName, dead: thisDead)
+                    mapViewController?.updatePlayerDead(name: thisName, dead: thisDead)
                 }
             case "ward":
                 if let thisLat = Double(stringArray[posInArray + 2]) {
                     if let thisLong = Double(stringArray[posInArray + 3]) {
                         if (thisLat != 0 || thisLong != 0) {
                             let thisName = stringArray[posInArray + 1]
-                            mapViewController.updatePlayerWardLoc(name: thisName, lat: thisLat, long: thisLong)
+                            mapViewController?.updatePlayerWardLoc(name: thisName, lat: thisLat, long: thisLong)
                         }
                     }
                 }
@@ -148,14 +138,32 @@ class Networking {
                 let thisName = stringArray[posInArray + 1]
                 
                 if let thisConn = Bool(stringArray[posInArray + 2]) {
-                    mapViewController.updatePlayerConn(name: thisName, conn: thisConn)
+                    mapViewController?.updatePlayerConn(name: thisName, conn: thisConn)
                 }
             case "brd":
                 if let thisLat = Double(stringArray[posInArray + 1]) {
                     if let thisLong = Double(stringArray[posInArray + 2]) {
-                        mapViewController.addBoord(boord: CLLocation(latitude: thisLat, longitude: thisLong))
+                        mapViewController?.addBoord(boord: CLLocation(latitude: thisLat, longitude: thisLong))
+                    } else {
+                        print("brd long wrong")
                     }
+                } else {
+                    print("brd lat wrong")
                 }
+                
+                recBrd = false
+            case "rp":
+                if let thisLat = Double(stringArray[posInArray + 1]) {
+                    if let thisLong = Double(stringArray[posInArray + 2]) {
+                        mapViewController?.addRP(name: "Respawn Point", coordinate: CLLocationCoordinate2D(latitude: thisLat, longitude: thisLong))
+                    } else {
+                        print("rp long wrong")
+                    }
+                } else {
+                    print("rp lat wrong")
+                }
+                
+                recRP = false
             default:
                 _ = 1
             }
@@ -175,11 +183,11 @@ class Networking {
     }
     
     func read() -> [String] {
-        self.connection?.receiveMessage { (data, context, isComplete, error) in
-            if (isComplete) {
+        for _ in 1...5 {
+            self.connection?.receiveMessage { (data, context, isComplete, error) in
                 if (data != nil) {
-                    self.dataString = String(decoding: data!, as: UTF8.self)
-                    print("Read \(self.dataString)")
+                    self.dataString += String(decoding: data!, as: UTF8.self)
+                    print("datastring = \(self.dataString)")
                 } else {
                     print("Data is nil")
                 }
@@ -187,18 +195,21 @@ class Networking {
         }
         
         let stringArray = dataString.components(separatedBy: ":")
+        dataString = ""
         return stringArray
     }
     
     func write(_ content: String) {
-        let contentToSendUDP = content.data(using: String.Encoding.utf8)
-        self.connection?.send(content: contentToSendUDP, completion: NWConnection.SendCompletion.contentProcessed(({ (NWError) in
-            if (NWError == nil) {
-                print("Wrote \(content)")
-            } else {
-                print("ERROR! Error when data (Type: Data) sending. NWError: \n \(NWError!)")
-            }
-        })))
+        if (Float.random(in: 0 ..< 1) < 0.5) {
+            let contentToSendUDP = content.data(using: String.Encoding.utf8)
+            self.connection?.send(content: contentToSendUDP, completion: NWConnection.SendCompletion.contentProcessed(({ (NWError) in
+                if (NWError == nil) {
+                    print("Wrote \(content)")
+                } else {
+                    print("ERROR! Error when data (Type: Data) sending. NWError: \n \(NWError!)")
+                }
+            })))
+        }
     }
     
     func sendHeartbeat() {
@@ -206,43 +217,41 @@ class Networking {
     }
     
     func checkGameIDTaken(idToCheck: String) -> Bool {
-        write("checkID:\(idToCheck):")
-        print("checking if gameID exists")
         var ret = true
+        idExists = nil
         
         while (true) {
+            write("checkID:\(idToCheck):")
             readAllData()
             
             if let exists = idExists {
                 print("idExists = \(exists)")
                 ret = exists
-                idExists = nil
                 break
             } else {
                 print("idExists is nil")
             }
             
-            usleep(100000)
+            usleep(500000)
         }
         
         return ret
     }
     
     func checkNameTaken(nameToCheck: String) -> Bool {
-        write("checkName:\(nameToCheck):")
-        print("checking if name is taken")
         var ret = true
+        nameExists = nil
         
         while (true) {
+            write("checkName:\(nameToCheck):")
             readAllData()
             
             if let exists = nameExists {
                 ret = exists
-                nameExists = nil
                 break
             }
             
-            usleep(100000)
+            usleep(500000)
         }
         
         return ret
@@ -294,6 +303,14 @@ class Networking {
         let lat = truncate(num: boord.coordinate.latitude, places: locPlaces)
         let long = truncate(num: boord.coordinate.longitude, places: locPlaces)
         write("brd:\(lat):\(long):")
+    }
+    
+    func sendRecBrd() {
+        write("recBrd:")
+    }
+    
+    func sendRecRP() {
+        write("recRP:")
     }
     
     func truncate(num: Double, places: Int) -> Double {

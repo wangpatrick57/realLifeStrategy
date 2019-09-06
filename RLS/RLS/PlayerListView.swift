@@ -27,27 +27,6 @@ class PlayerListView : UIViewController{
     var team: String = ""
     var respawnPointNum: Int = 3
     
-    @IBAction func onReturnPressed(_ sender: Any) {
-        if (true || !debug) {
-            //tell server
-            networking.sendRet()
-        }
-        
-        self.performSegue(withIdentifier: "ShowName", sender: nil)
-    }
-    
-    @IBAction func redSelected(_ sender: Any) {
-        team = "red"
-        redButton.backgroundColor = redSelected
-        blueButton.backgroundColor = blueUnselected
-    }
-    
-    @IBAction func blueSelected(_ sender: Any) {
-        team = "blue"
-        redButton.backgroundColor = redUnselected
-        blueButton.backgroundColor = blueSelected
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         redButton.backgroundColor = redUnselected
@@ -82,6 +61,27 @@ class PlayerListView : UIViewController{
         //start step function timer
         timer.invalidate()
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(step), userInfo: nil, repeats: true)
+    }
+    
+    @IBAction func onReturnPressed(_ sender: Any) {
+        if (true || !debug) {
+            //tell server
+            networking.sendRet()
+        }
+        
+        self.performSegue(withIdentifier: "ShowName", sender: nil)
+    }
+    
+    @IBAction func redSelected(_ sender: Any) {
+        team = "red"
+        redButton.backgroundColor = redSelected
+        blueButton.backgroundColor = blueUnselected
+    }
+    
+    @IBAction func blueSelected(_ sender: Any) {
+        team = "blue"
+        redButton.backgroundColor = redUnselected
+        blueButton.backgroundColor = blueSelected
     }
     
     @objc func step() {

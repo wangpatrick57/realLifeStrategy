@@ -1,4 +1,0 @@
-#!/bin/bash
-kill $ncpid
-exec 3>&-
-rm -r "$tmpd"\n

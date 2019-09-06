@@ -14,7 +14,6 @@ class GameIDTF: UIViewController {
     @IBOutlet var idTF: UITextField!
     
     @IBAction func EnterButton(_ sender: Any) {
-        print("Enter Button clicked")
         gameID = idTF.text ?? ""
         
         if (networking.checkGameIDTaken(idToCheck: gameID)) {

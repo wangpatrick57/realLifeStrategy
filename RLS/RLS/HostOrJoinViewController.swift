@@ -16,7 +16,6 @@ let debug = true
 
 class HostOrJoinViewController : UIViewController {
     @IBAction func HostButton(_ sender: Any) {
-        print("Host Button clicked")
         //gameID = generateGameID()
         gameID = generateGameID()
         

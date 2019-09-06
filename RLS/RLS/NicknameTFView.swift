@@ -18,7 +18,6 @@ class NicknameTFView: UIViewController {
     @IBOutlet weak var nicknameTF: UITextField!
     
     @IBAction func JoinButton(_ sender: Any) {
-        print("Join Button clicked")
         let enteredName = nicknameTF.text ?? ""
         
         if (enteredName != "") {

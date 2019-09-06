@@ -12,6 +12,7 @@ import (
     "strconv"
     "time"
     "sync"
+    "math/rand"
 )
 
 const (
@@ -39,7 +40,7 @@ func main() {
     setAddrToClient(make(map[string]*Client))
 
     //sets print periodicals to true. you might prefer to set this to false by default
-    setPrintPeriodicals(true)
+    setPrintPeriodicals(false)
 
     //position increment. the amount of cells to increment in the string array after every command
     posInc = map[string]int {
@@ -58,6 +59,8 @@ func main() {
         "ret": 1,
         "reset": 1,
         "brd": 3,
+        "recBrd": 1,
+        "recRP": 1,
     }
 
     //sets the default state of the master json
@@ -102,6 +105,9 @@ func main() {
 
             //if this is a new address, create a new routine that listens for data from that connection
             go processData(addr)
+
+            //send the data to the new goroutine
+            client.getChannel() <- bufString
         } else {
             client.getChannel() <- bufString
         }
@@ -128,7 +134,7 @@ func processData(addr string) {
         printString := ""
         posInSlice := 0
         pp := getPrintPeriodicals()
-        printRead(client, info, pp)
+        printRead(client, info, pp, addr)
 
         for ;posInSlice < len(info) - 1; {
             validBuffer := true
@@ -187,13 +193,18 @@ func processData(addr string) {
                     if (client.getGame() != nil) {
                         nameTaken := client.getGame().checkNameTaken(readName)
 
-                        if (!nameTaken) {
-                            thisPlayer := &(Player{})
-                            client.setPlayer(thisPlayer)
-                            thisGame := client.getGame()
-                            thisPlayer.constructor(thisGame.getPlayers())
-                            thisPlayer.setName(readName)
-                            thisGame.addPlayer(thisPlayer)
+                        if (client.getPlayer() == nil || client.getPlayer().getName() != readName) {
+                            if (!nameTaken) {
+                                thisPlayer := &(Player{})
+                                client.setPlayer(thisPlayer)
+                                thisGame := client.getGame()
+                                thisPlayer.constructor(thisGame.getPlayers())
+                                thisPlayer.setName(readName)
+                                thisGame.addPlayer(thisPlayer)
+                            }
+                        } else {
+                            //special case: return false if this isn't the client's first time checking this name
+                            nameTaken = false
                         }
 
                         additionalString := fmt.Sprintf("checkName:%t:", nameTaken)
@@ -228,10 +239,6 @@ func processData(addr string) {
 
                 if (err1 == nil && err2 == nil) {
                     if (client.getPlayer() != nil && client.getGame() != nil) {
-                        if (client.getPlayer().getLat() == 0 && client.getPlayer().getLong() == 0) {
-                            client.setReceivingInitial(true)
-                        }
-
                         client.getPlayer().setLoc(lat, long)
                     } else {
                         fmt.Printf("A client without a game/player is trying to set loc\n")
@@ -287,9 +294,25 @@ func processData(addr string) {
                     }
                 } else {
                     fmt.Printf("Error parsing boord location. Lat error: %v; long error: %v\n", err1, err2)
-                    //setting validBuffer on a failed parse makes sure any commands after loc are kept
-                    //for example, if loc:ward:1:1: is sent
+                    /*setting validBuffer on a failed parse makes sure any commands after loc are kept
+                    for example, if loc:ward:1:1: is sent*/
                     validBuffer = false
+                }
+            case "recBrd":
+                /*the design is that the client asks for the server to send game element packets instead of
+                the server continously sending packets until the client asks it to stop. this way, the more
+                expensive game element packet is sent after the less expensive request packet. it's like
+                why you put less expensive checks first in an if statement.*/
+                if (client.getPlayer() != nil && client.getGame() != nil) {
+                    client.setReceivingBorder(true)
+                } else {
+                    fmt.Printf("A client without a game/player is trying to set recBrd\n")
+                }
+            case "recRP":
+                if (client.getPlayer() != nil && client.getGame() != nil) {
+                    client.setReceivingRP(true)
+                } else {
+                    fmt.Printf("A client without a game/player is trying to set recBrd\n")
                 }
             default:
                 //protects against invalid types
@@ -301,6 +324,7 @@ func processData(addr string) {
                 //if the buffer is valid it's mostly safe to assume that no other commands are "hidden" after the type
                 posInSlice += posInc[bufType]
             } else {
+                //if the data after the buffer is invalid this makes sure to only increment by one to check that case
                 posInSlice++
             }
         }
@@ -321,18 +345,25 @@ func processData(addr string) {
 func broadcast() {
     for {
         for recAddr, recClient := range getAddrToClient() {
-            if !recClient.getReceiving() || recClient.getGame() == nil || recClient.getPlayer() == nil {
+            if /*!recClient.getReceiving() || */recClient.getGame() == nil || recClient.getPlayer() == nil {
                 continue
             }
 
-            //one time things for clients like respawn points, game settings, etc
-            if (recClient.getReceivingInitial()) {
-                writeString := ""
-                writeString += recClient.getGame().rpString()
-                writeString += recClient.getGame().boordString()
-                printString := writeString
+            //game elements
+            if (recClient.getReceivingBorder()) {
+                writeString := recClient.getGame().boordString()
                 write(recAddr, writeString)
+                printString := writeString
                 printWrote(recClient, printString)
+                recClient.setReceivingBorder(false)
+            }
+
+            if (recClient.getReceivingRP()) {
+                writeString := recClient.getGame().rpString()
+                write(recAddr, writeString)
+                printString := writeString
+                printWrote(recClient, printString)
+                recClient.setReceivingRP(false)
             }
 
             recPlayer := recClient.getPlayer()
@@ -347,7 +378,7 @@ func broadcast() {
 
                     //receivingInitial is for players who just joined the game to get the current game state
                     //sendTo arrays is for players already in the game to broadcast their changed info to all other players
-                    if recClient.getReceivingInitial() {
+                    if false/*recClient.getReceivingInitial()*/ {
                         writeString = thisPlayer.initialPlayerString()
                         printString = writeString
                     } else {
@@ -401,7 +432,7 @@ func broadcast() {
                 }
             }
 
-            recClient.setReceivingInitial(false)
+            //recClient.setReceivingInitial(false)
             recClient.setReceiving(false)
         }
 
@@ -423,15 +454,17 @@ func broadcast() {
 }
 
 func write(addr string, writeString string) {
-    addrObject, err := net.ResolveUDPAddr("udp", addr)
-
-    if err != nil {
-        fmt.Printf("Error resolving udp address: %v\n", err)
-    } else {
-        _, err := packetConn.WriteTo([]byte(writeString), addrObject)
+    if (rand.Float64() < 0.5) {
+        addrObject, err := net.ResolveUDPAddr("udp", addr)
 
         if err != nil {
-            fmt.Printf("Error writing: %v\n", err)
+            fmt.Printf("Error resolving udp address: %v\n", err)
+        } else {
+            _, err := packetConn.WriteTo([]byte(writeString), addrObject)
+
+            if err != nil {
+                fmt.Printf("Error writing: %v\n", err)
+            }
         }
     }
 }
@@ -448,7 +481,7 @@ func printWrote(client *Client, printString string) {
     fmt.Printf("Wrote %s to %s\n", printString, idString)
 }
 
-func printRead(client *Client, info []string, periodicals bool) {
+func printRead(client *Client, info []string, periodicals bool, addr string) {
     printString := ""
     posInSlice := 0
 
@@ -479,7 +512,7 @@ func printRead(client *Client, info []string, periodicals bool) {
             idString = "no name"
         }
 
-        fmt.Printf("Read %s from %s\n", printString, idString)
+        fmt.Printf("Read %s from %s at %s\n", printString, idString, addr)
     }
 }
 
@@ -498,20 +531,20 @@ func baseMaster() *Master {
 
                 Boords: []*Coord {
                     &Coord {
-                        Lat: 10,
-                        Long: 10,
+                        Lat: 45,
+                        Long: 45,
                     },
                     &Coord {
-                        Lat: -10,
-                        Long: 10,
+                        Lat: 45,
+                        Long: 55,
                     },
                     &Coord {
-                        Lat: -10,
-                        Long: -10,
+                        Lat: 55,
+                        Long: 55,
                     },
                     &Coord {
-                        Lat: 10,
-                        Long: -10,
+                        Lat: 55,
+                        Long: 45,
                     },
                 },
 
@@ -552,13 +585,6 @@ func baseMaster() *Master {
             },*/
         },
     }
-
-    /*blueDummy := &Player{}
-    blueDummy.constructor(ret.getGame("Home").getPlayers())
-    blueDummy.setName("blueDummy")
-    blueDummy.setTeam("blue")
-    blueDummy.setLoc(37.32440, -121.98119)
-    ret.getGame("Home").addPlayer(blueDummy)*/
 
     return ret
 }

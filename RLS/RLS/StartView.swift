@@ -17,6 +17,9 @@ let respawnDist = 20.0 //meters
 let cpDist = 50.0 //meters
 let wardVisionDist = 30.0 //meters
 let font : String = "San Francisco"
+var inGame = false
+var recBrd = false
+var recRP = false
 
 class StartView: UIViewController {
     override func viewDidLoad() {

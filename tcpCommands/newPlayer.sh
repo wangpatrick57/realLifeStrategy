@@ -11,4 +11,4 @@ else
     gameID=$2
 fi
 
-echo "checkID:$gameID:checkName:$name:loc:1:1:team:none:" >&3
+./send.sh checkID:$gameID:checkName:$name:loc:1:1:team:red:
