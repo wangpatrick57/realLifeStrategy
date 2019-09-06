@@ -23,6 +23,10 @@ class Networking {
     var connection: NWConnection?
     let hostUDP: NWEndpoint.Host = "73.189.41.182"
     var portUDP: NWEndpoint.Port = 8888
+    var sendWard = false
+    var sendTeam = true
+    var sendDead = true
+    var sendConn = true
     
     let posInc: [String: Int] = [
         "bt": 1,
@@ -35,6 +39,10 @@ class Networking {
         "dead": 3,
         "ward": 4,
         "conn": 3,
+        "wardCk": 3,
+        "teamCk": 2,
+        "deadCk": 2,
+        "connCk": 2,
     ]
     
     func setupNetworkComms() {
@@ -90,7 +98,13 @@ class Networking {
             case "team":
                 let thisName = stringArray[posInArray + 1]
                 let thisTeam = stringArray[posInArray + 2]
-                mapViewController?.updatePlayerTeam(name: thisName, team: thisTeam)
+                
+                if let mvc = mapViewController {
+                    mvc.updatePlayerTeam(name: thisName, team: thisTeam)
+                    sendTeamCheck(name: thisName, team: thisTeam)
+                } else {
+                    print("team packet: mvc doesn't exist")
+                }
             case "loc":
                 if let thisLat = Double(stringArray[posInArray + 2]) {
                     if let thisLong = Double(stringArray[posInArray + 3]) {
@@ -101,18 +115,29 @@ class Networking {
             case "dead":
                 if let thisDead = Bool(stringArray[posInArray + 2]) {
                     let thisName = stringArray[posInArray + 1]
-                    mapViewController?.updatePlayerDead(name: thisName, dead: thisDead)
+                    
+                    if let mvc = mapViewController {
+                        mvc.updatePlayerDead(name: thisName, dead: thisDead)
+                        sendDeadCheck(name: thisName, dead: thisDead)
+                    } else {
+                        print("team packet: mvc doesn't exist")
+                    }
                 }
             case "ward":
                 if let thisLat = Double(stringArray[posInArray + 2]) {
                     if let thisLong = Double(stringArray[posInArray + 3]) {
                         if (thisLat != 0 || thisLong != 0) {
                             let thisName = stringArray[posInArray + 1]
-                            mapViewController?.updatePlayerWardLoc(name: thisName, lat: thisLat, long: thisLong)
+                            
+                            if let mvc = mapViewController {
+                                mvc.updatePlayerWardLoc(name: thisName, lat: thisLat, long: thisLong)
+                                sendWardCheck(name: thisName, coord: CLLocationCoordinate2D(latitude: thisLat, longitude: thisLong))
+                            } else {
+                                print("team packet: mvc doesn't exist")
+                            }
                         }
                     }
                 }
-                
             case "redPoint":
                 if let p = Double(stringArray[posInArray + 1]){
                     controlPoint?.setRedPoints(point: p)
@@ -138,7 +163,12 @@ class Networking {
                 let thisName = stringArray[posInArray + 1]
                 
                 if let thisConn = Bool(stringArray[posInArray + 2]) {
-                    mapViewController?.updatePlayerConn(name: thisName, conn: thisConn)
+                    if let mvc = mapViewController {
+                        mvc.updatePlayerConn(name: thisName, conn: thisConn)
+                        sendConnCheck(name: thisName, conn: thisConn)
+                    } else {
+                        print("team packet: mvc doesn't exist")
+                    }
                 }
             case "brd":
                 if let thisLat = Double(stringArray[posInArray + 1]) {
@@ -164,6 +194,52 @@ class Networking {
                 }
                 
                 recRP = false
+            case "wardCk":
+                if let thisLat = Double(stringArray[posInArray + 1]) {
+                    if let thisLong = Double(stringArray[posInArray + 2]) {
+                        if let myWard = myPlayer.getWard() {
+                            let coord = myWard.getCoordinate()
+                            
+                            if (thisLat == truncate(num: coord.latitude, places: locPlaces) && thisLong == truncate(num: coord.longitude, places: locPlaces)) {
+                                sendWard = false
+                            } else {
+                                sendWard = true
+                            }
+                        }
+                    } else {
+                        print("wardCk long wrong")
+                    }
+                } else {
+                    print("wardCk lat wrong")
+                }
+            case "teamCk":
+                let thisTeam = stringArray[posInArray + 1]
+                
+                if (thisTeam == myPlayer.getTeam()) {
+                    sendTeam = false
+                } else {
+                    sendTeam = true
+                }
+            case "deadCk":
+                if let thisDead = Bool(stringArray[posInArray + 1]) {
+                    if (thisDead == myPlayer.getDead()) {
+                        sendDead = false
+                    } else {
+                        sendDead = true
+                    }
+                } else {
+                    print("deadCk dead wrong")
+                }
+            case "connCk":
+                if let thisConn = Bool(stringArray[posInArray + 1]) {
+                    if (thisConn == myPlayer.getConnected()) {
+                        sendConn = false
+                    } else {
+                        sendConn = true
+                    }
+                } else {
+                    print("connCk dead wrong")
+                }
             default:
                 _ = 1
             }
@@ -174,6 +250,26 @@ class Networking {
                 print("bufType \(bufType) does not exist")
                 print("buffer that gave error: \(stringArray)")
             }
+        }
+    }
+    
+    func broadcastOneTimers() {
+        if (sendWard) {
+            if let myWard = myPlayer.getWard() {
+                sendWardLoc(coord: myWard.getCoordinate())
+            }
+        }
+        
+        if (sendTeam) {
+            sendTeam(team: myPlayer.getTeam())
+        }
+        
+        if (sendDead) {
+            sendDead(dead: myPlayer.getDead())
+        }
+        
+        if (sendConn) {
+            sendConnected(conn: myPlayer.getConnected())
         }
     }
     
@@ -277,6 +373,10 @@ class Networking {
         write("team:\(team):")
     }
     
+    func sendConnected(conn: Bool) {
+        write("conn:\(conn):")
+    }
+    
     func sendRet() {
         write("ret:")
     }
@@ -293,6 +393,7 @@ class Networking {
         write("cp:\( controlPoint?.getLocation().latitude):\(controlPoint?.getLocation().longitude):\(numRed):\(numBlue):")
     }
     
+    //have to send lat and long as cllocationcoordinate2d so that .latitude and .longitude are cllocationdegrees
     func sendCPLoc(lat: Double, long: Double) {
         if let cp = controlPoint {
             write("cp:\(lat):\(long):\(cp.getNumRed()):\(cp.getNumBlue()):")
@@ -311,6 +412,38 @@ class Networking {
     
     func sendRecRP() {
         write("recRP:")
+    }
+    
+    func sendWardCheck(name: String, coord: CLLocationCoordinate2D) {
+        write("wardCk:\(name):\(truncate(num: coord.latitude, places: locPlaces)):\(truncate(num: coord.longitude, places: locPlaces)):")
+    }
+    
+    func sendTeamCheck(name: String, team: String) {
+        write("teamCk:\(name):\(team):")
+    }
+    
+    func sendDeadCheck(name: String, dead: Bool) {
+        write("deadCk:\(name):\(dead):")
+    }
+    
+    func sendConnCheck(name: String, conn: Bool) {
+        write("connCk:\(name):\(conn):")
+    }
+    
+    func setSendWard(sw: Bool) {
+        sendWard = sw
+    }
+    
+    func setSendTeam(st: Bool) {
+        sendTeam = st
+    }
+    
+    func setSendDead(sd: Bool) {
+        sendDead = sd
+    }
+    
+    func setSendConn(sc: Bool) {
+        sendConn = sc
     }
     
     func truncate(num: Double, places: Int) -> Double {

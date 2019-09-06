@@ -93,8 +93,7 @@ class PlayerListView : UIViewController{
     @IBAction func enterGamePressed(_ sender: Any) {
         if (team != "") {
             myPlayer = Player(name: nickname, team: team, coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
-            networking.sendTeam(team: team)
-            
+            networking.setSendTeam(st: true)
             self.performSegue(withIdentifier: "ShowMap", sender: self)
         } //else{
 //            myPlayer = Player(name: nickname, team: "neutral", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))

@@ -135,9 +135,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         
         //add myPlayer to playerDict
         playerDict[myPlayer.getName()] = myPlayer
-        
-        //send data
-        networking.sendTeam(team: myPlayer.getTeam())
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -192,7 +189,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             }
             
             myPlayer.addWardAt(coordinate: coordinate)
-            networking.sendWardLoc(coord: coordinate)
+            networking.setSendWard(sw: true)
         }
     }
     
@@ -203,7 +200,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             myPlayer.setDead(dead: true)
         }
         
-        networking.sendDead(dead: myPlayer.getDead())
+        networking.setSendDead(sd: true)
     }
     
     //ping with long press
@@ -271,6 +268,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         
         //server stuff every second
         networking.readAllData()
+        networking.broadcastOneTimers()
         
         if (recBrd) {
             networking.sendRecBrd()
@@ -287,7 +285,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             if (inRespawnArea()) {
                 if (currTime > respawnEnterTime + respawnTime) {
                     myPlayer.setDead(dead: false)
-                    networking.sendDead(dead: false)
+                    networking.setSendDead(sd: true)
                 }
                 
                 print("in respawn area")
@@ -582,26 +580,29 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             if (team != oldTeam) {
                 map.removeAnnotation(thisPlayer)
             }
+        } else {
+            let newPlayer = Player(name: name, team: team, coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
+            playerDict[name] = newPlayer
         }
     }
     
     func updatePlayerLoc(name: String, lat: Double, long: Double) {
         if let thisPlayer = playerDict[name] {
-            if (thisPlayer.getConnected()) {
-                thisPlayer.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
-            }
+            thisPlayer.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
         }
     }
     
     func updatePlayerDead(name: String, dead: Bool) {
         if let thisPlayer = playerDict[name] {
             thisPlayer.setDead(dead: dead)
+        } else {
+            let newPlayer = Player(name: name, team: "none", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
+            playerDict[name] = newPlayer
+            newPlayer.setDead(dead: dead)
         }
     }
     
     func updatePlayerWardLoc(name: String, lat: Double, long: Double) {
-        print("updatePlayerWardLoc called")
-        
         if let thisPlayer = playerDict[name] {
             //this annotation needs to be removed here so that a new ward circle is drawn
             if let thisWard = thisPlayer.getWard() {
@@ -614,6 +615,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             }
             
             thisPlayer.addWardAt(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
+        } else {
+            let newPlayer = Player(name: name, team: "none", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
+            playerDict[name] = newPlayer
+            newPlayer.addWardAt(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
         }
     }
     
@@ -629,15 +634,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                     }
                 }
             }
-        }
-        
-        if (conn) {
-            //creating a new player whenever conn is true is fine because in the server i will only send conn as true if it's part of a "new player package". if conn is sent by itself it is always false (i think)
-            ///wrong arguments below
-            //maybe a new player should be created regardless of what conn is, just whenever a conn update is attempted. this is wrong because if conn is false you need to preserve the old player to know that conn is false cuz a new player has a default conn of true
-            //maybe a new player should only be created if conn is changed, either from false to true or true to false. this is wrong because a new player of the same name could've connected within a second of an old one disconnecting, resulting in the server only sending conn true for this player name. in this case, conn stays at true but a new player needs to be created
+        } else {
             let newPlayer = Player(name: name, team: "none", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
             playerDict[name] = newPlayer
+            newPlayer.setConnected(connected: conn)
         }
     }
     

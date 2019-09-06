@@ -56,11 +56,15 @@ func main() {
         "loc": 3,
         "ward": 3,
         "dead": 2,
-        "ret": 1,
+        "conn": 2,
         "reset": 1,
         "brd": 3,
         "recBrd": 1,
         "recRP": 1,
+        "wardCk": 4,
+        "teamCk": 3,
+        "deadCk": 3,
+        "connCk": 3,
     }
 
     //sets the default state of the master json
@@ -91,7 +95,7 @@ func main() {
         //read for data
         /*create the buffer here instead of just once outside the loop because
             otherwise it doesn't clear*/
-        buf := make([]byte, 1024)
+        buf := make([]byte, 2048)
         _, addrObject, err := packetConn.ReadFrom(buf)
         addr := addrObject.String()
         bufString := string(bytes.Trim(buf, "\x00"))
@@ -191,20 +195,22 @@ func processData(addr string) {
 
                 if (readName != "") {
                     if (client.getGame() != nil) {
-                        nameTaken := client.getGame().checkNameTaken(readName)
+                        var nameTaken bool
 
-                        if (client.getPlayer() == nil || client.getPlayer().getName() != readName) {
+                        if (client.getPlayer() != nil && client.getPlayer().getName() == readName) {
+                            nameTaken = false
+                        } else {
+                            nameTaken = client.getGame().checkNameTaken(readName)
+
                             if (!nameTaken) {
                                 thisPlayer := &(Player{})
+                                thisPlayer.setName(readName)
                                 client.setPlayer(thisPlayer)
                                 thisGame := client.getGame()
-                                thisPlayer.constructor(thisGame.getPlayers())
-                                thisPlayer.setName(readName)
                                 thisGame.addPlayer(thisPlayer)
+                                //the constructor also sets the sendTo arrays of all other players to true
+                                thisPlayer.constructor(thisGame.getPlayers())
                             }
-                        } else {
-                            //special case: return false if this isn't the client's first time checking this name
-                            nameTaken = false
                         }
 
                         additionalString := fmt.Sprintf("checkName:%t:", nameTaken)
@@ -230,6 +236,9 @@ func processData(addr string) {
 
                     thisPlayer.setTeam(team)
                     thisPlayer.makeSendTrue("team", players)
+                    additionalString := fmt.Sprintf("teamCk:%s:", team)
+                    writeString += additionalString
+                    printString += additionalString
                 } else {
                     fmt.Printf("A client without a game/player is trying to set team\n")
                 }
@@ -257,6 +266,9 @@ func processData(addr string) {
                     if (client.getPlayer() != nil && client.getGame() != nil) {
                         client.getPlayer().setWardLoc(lat, long)
                         client.getPlayer().makeSendTrue("ward", client.getGame().getPlayers())
+                        additionalString := fmt.Sprintf("wardCk:%f:%f:", lat, long)
+                        writeString += additionalString
+                        printString += additionalString
                     } else {
                         fmt.Printf("A client without a game/player is trying to set ward loc\n")
                     }
@@ -271,6 +283,9 @@ func processData(addr string) {
                     if (client.getPlayer() != nil && client.getGame() != nil) {
                         client.getPlayer().setDead(dead)
                         client.getPlayer().makeSendTrue("dead", client.getGame().getPlayers())
+                        additionalString := fmt.Sprintf("deadCk:%t:", dead)
+                        writeString += additionalString
+                        printString += additionalString
                     } else {
                         fmt.Printf("A client without a game/player is trying to set dead\n")
                     }
@@ -278,8 +293,23 @@ func processData(addr string) {
                     fmt.Printf("Error parsing dead: %v\n", err)
                     validBuffer = false
                 }
-            case "ret":
-                client.playerDisconnectActions()
+            case "conn":
+                conn, err := strconv.ParseBool(info[posInSlice + 1])
+
+                if (err == nil) {
+                    if (!conn) {
+                        client.playerDisconnectActions()
+                    } else {
+                        //idk if this is good to have here
+                        //client.getPlayer().setConnected(true)
+                    }
+
+                    additionalString := fmt.Sprintf("connCk:%t:", conn)
+                    writeString += additionalString
+                    printString += additionalString
+                } else {
+                    fmt.Printf("Error parsing conn: %v\n", err)
+                }
             case "reset":
                 client.getGame().resetSettings()
             case "brd":
@@ -313,6 +343,106 @@ func processData(addr string) {
                     client.setReceivingRP(true)
                 } else {
                     fmt.Printf("A client without a game/player is trying to set recBrd\n")
+                }
+            case "wardCk": //ward check
+                name := info[posInSlice + 1]
+                wardLat, err1 := strconv.ParseFloat(info[posInSlice + 2], 64)
+                wardLong, err2 := strconv.ParseFloat(info[posInSlice + 3], 64)
+                myName := client.getPlayer().getName()
+                myGame := client.getGame()
+
+                if (err1 == nil && err2 == nil) {
+                    if (client.getPlayer() != nil && client.getGame() != nil) {
+                        thisPlayer := myGame.getPlayer(name)
+
+                        if (thisPlayer != nil) {
+                            if (thisPlayer.getWardLat() == wardLat && thisPlayer.getWardLong() == wardLong) {
+                                thisPlayer.setSendTo("ward", myName, false)
+                            } else {
+                                thisPlayer.setSendTo("ward", myName, true)
+                            }
+                        } else {
+                            fmt.Printf("Name %s sent in wardCk doesn't exist\n", name)
+                        }
+                    } else {
+                        fmt.Printf("A client without a game/player is trying to check ward\n")
+                    }
+                } else {
+                    fmt.Printf("Error parsing wardCk location. Lat error: %v; long error: %v\n", err1, err2)
+                    validBuffer = false
+                }
+            case "teamCk":
+                name := info[posInSlice + 1]
+                team := info[posInSlice + 2]
+                myName := client.getPlayer().getName()
+                myGame := client.getGame()
+
+                if (client.getPlayer() != nil && client.getGame() != nil) {
+                    thisPlayer := myGame.getPlayer(name)
+
+                    if (thisPlayer != nil) {
+                        if (thisPlayer.getTeam() == team) {
+                            thisPlayer.setSendTo("team", myName, false)
+                        } else {
+                            thisPlayer.setSendTo("team", myName, true)
+                        }
+                    } else {
+                        fmt.Printf("Name %s sent in teamCk doesn't exist\n", name)
+                    }
+                } else {
+                    fmt.Printf("A client without a game/player is trying to check team\n")
+                }
+            case "deadCk":
+                name := info[posInSlice + 1]
+                dead, err := strconv.ParseBool(info[posInSlice + 2])
+                myName := client.getPlayer().getName()
+                myGame := client.getGame()
+
+                if (err == nil) {
+                    if (client.getPlayer() != nil && client.getGame() != nil) {
+                        thisPlayer := myGame.getPlayer(name)
+
+                        if (thisPlayer != nil) {
+                            if (thisPlayer.getDead() == dead) {
+                                thisPlayer.setSendTo("dead", myName, false)
+                            } else {
+                                thisPlayer.setSendTo("dead", myName, true)
+                            }
+                        } else {
+                            fmt.Printf("Name %s sent in deadCk doesn't exist\n", name)
+                        }
+                    } else {
+                        fmt.Printf("A client without a game/player is trying to check dead\n")
+                    }
+                } else {
+                    fmt.Printf("Error parsing deadCk: %v\n", err)
+                    validBuffer = false
+                }
+            case "connCk":
+                name := info[posInSlice + 1]
+                conn, err := strconv.ParseBool(info[posInSlice + 2])
+                myName := client.getPlayer().getName()
+                myGame := client.getGame()
+
+                if (err == nil) {
+                    if (client.getPlayer() != nil && client.getGame() != nil) {
+                        thisPlayer := myGame.getPlayer(name)
+
+                        if (thisPlayer != nil) {
+                            if (thisPlayer.getConnected() == conn) {
+                                thisPlayer.setSendTo("conn", myName, false)
+                            } else {
+                                thisPlayer.setSendTo("conn", myName, true)
+                            }
+                        } else {
+                            fmt.Printf("Name %s sent in connCk doesn't exist\n", name)
+                        }
+                    } else {
+                        fmt.Printf("A client without a game/player is trying to check conn\n")
+                    }
+                } else {
+                    fmt.Printf("Error parsing connCk: %v\n", err)
+                    validBuffer = false
                 }
             default:
                 //protects against invalid types
@@ -376,50 +506,39 @@ func broadcast() {
                     printString := ""
                     pp := getPrintPeriodicals()
 
-                    //receivingInitial is for players who just joined the game to get the current game state
-                    //sendTo arrays is for players already in the game to broadcast their changed info to all other players
-                    if false/*recClient.getReceivingInitial()*/ {
-                        writeString = thisPlayer.initialPlayerString()
-                        printString = writeString
-                    } else {
-                        if (thisPlayer.getConnected()) {
-                            additionalString := fmt.Sprintf("loc:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getLat(), thisPlayer.getLong())
-                            writeString += additionalString
+                    if (thisPlayer.getConnected()) {
+                        additionalString := fmt.Sprintf("loc:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getLat(), thisPlayer.getLong())
+                        writeString += additionalString
 
-                            if (pp) {
-                                printString += additionalString
-                            }
-                        }
-
-                        //conn has to be before everything because when conn is true the client creates a new player
-                        if val, ok := thisPlayer.getSendTo("conn", recPlayer.getName()); ok && val {
-                            additionalString := fmt.Sprintf("conn:%s:%t:", thisPlayer.getName(), thisPlayer.getConnected())
-                            writeString += additionalString
+                        if (pp) {
                             printString += additionalString
-                            thisPlayer.setSendTo("conn", recPlayer.getName(), false)
                         }
+                    }
 
-                        //team has to be before ward so the ward is drawn with the team known
-                        if val, ok := thisPlayer.getSendTo("team", recPlayer.getName()); ok && val {
-                            additionalString := fmt.Sprintf("team:%s:%s:", thisPlayer.getName(), thisPlayer.getTeam())
-                            writeString += additionalString
-                            printString += additionalString
-                            thisPlayer.setSendTo("team", recPlayer.getName(), false)
-                        }
+                    //conn has to be before everything because when conn is true the client creates a new player
+                    if val, ok := thisPlayer.getSendTo("conn", recPlayer.getName()); ok && val {
+                        additionalString := fmt.Sprintf("conn:%s:%t:", thisPlayer.getName(), thisPlayer.getConnected())
+                        writeString += additionalString
+                        printString += additionalString
+                    }
 
-                        if val, ok := thisPlayer.getSendTo("ward", recPlayer.getName()); ok && val {
-                            additionalString := fmt.Sprintf("ward:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getWardLat(), thisPlayer.getWardLong())
-                            writeString += additionalString
-                            printString += additionalString
-                            thisPlayer.setSendTo("ward", recPlayer.getName(), false)
-                        }
+                    //team has to be before ward so the ward is drawn with the team known
+                    if val, ok := thisPlayer.getSendTo("team", recPlayer.getName()); ok && val {
+                        additionalString := fmt.Sprintf("team:%s:%s:", thisPlayer.getName(), thisPlayer.getTeam())
+                        writeString += additionalString
+                        printString += additionalString
+                    }
 
-                        if val, ok := thisPlayer.getSendTo("dead", recPlayer.getName()); ok && val {
-                            additionalString := fmt.Sprintf("dead:%s:%t:", thisPlayer.getName(), thisPlayer.getDead())
-                            writeString += additionalString
-                            printString += additionalString
-                            thisPlayer.setSendTo("dead", recPlayer.getName(), false)
-                        }
+                    if val, ok := thisPlayer.getSendTo("ward", recPlayer.getName()); ok && val {
+                        additionalString := fmt.Sprintf("ward:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getWardLat(), thisPlayer.getWardLong())
+                        writeString += additionalString
+                        printString += additionalString
+                    }
+
+                    if val, ok := thisPlayer.getSendTo("dead", recPlayer.getName()); ok && val {
+                        additionalString := fmt.Sprintf("dead:%s:%t:", thisPlayer.getName(), thisPlayer.getDead())
+                        writeString += additionalString
+                        printString += additionalString
                     }
 
                     if (writeString != "") {
