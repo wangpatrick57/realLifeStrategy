@@ -296,15 +296,24 @@ class Networking {
     }
     
     func write(_ content: String) {
-        if (Float.random(in: 0 ..< 1) < 0.5) {
+        if (Float.random(in: 0 ..< 1) < 1) {
             let contentToSendUDP = content.data(using: String.Encoding.utf8)
-            self.connection?.send(content: contentToSendUDP, completion: NWConnection.SendCompletion.contentProcessed(({ (NWError) in
-                if (NWError == nil) {
-                    print("Wrote \(content)")
-                } else {
-                    print("ERROR! Error when data (Type: Data) sending. NWError: \n \(NWError!)")
-                }
-            })))
+            
+            if let connObj = self.connection {
+                print("connObj is good")
+                
+                connObj.send(content: contentToSendUDP, completion: NWConnection.SendCompletion.contentProcessed(({ (NWError) in
+                    if (NWError == nil) {
+                        print("Wrote \(content)")
+                    } else {
+                        print("ERROR! Error when data (Type: Data) sending. NWError: \n \(NWError!)")
+                    }
+                })))
+            } else {
+                print("connObj is nil")
+            }
+        } else {
+            print("data lost")
         }
     }
     

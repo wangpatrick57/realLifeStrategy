@@ -73,8 +73,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         getCPData()
         
         //start step function timer
-        timer.invalidate()
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(step), userInfo: nil, repeats: true)
+        stepTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(step), userInfo: nil, repeats: true)
         
         //ping long press gesture recognizer
         let lpgr = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(gestureRecognizer:)))
@@ -170,10 +169,12 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     @IBAction func onReturnPressed(_ sender: Any) {
         if (true/*!debug*/) {
             //tell server
-            networking.sendRet()
+            myPlayer.setConnected(connected: false)
+            networking.setSendConn(sc: true)
         }
         
         manager.stopUpdatingLocation()
+        stepTimer.invalidate()
         inGame = false
         recBrd = false
         recRP = false
@@ -233,9 +234,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         if (callStepActions) {
             stepActions()
         }
-        
-        //make sure to send a heartbeat every second regardless
-        networking.sendHeartbeat()
     }
     
     func stepActions() {
@@ -265,10 +263,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             
             debugLabel.text = gameStateString
         }
-        
-        //server stuff every second
-        networking.readAllData()
-        networking.broadcastOneTimers()
         
         if (recBrd) {
             networking.sendRecBrd()

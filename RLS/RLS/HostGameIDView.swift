@@ -35,10 +35,6 @@ class HostGameIDView : UIViewController, CLLocationManagerDelegate, UIGestureRec
         mapView.addGestureRecognizer(tgr)
         
         HostGameID.text = "Game ID: " + gameID
-        
-        //start step function timer
-        timer.invalidate()
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(step), userInfo: nil, repeats: true)
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -80,16 +76,6 @@ class HostGameIDView : UIViewController, CLLocationManagerDelegate, UIGestureRec
         
         //go to nickname view
         self.performSegue(withIdentifier: "EnterNicknameSegue", sender: self)
-    }
-    
-    @objc func step() {
-        //send heartbeat
-        networking.readAllData()
-        networking.sendHeartbeat()
-    }
-    
-    override func didReceiveMemoryWarning() {
-        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

@@ -13,9 +13,18 @@ import FirebaseFirestore
 var nickname:String = ""
 
 class NicknameTFView: UIViewController {
-    
     @IBOutlet weak var gameIDLabel: UILabel!
     @IBOutlet weak var nicknameTF: UITextField!
+    var id = String()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        gameIDLabel.text = "Game ID: " + gameID
+        
+        db.document("\(gameCol)/\(gameID)").setData([
+            "respawnPointNum": 0
+            ])
+    }
     
     @IBAction func JoinButton(_ sender: Any) {
         let enteredName = nicknameTF.text ?? ""
@@ -28,30 +37,6 @@ class NicknameTFView: UIViewController {
                 self.performSegue(withIdentifier: "PlayerListSegue", sender: self)
             }
         }
-    }
-    
-    var id = String()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        gameIDLabel.text = "Game ID: " + gameID
-        
-        db.document("\(gameCol)/\(gameID)").setData([
-            "respawnPointNum": 0
-            ])
-        
-        //start step function timer
-        timer.invalidate()
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(step), userInfo: nil, repeats: true)
-    }
-    
-    @objc func step() {
-        //send heartbeat
-        networking.readAllData()
-        networking.sendHeartbeat()
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     }
     
     func checkNameTaken() {

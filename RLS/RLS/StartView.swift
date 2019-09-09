@@ -9,7 +9,7 @@
 import UIKit
 
 let networking = Networking()
-var timer: Timer!
+var stepTimer: Timer!
 let deathTime = 5.0
 let tetherDist = 20.0
 var respawnTime = 15.0 //seconds
@@ -29,14 +29,14 @@ class StartView: UIViewController {
         print("networking in start")
         networking.setupNetworkComms()
         
-        //start step function timer
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(step), userInfo: nil, repeats: true)
+        //start serverStep timer
+        _ = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(serverStep), userInfo: nil, repeats: true)
     }
     
-    @objc func step() {
-        //send heartbeat
+    @objc func serverStep() {
         networking.readAllData() //read all data to check if bt was received to know whether or not to send hrt
         networking.sendHeartbeat()
+        networking.broadcastOneTimers()
     }
 
     override func didReceiveMemoryWarning() {

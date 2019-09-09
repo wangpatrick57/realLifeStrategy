@@ -57,10 +57,6 @@ class PlayerListView : UIViewController{
                 }
             }
         }
-        
-        //start step function timer
-        timer.invalidate()
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(step), userInfo: nil, repeats: true)
     }
     
     @IBAction func onReturnPressed(_ sender: Any) {
@@ -82,12 +78,6 @@ class PlayerListView : UIViewController{
         team = "blue"
         redButton.backgroundColor = redUnselected
         blueButton.backgroundColor = blueSelected
-    }
-    
-    @objc func step() {
-        //send heartbeat
-        networking.readAllData()
-        networking.sendHeartbeat()
     }
     
     @IBAction func enterGamePressed(_ sender: Any) {

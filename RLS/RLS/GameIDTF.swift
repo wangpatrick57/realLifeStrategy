@@ -13,6 +13,10 @@ import Firebase
 class GameIDTF: UIViewController {
     @IBOutlet var idTF: UITextField!
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
     @IBAction func EnterButton(_ sender: Any) {
         gameID = idTF.text ?? ""
         
@@ -38,25 +42,6 @@ class GameIDTF: UIViewController {
                 }
             }
         }
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        
-        //start step function timer
-        timer.invalidate()
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(step), userInfo: nil, repeats: true)
-    }
-    
-    @objc func step() {
-        //send heartbeat
-        networking.readAllData()
-        networking.sendHeartbeat()
-    }
-    
-    override func didReceiveMemoryWarning() {
-        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
