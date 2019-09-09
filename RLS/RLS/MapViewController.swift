@@ -170,7 +170,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         if (true/*!debug*/) {
             //tell server
             myPlayer.setConnected(connected: false)
-            networking.setSendConn(sc: true)
         }
         
         manager.stopUpdatingLocation()
@@ -190,7 +189,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             }
             
             myPlayer.addWardAt(coordinate: coordinate)
-            networking.setSendWard(sw: true)
         }
     }
     
@@ -200,8 +198,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         } else {
             myPlayer.setDead(dead: true)
         }
-        
-        networking.setSendDead(sd: true)
     }
     
     //ping with long press
@@ -279,7 +275,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             if (inRespawnArea()) {
                 if (currTime > respawnEnterTime + respawnTime) {
                     myPlayer.setDead(dead: false)
-                    networking.setSendDead(sd: true)
                 }
                 
                 print("in respawn area")
@@ -575,7 +570,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                 map.removeAnnotation(thisPlayer)
             }
         } else {
-            let newPlayer = Player(name: name, team: team, coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
+            let newPlayer = Player(name: name)
+            newPlayer.setTeam(team: team)
             playerDict[name] = newPlayer
         }
     }
@@ -590,9 +586,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         if let thisPlayer = playerDict[name] {
             thisPlayer.setDead(dead: dead)
         } else {
-            let newPlayer = Player(name: name, team: "none", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
-            playerDict[name] = newPlayer
+            let newPlayer = Player(name: name)
             newPlayer.setDead(dead: dead)
+            playerDict[name] = newPlayer
         }
     }
     
@@ -610,9 +606,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             
             thisPlayer.addWardAt(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
         } else {
-            let newPlayer = Player(name: name, team: "none", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
-            playerDict[name] = newPlayer
+            let newPlayer = Player(name: name)
             newPlayer.addWardAt(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
+            playerDict[name] = newPlayer
         }
     }
     
@@ -629,9 +625,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                 }
             }
         } else {
-            let newPlayer = Player(name: name, team: "none", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
-            playerDict[name] = newPlayer
+            let newPlayer = Player(name: name)
             newPlayer.setConnected(connected: conn)
+            playerDict[name] = newPlayer
         }
     }
     

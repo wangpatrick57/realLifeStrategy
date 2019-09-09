@@ -24,9 +24,9 @@ class Networking {
     let hostUDP: NWEndpoint.Host = "73.189.41.182"
     var portUDP: NWEndpoint.Port = 8888
     var sendWard = false
-    var sendTeam = true
-    var sendDead = true
-    var sendConn = true
+    var sendTeam = false
+    var sendDead = false
+    var sendConn = false
     
     let posInc: [String: Int] = [
         "bt": 1,
@@ -296,12 +296,10 @@ class Networking {
     }
     
     func write(_ content: String) {
-        if (Float.random(in: 0 ..< 1) < 1) {
+        if (Float.random(in: 0 ..< 1) > packetLossChance) {
             let contentToSendUDP = content.data(using: String.Encoding.utf8)
             
             if let connObj = self.connection {
-                print("connObj is good")
-                
                 connObj.send(content: contentToSendUDP, completion: NWConnection.SendCompletion.contentProcessed(({ (NWError) in
                     if (NWError == nil) {
                         print("Wrote \(content)")

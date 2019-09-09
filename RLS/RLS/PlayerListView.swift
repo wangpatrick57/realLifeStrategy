@@ -11,7 +11,7 @@ import MapKit
 import UIKit
 import Firebase
 
-var myPlayer:Player = Player()
+var myPlayer:Player = Player(name: "")
 
 class PlayerListView : UIViewController{
     
@@ -82,23 +82,9 @@ class PlayerListView : UIViewController{
     
     @IBAction func enterGamePressed(_ sender: Any) {
         if (team != "") {
-            myPlayer = Player(name: nickname, team: team, coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
-            networking.setSendTeam(st: true)
+            myPlayer = Player(name: nickname)
+            myPlayer.setTeam(team: team)
             self.performSegue(withIdentifier: "ShowMap", sender: self)
-        } //else{
-//            myPlayer = Player(name: nickname, team: "neutral", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
-//        }
+        }
     }
-    
-//    @IBOutlet weak var redPlayersScroll: UIScrollView!
-//
-//    @IBAction func teamSelected(_ sender: UIButton) {
-//        if sender.tag == 1{
-//            team = "Red"
-//        }
-//        if sender.tag == 2{
-//            team = "Blue"
-//        }
-//        print(team)
-//    }
 }

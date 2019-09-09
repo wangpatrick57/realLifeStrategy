@@ -31,6 +31,7 @@ var posInc map[string]int
 var mutex sync.Mutex //lock this with actions regarding connToClient or printPeriodicals
 var printPeriodicals bool
 var packetConn net.PacketConn
+var packetLossChance float64 = 0.0
 
 func main() {
     /*initializes the addrToClient array. the design is kinda weird, i basically treat
@@ -500,8 +501,8 @@ func broadcast() {
 
             //looping through all the sendPlayers
             for _, thisPlayer := range recClient.getGame().getPlayers() {
-                //checking that their position isn't 0,0 ensures they are in game
-                if thisPlayer != recClient.getPlayer() && thisPlayer.getLat() != 0 && thisPlayer.getLong() != 0 {
+                //checking that they're connected
+                if thisPlayer != recClient.getPlayer() && thisPlayer.getConnected() {
                     writeString := ""
                     printString := ""
                     pp := getPrintPeriodicals()
@@ -573,7 +574,7 @@ func broadcast() {
 }
 
 func write(addr string, writeString string) {
-    if (rand.Float64() < 0.5) {
+    if (rand.Float64() > packetLossChance) {
         addrObject, err := net.ResolveUDPAddr("udp", addr)
 
         if err != nil {
