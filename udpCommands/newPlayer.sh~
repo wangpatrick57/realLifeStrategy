@@ -11,4 +11,4 @@ else
     gameID=$2
 fi
 
-./send.sh checkID:$gameID:checkName:$name:loc:1:1:team:red:conn:true:simClient:
+./send.sh checkID:$gameID:checkName:$name:loc:1:1:team:red:conn:true:
