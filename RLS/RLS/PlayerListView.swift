@@ -11,7 +11,7 @@ import MapKit
 import UIKit
 import Firebase
 
-var myPlayer:Player = Player()
+var myPlayer:Player = Player(name: "")
 
 class PlayerListView : UIViewController{
     
@@ -26,27 +26,6 @@ class PlayerListView : UIViewController{
     var blueSelected: UIColor = UIColor(red: 73.0/255.0, green: 94.0/255.0, blue: 246.0/255.0, alpha: 1.0)
     var team: String = ""
     var respawnPointNum: Int = 3
-    
-    @IBAction func onReturnPressed(_ sender: Any) {
-        if (true || !debug) {
-            //tell server
-            networking.sendRet()
-        }
-        
-        self.performSegue(withIdentifier: "ShowName", sender: nil)
-    }
-    
-    @IBAction func redSelected(_ sender: Any) {
-        team = "red"
-        redButton.backgroundColor = redSelected
-        blueButton.backgroundColor = blueUnselected
-    }
-    
-    @IBAction func blueSelected(_ sender: Any) {
-        team = "blue"
-        redButton.backgroundColor = redUnselected
-        blueButton.backgroundColor = blueSelected
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -78,38 +57,34 @@ class PlayerListView : UIViewController{
                 }
             }
         }
-        
-        //start step function timer
-        timer.invalidate()
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(step), userInfo: nil, repeats: true)
     }
     
-    @objc func step() {
-        //send heartbeat
-        networking.readAllData()
-        networking.sendHeartbeat()
+    @IBAction func onReturnPressed(_ sender: Any) {
+        if (true || !debug) {
+            //tell server
+            networking.sendRet()
+        }
+        
+        self.performSegue(withIdentifier: "ShowName", sender: nil)
+    }
+    
+    @IBAction func redSelected(_ sender: Any) {
+        team = "red"
+        redButton.backgroundColor = redSelected
+        blueButton.backgroundColor = blueUnselected
+    }
+    
+    @IBAction func blueSelected(_ sender: Any) {
+        team = "blue"
+        redButton.backgroundColor = redUnselected
+        blueButton.backgroundColor = blueSelected
     }
     
     @IBAction func enterGamePressed(_ sender: Any) {
         if (team != "") {
-            myPlayer = Player(name: nickname, team: team, coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
-            networking.sendTeam(team: team)
-            
+            myPlayer = Player(name: nickname)
+            myPlayer.setTeam(team: team)
             self.performSegue(withIdentifier: "ShowMap", sender: self)
-        } //else{
-//            myPlayer = Player(name: nickname, team: "neutral", coordinate: CLLocationCoordinate2D(latitude: 0, longitude: 0))
-//        }
+        }
     }
-    
-//    @IBOutlet weak var redPlayersScroll: UIScrollView!
-//
-//    @IBAction func teamSelected(_ sender: UIButton) {
-//        if sender.tag == 1{
-//            team = "Red"
-//        }
-//        if sender.tag == 2{
-//            team = "Blue"
-//        }
-//        print(team)
-//    }
 }

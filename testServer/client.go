@@ -8,7 +8,9 @@ type Client struct {
     Game *Game
     Player *Player
     Receiving bool
-    ReceivingInitial bool
+    ReceivingBorder bool
+    ReceivingRP bool
+    Channel chan string
     Mutex sync.Mutex //lock this for actions regarding receiving, game, or player
 }
 
@@ -42,14 +44,34 @@ func (client *Client) setReceiving(receiving bool) {
     client.Receiving = receiving
 }
 
-func (client *Client) getReceivingInitial() bool {
+func (client *Client) getReceivingBorder() bool {
     client.mutexLock()
-    return client.ReceivingInitial
+    return client.ReceivingBorder
 }
 
-func (client *Client) setReceivingInitial(receivingInitial bool) {
+func (client *Client) setReceivingBorder(receivingBorder bool) {
     client.mutexLock()
-    client.ReceivingInitial = receivingInitial
+    client.ReceivingBorder = receivingBorder
+}
+
+func (client *Client) getReceivingRP() bool {
+    client.mutexLock()
+    return client.ReceivingRP
+}
+
+func (client *Client) setReceivingRP(receivingRP bool) {
+    client.mutexLock()
+    client.ReceivingRP = receivingRP
+}
+
+func (client *Client) getChannel() chan string {
+    client.mutexLock()
+    return client.Channel
+}
+
+func (client *Client) setChannel(channel chan string) {
+    client.mutexLock()
+    client.Channel = channel
 }
 
 func (client *Client) playerDisconnectActions() {

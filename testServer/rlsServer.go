@@ -12,32 +12,36 @@ import (
     "strconv"
     "time"
     "sync"
+    "math/rand"
 )
 
 const (
     HostName = "10.0.1.128"
     //HostName = "127.0.0.1"
     Port = "8889" //8888 is for stable server. 8889 is for test server. in the future we may need different ports for each person
-    ConnType = "tcp"
+    ConnType = "udp"
 )
 
 //dictionary of conn objects to client objects
-var connToClient map[*net.Conn]*Client
+var addrToClient map[string]*Client
 //the master json object
 var master *Master
 //this is explained below
 var posInc map[string]int
 var mutex sync.Mutex //lock this with actions regarding connToClient or printPeriodicals
 var printPeriodicals bool
+var packetConn net.PacketConn
+var packetLossChance float64 = 0.0
 
 func main() {
-    /*initializes the connToClient array. the design is kinda weird, i basically treat
+    /*initializes the addrToClient array. the design is kinda weird, i basically treat
     rlsServer itself as its own class with its own getters and setters. this way, i
     don't forget use mutex before accessing or changing any data since locking the
     mutex is built in (by the code, not by golang) to all getters and setters*/
-    setConnToClient(make(map[*net.Conn]*Client))
-    //sets print periodicals to true. you might want to set this to false by default by preference
-    setPrintPeriodicals(true)
+    setAddrToClient(make(map[string]*Client))
+
+    //sets print periodicals to true. you might prefer to set this to false by default
+    setPrintPeriodicals(false)
 
     //position increment. the amount of cells to increment in the string array after every command
     posInc = map[string]int {
@@ -53,75 +57,89 @@ func main() {
         "loc": 3,
         "ward": 3,
         "dead": 2,
-        "ret": 1,
+        "conn": 2,
         "reset": 1,
         "brd": 3,
+        "recBrd": 1,
+        "recRP": 1,
+        "wardCk": 4,
+        "teamCk": 3,
+        "deadCk": 3,
+        "connCk": 3,
     }
 
     //sets the default state of the master json
     master = baseMaster()
+
+    //broadcast is a single forever loop that takes care of all the writes
+    go broadcast()
+
+    //send data through a channel based on the data's address for another goroutine to process the data
+
     //creates the listener (for connections, not for data)
-    l, err := net.Listen(ConnType, HostName + ":" + Port)
+    //err has to be initialized instead of using := notation because packetConn is a globalvar
+    var err error
+    packetConn, err = net.ListenPacket(ConnType, HostName + ":" + Port)
 
     //crashes if there's an error in creating the listener (for example, if another instance of the server is running)
     if err != nil {
         fmt.Printf("Error listening: %v\n", err.Error())
         os.Exit(1)
+    } else {
+        fmt.Printf("Listening on %s:%s\n", HostName, Port)
     }
 
-    defer l.Close()
+    defer packetConn.Close()
 
-    fmt.Printf("Listening on %s:%s\n", HostName, Port)
-    //broadcast has its own forever loop so this function only needs to be called once
-    go broadcast()
-
-    //the forever loop that runs the entire server
+    //the forever loop that reads
     for {
-        //check for connections (the code stops here if there are no connections i think)
-        conn, err := l.Accept()
-        fmt.Printf("connection detected\n")
+        //read for data
+        /*create the buffer here instead of just once outside the loop because
+            otherwise it doesn't clear*/
+        buf := make([]byte, 2048)
+        _, addrObject, err := packetConn.ReadFrom(buf)
+        addr := addrObject.String()
+        bufString := string(bytes.Trim(buf, "\x00"))
+        client, ok := getClient(addr)
+
+        if (!ok) {
+            client := &(Client{})
+            setClient(addr, client)
+            channel := make(chan string)
+            client.setChannel(channel)
+
+            //if this is a new address, create a new routine that listens for data from that connection
+            go processData(addr)
+
+            //send the data to the new goroutine
+            client.getChannel() <- bufString
+        } else {
+            client.getChannel() <- bufString
+        }
 
         if err != nil {
-            fmt.Printf("Error accepting: %v\n", err.Error())
+            fmt.Printf("Error reading: %v\n", err.Error())
             //think about not exiting for a failed connection
             os.Exit(1)
         }
-
-        //if the connection is successful, create a new routine that listens for data from that connection
-        go handleRequest(conn)
     }
 
     return
 }
 
-func handleRequest(conn net.Conn) {
-    client := &(Client{})
-    setClient(&conn, client)
+func processData(addr string) {
     rdlEnabled := true
+    client, _ := getClient(addr)
+    channel := client.getChannel()
 
     for {
-        buf := make([]byte, 1024)
-
-        if (rdlEnabled) {
-            conn.SetReadDeadline(time.Now().Local().Add(time.Second * time.Duration(30)))
-        }
-
-        _, err := conn.Read(buf)
-        buf = bytes.Trim(buf, "\x00")
-		content := string(buf)
-
-        if err != nil {
-            fmt.Printf("Error reading: %v\n", err.Error())
-            client.playerDisconnectActions()
-            return
-        }
-
+        content := <-channel
 		info := strings.Split(content, ":")
         writeString := ""
         printString := ""
         posInSlice := 0
         pp := getPrintPeriodicals()
-        printRead(client, info, pp)
+        printRead(client, info, pp, addr)
 
         for ;posInSlice < len(info) - 1; {
             validBuffer := true
@@ -149,7 +167,7 @@ func handleRequest(conn net.Conn) {
                 rdlEnabled = !rdlEnabled
 
                 if (!rdlEnabled) {
-                    conn.SetReadDeadline(time.Time{})
+                    //conn.SetReadDeadline(time.Time{})
                 }
             case "togglePP":
                 setPrintPeriodicals(!getPrintPeriodicals())
@@ -178,15 +196,22 @@ func handleRequest(conn net.Conn) {
 
                 if (readName != "") {
                     if (client.getGame() != nil) {
-                        nameTaken := client.getGame().checkNameTaken(readName)
+                        var nameTaken bool
 
-                        if (!nameTaken) {
-                            thisPlayer := &(Player{})
-                            client.setPlayer(thisPlayer)
-                            thisGame := client.getGame()
-                            thisPlayer.constructor(thisGame.getPlayers())
-                            thisPlayer.setName(readName)
-                            thisGame.addPlayer(thisPlayer)
+                        if (client.getPlayer() != nil && client.getPlayer().getName() == readName) {
+                            nameTaken = false
+                        } else {
+                            nameTaken = client.getGame().checkNameTaken(readName)
+
+                            if (!nameTaken) {
+                                thisPlayer := &(Player{})
+                                thisPlayer.setName(readName)
+                                client.setPlayer(thisPlayer)
+                                thisGame := client.getGame()
+                                thisGame.addPlayer(thisPlayer)
+                                //the constructor also sets the sendTo arrays of all other players to true
+                                thisPlayer.constructor(thisGame.getPlayers())
+                            }
                         }
 
                         additionalString := fmt.Sprintf("checkName:%t:", nameTaken)
@@ -212,6 +237,9 @@ func handleRequest(conn net.Conn) {
 
                     thisPlayer.setTeam(team)
                     thisPlayer.makeSendTrue("team", players)
+                    additionalString := fmt.Sprintf("teamCk:%s:", team)
+                    writeString += additionalString
+                    printString += additionalString
                 } else {
                     fmt.Printf("A client without a game/player is trying to set team\n")
                 }
@@ -221,10 +249,6 @@ func handleRequest(conn net.Conn) {
 
                 if (err1 == nil && err2 == nil) {
                     if (client.getPlayer() != nil && client.getGame() != nil) {
-                        if (client.getPlayer().getLat() == 0 && client.getPlayer().getLong() == 0) {
-                            client.setReceivingInitial(true)
-                        }
-
                         client.getPlayer().setLoc(lat, long)
                     } else {
                         fmt.Printf("A client without a game/player is trying to set loc\n")
@@ -243,6 +267,9 @@ func handleRequest(conn net.Conn) {
                     if (client.getPlayer() != nil && client.getGame() != nil) {
                         client.getPlayer().setWardLoc(lat, long)
                         client.getPlayer().makeSendTrue("ward", client.getGame().getPlayers())
+                        additionalString := fmt.Sprintf("wardCk:%f:%f:", lat, long)
+                        writeString += additionalString
+                        printString += additionalString
                     } else {
                         fmt.Printf("A client without a game/player is trying to set ward loc\n")
                     }
@@ -257,6 +284,9 @@ func handleRequest(conn net.Conn) {
                     if (client.getPlayer() != nil && client.getGame() != nil) {
                         client.getPlayer().setDead(dead)
                         client.getPlayer().makeSendTrue("dead", client.getGame().getPlayers())
+                        additionalString := fmt.Sprintf("deadCk:%t:", dead)
+                        writeString += additionalString
+                        printString += additionalString
                     } else {
                         fmt.Printf("A client without a game/player is trying to set dead\n")
                     }
@@ -264,8 +294,23 @@ func handleRequest(conn net.Conn) {
                     fmt.Printf("Error parsing dead: %v\n", err)
                     validBuffer = false
                 }
-            case "ret":
-                client.playerDisconnectActions()
+            case "conn":
+                conn, err := strconv.ParseBool(info[posInSlice + 1])
+
+                if (err == nil) {
+                    if (!conn) {
+                        client.playerDisconnectActions()
+                    } else {
+                        //idk if this is good to have here
+                        //client.getPlayer().setConnected(true)
+                    }
+
+                    additionalString := fmt.Sprintf("connCk:%t:", conn)
+                    writeString += additionalString
+                    printString += additionalString
+                } else {
+                    fmt.Printf("Error parsing conn: %v\n", err)
+                }
             case "reset":
                 client.getGame().resetSettings()
             case "brd":
@@ -280,8 +325,124 @@ func handleRequest(conn net.Conn) {
                     }
                 } else {
                     fmt.Printf("Error parsing boord location. Lat error: %v; long error: %v\n", err1, err2)
-                    //setting validBuffer on a failed parse makes sure any commands after loc are kept
-                    //for example, if loc:ward:1:1: is sent
+                    /*setting validBuffer on a failed parse makes sure any commands after loc are kept
+                    for example, if loc:ward:1:1: is sent*/
+                    validBuffer = false
+                }
+            case "recBrd":
+                /*the design is that the client asks for the server to send game element packets instead of
+                the server continously sending packets until the client asks it to stop. this way, the more
+                expensive game element packet is sent after the less expensive request packet. it's like
+                why you put less expensive checks first in an if statement.*/
+                if (client.getPlayer() != nil && client.getGame() != nil) {
+                    client.setReceivingBorder(true)
+                } else {
+                    fmt.Printf("A client without a game/player is trying to set recBrd\n")
+                }
+            case "recRP":
+                if (client.getPlayer() != nil && client.getGame() != nil) {
+                    client.setReceivingRP(true)
+                } else {
+                    fmt.Printf("A client without a game/player is trying to set recBrd\n")
+                }
+            case "wardCk": //ward check
+                name := info[posInSlice + 1]
+                wardLat, err1 := strconv.ParseFloat(info[posInSlice + 2], 64)
+                wardLong, err2 := strconv.ParseFloat(info[posInSlice + 3], 64)
+                myName := client.getPlayer().getName()
+                myGame := client.getGame()
+
+                if (err1 == nil && err2 == nil) {
+                    if (client.getPlayer() != nil && client.getGame() != nil) {
+                        thisPlayer := myGame.getPlayer(name)
+
+                        if (thisPlayer != nil) {
+                            if (thisPlayer.getWardLat() == wardLat && thisPlayer.getWardLong() == wardLong) {
+                                thisPlayer.setSendTo("ward", myName, false)
+                            } else {
+                                thisPlayer.setSendTo("ward", myName, true)
+                            }
+                        } else {
+                            fmt.Printf("Name %s sent in wardCk doesn't exist\n", name)
+                        }
+                    } else {
+                        fmt.Printf("A client without a game/player is trying to check ward\n")
+                    }
+                } else {
+                    fmt.Printf("Error parsing wardCk location. Lat error: %v; long error: %v\n", err1, err2)
+                    validBuffer = false
+                }
+            case "teamCk":
+                name := info[posInSlice + 1]
+                team := info[posInSlice + 2]
+                myName := client.getPlayer().getName()
+                myGame := client.getGame()
+
+                if (client.getPlayer() != nil && client.getGame() != nil) {
+                    thisPlayer := myGame.getPlayer(name)
+
+                    if (thisPlayer != nil) {
+                        if (thisPlayer.getTeam() == team) {
+                            thisPlayer.setSendTo("team", myName, false)
+                        } else {
+                            thisPlayer.setSendTo("team", myName, true)
+                        }
+                    } else {
+                        fmt.Printf("Name %s sent in teamCk doesn't exist\n", name)
+                    }
+                } else {
+                    fmt.Printf("A client without a game/player is trying to check team\n")
+                }
+            case "deadCk":
+                name := info[posInSlice + 1]
+                dead, err := strconv.ParseBool(info[posInSlice + 2])
+                myName := client.getPlayer().getName()
+                myGame := client.getGame()
+
+                if (err == nil) {
+                    if (client.getPlayer() != nil && client.getGame() != nil) {
+                        thisPlayer := myGame.getPlayer(name)
+
+                        if (thisPlayer != nil) {
+                            if (thisPlayer.getDead() == dead) {
+                                thisPlayer.setSendTo("dead", myName, false)
+                            } else {
+                                thisPlayer.setSendTo("dead", myName, true)
+                            }
+                        } else {
+                            fmt.Printf("Name %s sent in deadCk doesn't exist\n", name)
+                        }
+                    } else {
+                        fmt.Printf("A client without a game/player is trying to check dead\n")
+                    }
+                } else {
+                    fmt.Printf("Error parsing deadCk: %v\n", err)
+                    validBuffer = false
+                }
+            case "connCk":
+                name := info[posInSlice + 1]
+                conn, err := strconv.ParseBool(info[posInSlice + 2])
+                myName := client.getPlayer().getName()
+                myGame := client.getGame()
+
+                if (err == nil) {
+                    if (client.getPlayer() != nil && client.getGame() != nil) {
+                        thisPlayer := myGame.getPlayer(name)
+
+                        if (thisPlayer != nil) {
+                            if (thisPlayer.getConnected() == conn) {
+                                thisPlayer.setSendTo("conn", myName, false)
+                            } else {
+                                thisPlayer.setSendTo("conn", myName, true)
+                            }
+                        } else {
+                            fmt.Printf("Name %s sent in connCk doesn't exist\n", name)
+                        }
+                    } else {
+                        fmt.Printf("A client without a game/player is trying to check conn\n")
+                    }
+                } else {
+                    fmt.Printf("Error parsing connCk: %v\n", err)
                     validBuffer = false
                 }
             default:
@@ -294,12 +455,13 @@ func handleRequest(conn net.Conn) {
                 //if the buffer is valid it's mostly safe to assume that no other commands are "hidden" after the type
                 posInSlice += posInc[bufType]
             } else {
+                //if the data after the buffer is invalid this makes sure to only increment by one to check that case
                 posInSlice++
             }
         }
 
         if (writeString != "") {
-            write(&conn, client, writeString)
+            write(addr, writeString)
         }
 
         if (printString != "") {
@@ -307,86 +469,81 @@ func handleRequest(conn net.Conn) {
         }
     }
 
-    deleteConn(&conn)
-    conn.Close()
+    deleteAddr(addr)
     return
 }
 
 func broadcast() {
     for {
-        for recConn, recClient := range getConnToClient() {
-            if !recClient.getReceiving() || recClient.getGame() == nil || recClient.getPlayer() == nil {
+        for recAddr, recClient := range getAddrToClient() {
+            if /*!recClient.getReceiving() || */recClient.getGame() == nil || recClient.getPlayer() == nil {
                 continue
             }
 
-            //one time things for clients like respawn points, game settings, etc
-            if (recClient.getReceivingInitial()) {
-                writeString := ""
-                writeString += recClient.getGame().rpString()
-                writeString += recClient.getGame().boordString()
+            //game elements
+            if (recClient.getReceivingBorder()) {
+                writeString := recClient.getGame().boordString()
+                write(recAddr, writeString)
                 printString := writeString
-                write(recConn, recClient, writeString)
                 printWrote(recClient, printString)
+                recClient.setReceivingBorder(false)
+            }
+
+            if (recClient.getReceivingRP()) {
+                writeString := recClient.getGame().rpString()
+                write(recAddr, writeString)
+                printString := writeString
+                printWrote(recClient, printString)
+                recClient.setReceivingRP(false)
             }
 
             recPlayer := recClient.getPlayer()
 
             //looping through all the sendPlayers
             for _, thisPlayer := range recClient.getGame().getPlayers() {
-                //checking that their position isn't 0,0 ensures they are in game
-                if thisPlayer != recClient.getPlayer() && thisPlayer.getLat() != 0 && thisPlayer.getLong() != 0 {
+                //checking that they're connected
+                if thisPlayer != recClient.getPlayer() && thisPlayer.getConnected() {
                     writeString := ""
                     printString := ""
                     pp := getPrintPeriodicals()
 
-                    //receivingInitial is for players who just joined the game to get the current game state
-                    //sendTo arrays is for players already in the game to broadcast their changed info to all other players
-                    if recClient.getReceivingInitial() {
-                        writeString = thisPlayer.initialPlayerString()
-                        printString = writeString
-                    } else {
-                        if (thisPlayer.getConnected()) {
-                            additionalString := fmt.Sprintf("loc:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getLat(), thisPlayer.getLong())
-                            writeString += additionalString
+                    if (thisPlayer.getConnected()) {
+                        additionalString := fmt.Sprintf("loc:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getLat(), thisPlayer.getLong())
+                        writeString += additionalString
 
-                            if (pp) {
-                                printString += additionalString
-                            }
-                        }
-
-                        //conn has to be before everything because when conn is true the client creates a new player
-                        if val, ok := thisPlayer.getSendTo("conn", recPlayer.getName()); ok && val {
-                            additionalString := fmt.Sprintf("conn:%s:%t:", thisPlayer.getName(), thisPlayer.getConnected())
-                            writeString += additionalString
+                        if (pp) {
                             printString += additionalString
-                            thisPlayer.setSendTo("conn", recPlayer.getName(), false)
-                        }
-
-                        //team has to be before ward so the ward is drawn with the team known
-                        if val, ok := thisPlayer.getSendTo("team", recPlayer.getName()); ok && val {
-                            additionalString := fmt.Sprintf("team:%s:%s:", thisPlayer.getName(), thisPlayer.getTeam())
-                            writeString += additionalString
-                            printString += additionalString
-                            thisPlayer.setSendTo("team", recPlayer.getName(), false)
-                        }
-
-                        if val, ok := thisPlayer.getSendTo("ward", recPlayer.getName()); ok && val {
-                            additionalString := fmt.Sprintf("ward:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getWardLat(), thisPlayer.getWardLong())
-                            writeString += additionalString
-                            printString += additionalString
-                            thisPlayer.setSendTo("ward", recPlayer.getName(), false)
-                        }
-
-                        if val, ok := thisPlayer.getSendTo("dead", recPlayer.getName()); ok && val {
-                            additionalString := fmt.Sprintf("dead:%s:%t:", thisPlayer.getName(), thisPlayer.getDead())
-                            writeString += additionalString
-                            printString += additionalString
-                            thisPlayer.setSendTo("dead", recPlayer.getName(), false)
                         }
                     }
 
+                    //conn has to be before everything because when conn is true the client creates a new player
+                    if val, ok := thisPlayer.getSendTo("conn", recPlayer.getName()); ok && val {
+                        additionalString := fmt.Sprintf("conn:%s:%t:", thisPlayer.getName(), thisPlayer.getConnected())
+                        writeString += additionalString
+                        printString += additionalString
+                    }
+
+                    //team has to be before ward so the ward is drawn with the team known
+                    if val, ok := thisPlayer.getSendTo("team", recPlayer.getName()); ok && val {
+                        additionalString := fmt.Sprintf("team:%s:%s:", thisPlayer.getName(), thisPlayer.getTeam())
+                        writeString += additionalString
+                        printString += additionalString
+                    }
+
+                    if val, ok := thisPlayer.getSendTo("ward", recPlayer.getName()); ok && val {
+                        additionalString := fmt.Sprintf("ward:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getWardLat(), thisPlayer.getWardLong())
+                        writeString += additionalString
+                        printString += additionalString
+                    }
+
+                    if val, ok := thisPlayer.getSendTo("dead", recPlayer.getName()); ok && val {
+                        additionalString := fmt.Sprintf("dead:%s:%t:", thisPlayer.getName(), thisPlayer.getDead())
+                        writeString += additionalString
+                        printString += additionalString
+                    }
+
                     if (writeString != "") {
-                        write(recConn, recClient, writeString)
+                        write(recAddr, writeString)
                     }
 
                     if (printString != "") {
@@ -395,7 +552,7 @@ func broadcast() {
                 }
             }
 
-            recClient.setReceivingInitial(false)
+            //recClient.setReceivingInitial(false)
             recClient.setReceiving(false)
         }
 
@@ -416,11 +573,19 @@ func broadcast() {
     }
 }
 
-func write(conn *net.Conn, client *Client, writeString string) {
-    _, err := (*conn).Write([]byte(writeString))
+func write(addr string, writeString string) {
+    if (rand.Float64() > packetLossChance) {
+        addrObject, err := net.ResolveUDPAddr("udp", addr)
 
-    if err != nil {
-        fmt.Printf("Error writing: %v\n", err)
+        if err != nil {
+            fmt.Printf("Error resolving udp address: %v\n", err)
+        } else {
+            _, err := packetConn.WriteTo([]byte(writeString), addrObject)
+
+            if err != nil {
+                fmt.Printf("Error writing: %v\n", err)
+            }
+        }
     }
 }
 
@@ -436,7 +601,7 @@ func printWrote(client *Client, printString string) {
     fmt.Printf("Wrote %s to %s\n", printString, idString)
 }
 
-func printRead(client *Client, info []string, periodicals bool) {
+func printRead(client *Client, info []string, periodicals bool, addr string) {
     printString := ""
     posInSlice := 0
 
@@ -467,7 +632,7 @@ func printRead(client *Client, info []string, periodicals bool) {
             idString = "no name"
         }
 
-        fmt.Printf("Read %s from %s\n", printString, idString)
+        fmt.Printf("Read %s from %s at %s\n", printString, idString, addr)
     }
 }
 
@@ -486,20 +651,20 @@ func baseMaster() *Master {
 
                 Boords: []*Coord {
                     &Coord {
-                        Lat: 10,
-                        Long: 10,
+                        Lat: 45,
+                        Long: 45,
                     },
                     &Coord {
-                        Lat: -10,
-                        Long: 10,
+                        Lat: 45,
+                        Long: 55,
                     },
                     &Coord {
-                        Lat: -10,
-                        Long: -10,
+                        Lat: 55,
+                        Long: 55,
                     },
                     &Coord {
-                        Lat: 10,
-                        Long: -10,
+                        Lat: 55,
+                        Long: 45,
                     },
                 },
 
@@ -541,34 +706,33 @@ func baseMaster() *Master {
         },
     }
 
-    /*blueDummy := &Player{}
-    blueDummy.constructor(ret.getGame("Home").getPlayers())
-    blueDummy.setName("blueDummy")
-    blueDummy.setTeam("blue")
-    blueDummy.setLoc(37.32440, -121.98119)
-    ret.getGame("Home").addPlayer(blueDummy)*/
-
     return ret
 }
 
-func getConnToClient() map[*net.Conn]*Client {
+func getAddrToClient() map[string]*Client {
     mutexLock()
-    return connToClient
+    return addrToClient
 }
 
-func setConnToClient(newMap map[*net.Conn]*Client) {
+func setAddrToClient(newMap map[string]*Client) {
     mutexLock()
-    connToClient = newMap
+    addrToClient = newMap
 }
 
-func setClient(conn *net.Conn, client *Client) {
+func setClient(addr string, client *Client) {
     mutexLock()
-    connToClient[conn] = client
+    addrToClient[addr] = client
 }
 
-func deleteConn(conn *net.Conn) {
+func getClient(addr string) (*Client, bool) {
     mutexLock()
-    delete(connToClient, conn)
+    client, ok := addrToClient[addr]
+    return client, ok
+}
+
+func deleteAddr(addr string) {
+    mutexLock()
+    delete(addrToClient, addr)
 }
 
 func getPrintPeriodicals() bool {

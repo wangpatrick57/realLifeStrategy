@@ -3,6 +3,7 @@ package main
 import (
     "fmt"
     "sync"
+    "math"
 )
 
 type Player struct {
@@ -21,10 +22,11 @@ type Player struct {
     Mutex sync.Mutex //lock this for actions regarding any of these variables
 }
 
+var locPlaces int = 5
+
 func (player *Player) constructor(players map[string]*Player) {
     //can't use mutexLock() function because I need to unlock before doing makeSendTrue
     player.Mutex.Lock()
-    player.Connected = true
     player.SendWardTo = make(map[string]bool)
     player.SendTeamTo = make(map[string]bool)
     player.SendDeadTo = make(map[string]bool)
@@ -35,6 +37,15 @@ func (player *Player) constructor(players map[string]*Player) {
     player.makeSendTrue("team", players)
     player.makeSendTrue("dead", players)
     player.makeSendTrue("conn", players)
+
+    myName := player.Name
+
+    for _, p := range players {
+        p.setSendTo("ward", myName, true)
+        p.setSendTo("team", myName, true)
+        p.setSendTo("dead", myName, true)
+        p.setSendTo("conn", myName, true)
+    }
 }
 
 func (player *Player) getName() string {
@@ -54,8 +65,8 @@ func (player *Player) getLoc() (float64, float64) {
 
 func (player *Player) setLoc(lat, long float64) {
     player.mutexLock()
-    player.Lat = lat
-    player.Long = long
+    player.Lat = truncate(lat, locPlaces)
+    player.Long = truncate(long, locPlaces)
 }
 
 func (player *Player) getLat() float64 {
@@ -65,7 +76,7 @@ func (player *Player) getLat() float64 {
 
 func (player *Player) setLat(lat float64) {
     player.mutexLock()
-    player.Lat = lat
+    player.Lat = truncate(lat, locPlaces)
 }
 
 func (player *Player) getLong() float64 {
@@ -75,7 +86,7 @@ func (player *Player) getLong() float64 {
 
 func (player *Player) setLong(long float64) {
     player.mutexLock()
-    player.Long = long
+    player.Long = truncate(long, locPlaces)
 }
 
 func (player *Player) getWardLoc() (float64, float64) {
@@ -85,8 +96,8 @@ func (player *Player) getWardLoc() (float64, float64) {
 
 func (player *Player) setWardLoc(lat, long float64) {
     player.mutexLock()
-    player.WardLat = lat
-    player.WardLong = long
+    player.WardLat = truncate(lat, locPlaces)
+    player.WardLong = truncate(long, locPlaces)
 }
 
 func (player *Player) getWardLat() float64 {
@@ -96,7 +107,7 @@ func (player *Player) getWardLat() float64 {
 
 func (player *Player) setWardLat(lat float64) {
     player.mutexLock()
-    player.WardLat = lat
+    player.WardLat = truncate(lat, locPlaces)
 }
 
 func (player *Player) getWardLong() float64 {
@@ -106,7 +117,7 @@ func (player *Player) getWardLong() float64 {
 
 func (player *Player) setWardLong(long float64) {
     player.mutexLock()
-    player.WardLong = long
+    player.WardLong = truncate(long, locPlaces)
 }
 
 func (player *Player) getTeam() string {
@@ -213,6 +224,11 @@ func (player *Player) initialPlayerString() string {
     }
 
     return ret
+}
+
+func truncate(num float64, places int) float64 {
+    tenPowerNum := math.Pow10(places)
+    return math.Floor(num * tenPowerNum / tenPowerNum)
 }
 
 func (player *Player) mutexLock() {

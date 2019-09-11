@@ -15,39 +15,21 @@ class Player: MKPointAnnotation{
     private var team: String
     private var ward: Ward?
     private var dead: Bool
-    private var connected = true
-    private var teamChanged: Bool
+    private var connected: Bool
     let visionDist: Double = 20 //meters
     
-    override init() {
-        self.name = ""
-        self.team = ""
+    init (name: String) {
+        self.name = name
+        self.team = "none"
         self.dead = false
-        self.teamChanged = false
-        super.init()
-        self.coordinate = CLLocationCoordinate2D(latitude: 0, longitude: 0)
-    }
-    
-    init(name:String,team:String,coordinate:CLLocationCoordinate2D){
-        self.name=name
-        self.team=team
-        self.dead = false
-        self.teamChanged = false
+        self.connected = true
         super.init()
         self.title = name
-        //self.subtitle = team
-        self.coordinate=coordinate
-    }
-    
-    init(name:String,team:String,coordinate:CLLocationCoordinate2D, dead:Bool){
-        self.name=name
-        self.team=team
-        self.dead = dead
-        self.teamChanged = false
-        super.init()
-        self.title = name
-        //self.subtitle = team
-        self.coordinate=coordinate
+        let coord = CLLocationCoordinate2D(latitude: 200, longitude: 200)
+        self.coordinate = coord
+        //these two because dead and connected have default values
+        networking.setSendDead(sd: true)
+        networking.setSendConn(sc: true)
     }
     
     func setCoordinate(coordinate: CLLocationCoordinate2D) -> Void {
@@ -64,6 +46,7 @@ class Player: MKPointAnnotation{
     
     func setTeam(team: String) {
         self.team = team
+        networking.setSendTeam(st: true)
     }
     
     func getTeam() -> String {
@@ -76,6 +59,7 @@ class Player: MKPointAnnotation{
     
     func setDead(dead: Bool) {
         self.dead = dead
+        networking.setSendDead(sd: true)
     }
     
     func getConnected() -> Bool {
@@ -84,14 +68,7 @@ class Player: MKPointAnnotation{
     
     func setConnected(connected: Bool) {
         self.connected = connected
-    }
-    
-    func getTeamChanged() -> Bool {
-        return teamChanged
-    }
-    
-    func setTeamChanged(teamChanged: Bool) {
-        self.teamChanged = teamChanged
+        networking.setSendConn(sc: true)
     }
     
     func addWard() {
@@ -105,6 +82,8 @@ class Player: MKPointAnnotation{
         } else {
             ward = Ward(name: name + "'s ward", team: team, coordinate: coordinate)
         }
+        
+        networking.setSendWard(sw: true)
     }
     
     func getWard() -> Ward? {
