@@ -1,0 +1,11 @@
+#!/bin/bash
+while :
+do
+    for playerNum in {1..10}
+    do
+	port=$(( 60000+playerNum ))
+	./send.sh "loc:${playerNum}:${playerNum}:" "$port"
+    done
+
+    sleep 1
+done
