@@ -170,10 +170,13 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         if (true/*!debug*/) {
             //tell server
             myPlayer.setConnected(connected: false)
+            networking.setSendDC(sd: true)
         }
         
+        //stopping/setting to nil all the globalvars
         manager.stopUpdatingLocation()
         stepTimer.invalidate()
+        mapViewController = nil //this must be set to nil here so that when the client receives team or dead info from other players after the checkName screen (since after the client checks name the server creates a player object with connected = true, so it starts sending info to that player), the client won't send back teamCk or deadCk. if the client did send back teamCk or deadCk, the server would stop sending team and dead info when the client can actually use it (when you're in the map screen)
         inGame = false
         recBrd = false
         recRP = false
@@ -189,6 +192,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             }
             
             myPlayer.addWardAt(coordinate: coordinate)
+            networking.setSendWard(sw: true)
         }
     }
     
@@ -198,6 +202,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         } else {
             myPlayer.setDead(dead: true)
         }
+        
+        networking.setSendDead(sd: true)
     }
     
     //ping with long press
@@ -275,6 +281,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             if (inRespawnArea()) {
                 if (currTime > respawnEnterTime + respawnTime) {
                     myPlayer.setDead(dead: false)
+                    networking.setSendDead(sd: true)
                 }
                 
                 print("in respawn area")
@@ -552,6 +559,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     }
     
     func updatePlayerTeam(name: String, team: String) {
+        print("updatePlayerTeam called with name:\(name) and team:\(team)")
+        
         if let thisPlayer = playerDict[name] {
             let oldTeam = thisPlayer.getTeam()
             thisPlayer.setTeam(team: team)
@@ -569,10 +578,14 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             if (team != oldTeam) {
                 map.removeAnnotation(thisPlayer)
             }
+            
+            print("player \(name) already exists")
         } else {
             let newPlayer = Player(name: name)
             newPlayer.setTeam(team: team)
             playerDict[name] = newPlayer
+            
+            print("player \(name) doesn't exist")
         }
     }
     
@@ -612,22 +625,18 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         }
     }
     
-    func updatePlayerConn(name: String, conn: Bool) {
+    func playerDC(name: String) {
         if let thisPlayer = playerDict[name] {
-            if (!conn) {
-                thisPlayer.setConnected(connected: conn)
-                
-                if let thisWard = thisPlayer.getWard() {
-                    //the old ward circle needs to be removed here because mapView is only called on adding
-                    if let thisOverlay = thisWard.getOverlay() {
-                        map.removeOverlay(thisOverlay)
-                    }
+            if let thisWard = thisPlayer.getWard() {
+                //the old ward circle needs to be removed here because mapView is only called on adding
+                if let thisOverlay = thisWard.getOverlay() {
+                    map.removeOverlay(thisOverlay)
                 }
             }
+            
+            playerDict[name] = nil
         } else {
-            let newPlayer = Player(name: name)
-            newPlayer.setConnected(connected: conn)
-            playerDict[name] = newPlayer
+            print("player \(name) trying to dc doesn't exit")
         }
     }
     

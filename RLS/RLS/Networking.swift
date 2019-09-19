@@ -22,11 +22,11 @@ class Networking {
     var controlPoint: ControlPoint? = nil
     var connection: NWConnection?
     let hostUDP: NWEndpoint.Host = "73.189.41.182"
-    var portUDP: NWEndpoint.Port = 8888
+    var portUDP: NWEndpoint.Port = 8889
     var sendWard = false
     var sendTeam = false
     var sendDead = false
-    var sendConn = false
+    var sendDC = false
     
     let posInc: [String: Int] = [
         "bt": 1,
@@ -38,18 +38,14 @@ class Networking {
         "team": 3,
         "dead": 3,
         "ward": 4,
-        "conn": 3,
+        "dc": 2,
         "wardCk": 3,
         "teamCk": 2,
         "deadCk": 2,
-        "connCk": 2,
+        "dcCk": 1,
     ]
     
     func setupNetworkComms() {
-        if (true || debug) {
-            portUDP = 8889
-        }
-        
         connection = NWConnection(host: hostUDP, port: portUDP, using: .udp)
         
         self.connection?.stateUpdateHandler = { (newState) in
@@ -159,16 +155,13 @@ class Networking {
                     controlPoint?.setNumRed(numRed: nb)
                 }
                 
-            case "conn":
+            case "dc":
                 let thisName = stringArray[posInArray + 1]
-                
-                if let thisConn = Bool(stringArray[posInArray + 2]) {
-                    if let mvc = mapViewController {
-                        mvc.updatePlayerConn(name: thisName, conn: thisConn)
-                        sendConnCheck(name: thisName, conn: thisConn)
-                    } else {
-                        print("team packet: mvc doesn't exist")
-                    }
+                if let mvc = mapViewController {
+                    mvc.playerDC(name: thisName)
+                    sendDCCheck(name: thisName)
+                } else {
+                    print("team packet: mvc doesn't exist")
                 }
             case "brd":
                 if let thisLat = Double(stringArray[posInArray + 1]) {
@@ -220,6 +213,8 @@ class Networking {
                 } else {
                     sendTeam = true
                 }
+                
+                print("sendTeam = \(sendTeam)")
             case "deadCk":
                 if let thisDead = Bool(stringArray[posInArray + 1]) {
                     if (thisDead == myPlayer.getDead()) {
@@ -230,16 +225,8 @@ class Networking {
                 } else {
                     print("deadCk dead wrong")
                 }
-            case "connCk":
-                if let thisConn = Bool(stringArray[posInArray + 1]) {
-                    if (thisConn == myPlayer.getConnected()) {
-                        sendConn = false
-                    } else {
-                        sendConn = true
-                    }
-                } else {
-                    print("connCk dead wrong")
-                }
+            case "dcCk":
+                sendDC = false
             default:
                 _ = 1
             }
@@ -268,8 +255,8 @@ class Networking {
             sendDead(dead: myPlayer.getDead())
         }
         
-        if (sendConn) {
-            sendConnected(conn: myPlayer.getConnected())
+        if (sendDC) {
+            sendDCFunc()
         }
     }
     
@@ -283,7 +270,6 @@ class Networking {
             self.connection?.receiveMessage { (data, context, isComplete, error) in
                 if (data != nil) {
                     self.dataString += String(decoding: data!, as: UTF8.self)
-                    print("datastring = \(self.dataString)")
                 } else {
                     print("Data is nil")
                 }
@@ -380,8 +366,8 @@ class Networking {
         write("team:\(team):")
     }
     
-    func sendConnected(conn: Bool) {
-        write("conn:\(conn):")
+    func sendDCFunc() { //it can't be called sendDC cuz there's a variable called sendDC and this function has no parameters
+        write("dc:")
     }
     
     func sendRet() {
@@ -433,8 +419,8 @@ class Networking {
         write("deadCk:\(name):\(dead):")
     }
     
-    func sendConnCheck(name: String, conn: Bool) {
-        write("connCk:\(name):\(conn):")
+    func sendDCCheck(name: String) {
+        write("dcCk:\(name):")
     }
     
     func setSendWard(sw: Bool) {
@@ -443,14 +429,15 @@ class Networking {
     
     func setSendTeam(st: Bool) {
         sendTeam = st
+        print("sendTeam set to \(st)")
     }
     
     func setSendDead(sd: Bool) {
         sendDead = sd
     }
     
-    func setSendConn(sc: Bool) {
-        sendConn = sc
+    func setSendDC(sd: Bool) {
+        sendDC = sd
     }
     
     func truncate(num: Double, places: Int) -> Double {

@@ -27,9 +27,6 @@ class Player: MKPointAnnotation{
         self.title = name
         let coord = CLLocationCoordinate2D(latitude: 200, longitude: 200)
         self.coordinate = coord
-        //these two because dead and connected have default values
-        networking.setSendDead(sd: true)
-        networking.setSendConn(sc: true)
     }
     
     func setCoordinate(coordinate: CLLocationCoordinate2D) -> Void {
@@ -46,7 +43,6 @@ class Player: MKPointAnnotation{
     
     func setTeam(team: String) {
         self.team = team
-        networking.setSendTeam(st: true)
     }
     
     func getTeam() -> String {
@@ -59,7 +55,6 @@ class Player: MKPointAnnotation{
     
     func setDead(dead: Bool) {
         self.dead = dead
-        networking.setSendDead(sd: true)
     }
     
     func getConnected() -> Bool {
@@ -68,7 +63,6 @@ class Player: MKPointAnnotation{
     
     func setConnected(connected: Bool) {
         self.connected = connected
-        networking.setSendConn(sc: true)
     }
     
     func addWard() {
@@ -82,8 +76,6 @@ class Player: MKPointAnnotation{
         } else {
             ward = Ward(name: name + "'s ward", team: team, coordinate: coordinate)
         }
-        
-        networking.setSendWard(sw: true)
     }
     
     func getWard() -> Ward? {

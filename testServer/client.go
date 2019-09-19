@@ -11,6 +11,7 @@ type Client struct {
     ReceivingBorder bool
     ReceivingRP bool
     Channel chan string
+    SimClient bool
     Mutex sync.Mutex //lock this for actions regarding receiving, game, or player
 }
 
@@ -74,13 +75,24 @@ func (client *Client) setChannel(channel chan string) {
     client.Channel = channel
 }
 
+func (client *Client) getSimClient() bool {
+    client.mutexLock()
+    return client.SimClient
+}
+
+func (client *Client) setSimClient(simClient bool) {
+    client.mutexLock()
+    client.SimClient = simClient
+}
+
 func (client *Client) playerDisconnectActions() {
     client.mutexLock()
 
-    //player has to come first because the player has to be dc-ed when trying clean
+    //dcing player has to come before trying clean because the player has to be dc-ed when trying clean
     if (client.Player != nil) {
         client.Player.setConnected(false)
-        client.Player.makeSendTrue("conn", client.Game.getPlayers())
+        client.Player.makeSendTrue("dc", client.Game.getPlayers())
+        client.Player = nil
     }
 
     if (client.Game != nil) {

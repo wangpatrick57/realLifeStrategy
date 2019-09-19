@@ -105,7 +105,7 @@ func (game *Game) tryClean() {
     if (game.GameID == "Home" || game.GameID == "DeAnza") {
         game.Players = make(map[string]*Player)
     } else {
-        master.removeGame(game.GameID)
+        getMaster().removeGame(game.GameID)
     }
 }
 
