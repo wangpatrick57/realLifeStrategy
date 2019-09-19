@@ -1,2 +1,2 @@
 #!/bin/bash
-for i in {1..10}; do echo -n "This is a test in loop $i "; date ; sleep 5; done
+for i in {1..1000}; do ./send.sh rec:; date ; sleep 3; done
