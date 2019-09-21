@@ -370,10 +370,6 @@ class Networking {
         write("dc:")
     }
     
-    func sendRet() {
-        write("ret:")
-    }
-    
     func sendRedPoint(point: Double) {
         write("redPoint:\(point):")
     }
@@ -441,6 +437,6 @@ class Networking {
     }
     
     func truncate(num: Double, places: Int) -> Double {
-        return Double(floor(pow(10.0, Double(places)) * num) / pow(10.0, Double(places)))
+        return Double(round(pow(10.0, Double(places)) * num) / pow(10.0, Double(places)))
     }
 }

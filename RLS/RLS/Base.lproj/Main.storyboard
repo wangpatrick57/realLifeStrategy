@@ -4,7 +4,6 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -463,17 +462,16 @@
                                 <gestureRecognizers/>
                             </mapView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8jn-Ye-9oO">
-                                <rect key="frame" x="164.5" y="590" width="46" height="30"/>
+                                <rect key="frame" x="172.5" y="590" width="30" height="30"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" button="YES" playsSound="YES"/>
                                 </accessibility>
                                 <rect key="contentStretch" x="0.0" y="0.0" width="0.0" height="0.0"/>
                                 <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="15"/>
-                                <state key="normal" title="Return"/>
+                                <state key="normal" title="Quit"/>
                                 <connections>
-                                    <action selector="onReturnPressed:" destination="cP6-KO-xW8" eventType="touchUpInside" id="5FF-0R-jxD"/>
-                                    <segue destination="nP5-Pd-5pS" kind="show" identifier="ShowName" id="pDI-Zx-MUr"/>
+                                    <action selector="onQuitPressed:" destination="cP6-KO-xW8" eventType="touchUpInside" id="ZS4-lq-ZFc"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="WardButton" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cL8-T9-r7N">
@@ -554,10 +552,10 @@
                         <outlet property="debugLabel" destination="3KP-CA-cyX" id="HZK-h8-rNf"/>
                         <outlet property="gameIDLabel" destination="xtF-th-WhU" id="Eru-1T-uFd"/>
                         <outlet property="map" destination="mND-6A-hkp" id="AJm-3B-oAS"/>
+                        <outlet property="quitButtonMap" destination="8jn-Ye-9oO" id="3cJ-VZ-acK"/>
                         <outlet property="redPtLabel" destination="lKI-mR-Z5L" id="X7I-v0-2PJ"/>
-                        <outlet property="returnButtonMap" destination="8jn-Ye-9oO" id="obk-IJ-No3"/>
                         <outlet property="ward" destination="cL8-T9-r7N" id="Opn-1e-Vbi"/>
-                        <segue destination="iCi-CW-8rI" kind="show" identifier="ShowPlayerList" id="Ln6-5H-nl1"/>
+                        <segue destination="qoq-Th-0eg" kind="show" identifier="ShowHostOrJoin" id="I8M-I4-0w6"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XVg-IN-cfz" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -569,8 +567,7 @@
         <image name="rlsLogo.png" width="306" height="396"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Ln6-5H-nl1"/>
         <segue reference="33A-tr-XmC"/>
-        <segue reference="7sF-Wl-NRA"/>
+        <segue reference="I8M-I4-0w6"/>
     </inferredMetricsTieBreakers>
 </document>

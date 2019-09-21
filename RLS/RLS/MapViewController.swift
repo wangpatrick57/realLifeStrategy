@@ -18,7 +18,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     //ib outlets
     @IBOutlet weak var map: MKMapView!
     @IBOutlet weak var ward : UIButton!
-    @IBOutlet weak var returnButtonMap : UIButton!
+    @IBOutlet weak var quitButtonMap: UIButton!
     @IBOutlet weak var death : UIButton!
     @IBOutlet weak var debugLabel: UILabel!
     @IBOutlet weak var redPtLabel: UILabel!
@@ -119,15 +119,15 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         
         //Change button colors to Player's team color
         if myPlayer.getTeam() == "red" {
-            returnButtonMap.setTitleColor(.red, for : .normal)
+            quitButtonMap.setTitleColor(.red, for : .normal)
             ward.setTitleColor(.red, for : .normal)
             death.setTitleColor(.red, for : .normal)
         } else if myPlayer.getTeam() == "blue" {
-            returnButtonMap.setTitleColor(.blue, for : .normal)
+            quitButtonMap.setTitleColor(.blue, for : .normal)
             ward.setTitleColor(.blue, for : .normal)
             death.setTitleColor(.blue, for : .normal)
         } else { //a spectator
-            returnButtonMap.setTitleColor(.gray, for : .normal)
+            quitButtonMap.setTitleColor(.gray, for : .normal)
             ward.setTitleColor(.gray, for : .normal)
             death.setTitleColor(.gray, for : .normal)
         }
@@ -166,7 +166,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         }
     }
     
-    @IBAction func onReturnPressed(_ sender: Any) {
+    @IBAction func onQuitPressed(_ sender: Any) {
         if (true/*!debug*/) {
             //tell server
             myPlayer.setConnected(connected: false)
@@ -180,7 +180,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         inGame = false
         recBrd = false
         recRP = false
-        self.performSegue(withIdentifier: "ShowName", sender: nil)
+        self.performSegue(withIdentifier: "ShowHostOrJoin", sender: nil)
     }
     
     @IBAction func dropWard(_ sender: Any) {
@@ -607,13 +607,16 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     
     func updatePlayerWardLoc(name: String, lat: Double, long: Double) {
         if let thisPlayer = playerDict[name] {
-            //this annotation needs to be removed here so that a new ward circle is drawn
             if let thisWard = thisPlayer.getWard() {
-                map.removeAnnotation(thisWard)
-                
-                //the old ward circle needs to be removed here because mapView is only called on adding
-                if let thisOverlay = thisWard.getOverlay() {
-                    map.removeOverlay(thisOverlay)
+                //only do something if the ward pos sent is different
+                if (thisWard.getCoordinate().latitude != lat || thisWard.getCoordinate().longitude != long) {
+                    //this annotation needs to be removed here so that a new ward circle is drawn
+                    map.removeAnnotation(thisWard)
+                    
+                    //the old ward circle needs to be removed here because mapView is only called on adding
+                    if let thisOverlay = thisWard.getOverlay() {
+                        map.removeOverlay(thisOverlay)
+                    }
                 }
             }
             
@@ -628,6 +631,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     func playerDC(name: String) {
         if let thisPlayer = playerDict[name] {
             if let thisWard = thisPlayer.getWard() {
+                map.removeAnnotation(thisWard)
+                
                 //the old ward circle needs to be removed here because mapView is only called on adding
                 if let thisOverlay = thisWard.getOverlay() {
                     map.removeOverlay(thisOverlay)

@@ -2,6 +2,7 @@ package main
 
 import (
     "sync"
+    "fmt"
 )
 
 type Client struct {
@@ -92,6 +93,7 @@ func (client *Client) playerDisconnectActions() {
     if (client.Player != nil) {
         client.Player.setConnected(false)
         client.Player.makeSendTrue("dc", client.Game.getPlayers())
+        fmt.Printf("hi\n")
         client.Player = nil
     }
 

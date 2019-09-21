@@ -13,6 +13,7 @@ import (
     "time"
     "sync"
     "math/rand"
+    "math"
 )
 
 const (
@@ -20,6 +21,7 @@ const (
     //HostName = "127.0.0.1"
     Port = "8889" //8888 is for stable server. 8889 is for test server. in the future we may need different ports for each person
     ConnType = "udp"
+    LocPlaces int = 5
 )
 
 //dictionary of conn objects to client objects
@@ -31,7 +33,7 @@ var posInc map[string]int
 var mutex sync.Mutex //lock this with actions regarding connToClient or printPeriodicals
 var printPeriodicals bool
 var packetConn net.PacketConn
-var packetLossChance float64 = 0.0
+var packetLossChance float64 = 0.5
 
 func main() {
     /*initializes the addrToClient array. the design is kinda weird, i basically treat
@@ -502,7 +504,7 @@ func broadcast() {
                     //checking that they're in game (connected means in game)
                     if (thisPlayer.getConnected()) {
                         //sending location
-                        additionalString := fmt.Sprintf("loc:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getLat(), thisPlayer.getLong())
+                        additionalString := fmt.Sprintf("loc:%s:%s:%s:", thisPlayer.getName(), truncate(thisPlayer.getLat(), LocPlaces), truncate(thisPlayer.getLong(), LocPlaces))
                         writeString += additionalString
 
                         if (pp) {
@@ -518,7 +520,7 @@ func broadcast() {
                         }
 
                         if val, ok := thisPlayer.getSendTo("ward", recPlayer.getName()); ok && val && stOk && !sendTeam {
-                            additionalString := fmt.Sprintf("ward:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getWardLat(), thisPlayer.getWardLong())
+                            additionalString := fmt.Sprintf("ward:%s:%s:%s:", thisPlayer.getName(), truncate(thisPlayer.getWardLat(), LocPlaces), truncate(thisPlayer.getWardLong(), LocPlaces))
                             writeString += additionalString
                             printString += additionalString
                         }
@@ -772,6 +774,12 @@ func getPrintPeriodicals() bool {
 func setPrintPeriodicals(val bool) {
     mutexLock()
     printPeriodicals = val
+}
+
+func truncate(num float64, places int) string {
+    tenPowerNum := math.Pow(10, float64(places))
+    ret := strconv.FormatFloat(math.Round(num * tenPowerNum) / tenPowerNum, 'f', -1, 64)
+    return ret
 }
 
 func mutexLock() {
