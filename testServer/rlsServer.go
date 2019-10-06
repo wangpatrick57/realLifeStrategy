@@ -53,7 +53,8 @@ func main() {
         "toggleRDL": 1,
         "togglePP": 1,
         "simClient": 1,
-        "checkID": 2,
+        "checkIDh": 2,
+        "checkIDj": 2,
         "checkName": 2,
         "rec": 1,
         "team": 2,
@@ -62,8 +63,9 @@ func main() {
         "dead": 2,
         "dc": 1,
         "reset": 1,
-        "brd": 3,
-        "recBrd": 1,
+        "brd": 4,
+        "recBrd": 2,
+        "brdCt": 1,
         "recRP": 1,
         "wardCk": 4,
         "teamCk": 3,
@@ -176,13 +178,13 @@ func processData(addr string) {
                 setPrintPeriodicals(!getPrintPeriodicals())
             case "simClient":
                 client.setSimClient(true)
-            case "checkID":
+            case "checkIDh": //h stands for host
                 readGameID := info[posInSlice + 1]
 
                 if (readGameID != "") {
                     idTaken := getMaster().checkIDTaken(readGameID)
 
-                    if (!idTaken) { //fix this so that a new game isn't created when trying to join a nonexisting game
+                    if (!idTaken) {
                         thisGame := &Game{}
                         thisGame.constructor()
                         thisGame.setGameID(readGameID)
@@ -192,7 +194,35 @@ func processData(addr string) {
                         client.setGame(getMaster().getGame(readGameID))
                     }
 
-                    additionalString := fmt.Sprintf("checkID:%t:", idTaken)
+                    additionalString := ""
+
+                    if (client.getGame().getGameID() == readGameID) { //special case of client not receiving checkID:false: the first time
+                        additionalString = "checkID:false:"
+                    } else {
+                        additionalString = fmt.Sprintf("checkID:%t:", idTaken)
+                    }
+
+                    writeString += additionalString
+                    printString += additionalString
+                }
+            case "checkIDj": //j stands for join
+                readGameID := info[posInSlice + 1]
+
+                if (readGameID != "") {
+                    idTaken := getMaster().checkIDTaken(readGameID)
+
+                    if (idTaken) {
+                        client.setGame(getMaster().getGame(readGameID))
+                    }
+
+                    additionalString := ""
+
+                    if (client.getGame() != nil && client.getGame().getGameID() == readGameID) { //special case of client not receiving checkID:false: the first time
+                        additionalString = "checkID:true:"
+                    } else {
+                        additionalString = fmt.Sprintf("checkID:%t:", idTaken)
+                    }
+
                     writeString += additionalString
                     printString += additionalString
                 }
@@ -307,30 +337,48 @@ func processData(addr string) {
             case "reset":
                 client.getGame().resetSettings()
             case "brd":
-                lat, err1 := strconv.ParseFloat(info[posInSlice + 1], 64)
-                long, err2 := strconv.ParseFloat(info[posInSlice + 2], 64)
+                index, err1 := strconv.ParseInt(info[posInSlice + 1], 10, 64)
+                lat, err2 := strconv.ParseFloat(info[posInSlice + 2], 64)
+                long, err3 := strconv.ParseFloat(info[posInSlice + 3], 64)
 
-                if (err1 == nil && err2 == nil) {
+                if (err1 == nil && err2 == nil && err3 == nil) {
                     if (client.getGame() != nil) {
-                        client.getGame().addBoord(lat, long)
+                        client.getGame().addBoord(int(index), lat, long)
+                        additionalString := fmt.Sprintf("brdCk:%d:%f:%f:", index, lat, long)
+                        writeString += additionalString
+                        printString += additionalString
                     } else {
                         fmt.Printf("A client without a game is trying to add a boord\n")
                     }
                 } else {
-                    fmt.Printf("Error parsing boord location. Lat error: %v; long error: %v\n", err1, err2)
+                    fmt.Printf("Error parsing boord location. Index error: %v; lat error: %v; long error: %v\n", err1, err2, err3)
                     /*setting validBuffer on a failed parse makes sure any commands after loc are kept
                     for example, if loc:ward:1:1: is sent*/
                     validBuffer = false
                 }
-            case "recBrd":
+            case "brdCt":
                 /*the design is that the client asks for the server to send game element packets instead of
                 the server continously sending packets until the client asks it to stop. this way, the more
                 expensive game element packet is sent after the less expensive request packet. it's like
                 why you put less expensive checks first in an if statement.*/
                 if (client.getPlayer() != nil && client.getGame() != nil) {
-                    client.setReceivingBorder(true)
+                    additionalString := fmt.Sprintf("brdCt:%d:", len(client.getGame().getBoords()))
+                    writeString += additionalString
+                    printString += additionalString
                 } else {
-                    fmt.Printf("A client without a game/player is trying to set recBrd\n")
+                    fmt.Printf("A client without a game/player is trying to set brdCt\n")
+                }
+            case "recBrd":
+                index, err := strconv.ParseInt(info[posInSlice + 1], 10, 64)
+
+                if (err == nil) {
+                    if (client.getPlayer() != nil && client.getGame() != nil) {
+                        client.setReceivingBorder(int(index), true)
+                    } else {
+                        fmt.Printf("A client without a game/player is trying to set recBrd\n")
+                    }
+                } else {
+                    fmt.Printf("Error parsing index for recBrd: %v\n", err)
                 }
             case "recRP":
                 if (client.getPlayer() != nil && client.getGame() != nil) {
@@ -471,14 +519,19 @@ func broadcast() {
             }
 
             //game elements
-            if (recClient.getReceivingBorder()) {
-                writeString := recClient.getGame().boordString()
-                write(recAddr, writeString)
-                printString := writeString
-                printWrote(recAddr, printString)
-                recClient.setReceivingBorder(false)
+            numBoords := len(recClient.getGame().getBoords())
+
+            for i := 0; i < numBoords; i++ {
+                if (recClient.getReceivingBorder(i)) {
+                    writeString := recClient.getGame().boordString(i)
+                    write(recAddr, writeString)
+                    printString := writeString
+                    printWrote(recAddr, printString)
+                    recClient.setReceivingBorder(i, false)
+                }
             }
 
+            //change rp to match border's design
             if (recClient.getReceivingRP()) {
                 writeString := recClient.getGame().rpString()
                 write(recAddr, writeString)
@@ -673,20 +726,28 @@ func baseMaster() *Master {
 
                 Boords: []*Coord {
                     &Coord {
-                        Lat: 45,
-                        Long: 45,
+                        Lat: 38,
+                        Long: -120,
                     },
                     &Coord {
-                        Lat: 45,
-                        Long: 55,
+                        Lat: 39,
+                        Long: -119,
                     },
                     &Coord {
-                        Lat: 55,
-                        Long: 55,
+                        Lat: 40,
+                        Long: -119,
                     },
                     &Coord {
-                        Lat: 55,
-                        Long: 45,
+                        Lat: 41,
+                        Long: -120,
+                    },
+                    &Coord {
+                        Lat: 40,
+                        Long: -121,
+                    },
+                    &Coord {
+                        Lat: 39,
+                        Long: -121,
                     },
                 },
 

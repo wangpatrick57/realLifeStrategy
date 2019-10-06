@@ -62,10 +62,20 @@ func (game *Game) addPlayer(player *Player) {
     }
 }
 
-func (game *Game) addBoord(lat float64, long float64) {
+func (game *Game) addBoord(index int, lat float64, long float64) {
     game.mutexLock()
-    boord := Coord {Lat: lat, Long: long}
-    game.Boords = append(game.Boords, &boord)
+    boord := &Coord{Lat: lat, Long: long}
+
+    for (len(game.Boords) <= index) {
+        game.Boords = append(game.Boords, boord)
+    }
+
+    game.Boords[index] = boord
+}
+
+func (game *Game) getBoords() []*Coord {
+    game.mutexLock()
+    return game.Boords
 }
 
 func (game *Game) rpString() string {
@@ -79,15 +89,10 @@ func (game *Game) rpString() string {
     return ret
 }
 
-func (game *Game) boordString() string {
+func (game *Game) boordString(index int) string {
     game.mutexLock()
-    ret := ""
-
-    for _, coord := range game.Boords {
-        ret += fmt.Sprintf("brd:%f:%f:", coord.getLat(), coord.getLong())
-    }
-
-    return ret
+    coord := game.Boords[index]
+    return fmt.Sprintf("brd:%d:%f:%f:", index, coord.getLat(), coord.getLong())
 }
 
 //cleans the players in a game but not the settings for hardcoded games

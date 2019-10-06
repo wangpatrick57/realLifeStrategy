@@ -9,7 +9,7 @@ type Client struct {
     Game *Game
     Player *Player
     Receiving bool
-    ReceivingBorder bool
+    ReceivingBorder []bool
     ReceivingRP bool
     Channel chan string
     SimClient bool
@@ -46,14 +46,36 @@ func (client *Client) setReceiving(receiving bool) {
     client.Receiving = receiving
 }
 
-func (client *Client) getReceivingBorder() bool {
+func (client *Client) getReceivingBorder(index int) bool {
     client.mutexLock()
-    return client.ReceivingBorder
+
+    if (index < len(client.ReceivingBorder)) {
+        return client.ReceivingBorder[index]
+    }
+
+    //return false as default (this might be bad design)
+    return false
 }
 
-func (client *Client) setReceivingBorder(receivingBorder bool) {
+func (client *Client) resetReceivingBorder() {
     client.mutexLock()
-    client.ReceivingBorder = receivingBorder
+    numBoords := len(client.Game.getBoords())
+    client.ReceivingBorder = make([]bool, numBoords)
+
+    for i := 0; i < numBoords; i++ {
+        client.ReceivingBorder[i] = true
+    }
+}
+
+func (client *Client) setReceivingBorder(index int, receivingBorder bool) {
+    client.mutexLock()
+
+    for (len(client.ReceivingBorder) <= index) {
+        client.ReceivingBorder = append(client.ReceivingBorder, true) //append true because if the index doesn't exist
+            //you know that you need to send that borderPoint to the client
+    }
+
+    client.ReceivingBorder[index] = receivingBorder
 }
 
 func (client *Client) getReceivingRP() bool {
