@@ -7,3 +7,11 @@
 //
 
 import Foundation
+
+class SpecMath {
+    var truncPlaces = 5
+    
+    func truncate(num: Double) -> Double {
+        return Double(round(pow(10.0, Double(truncPlaces)) * num) / pow(10.0, Double(truncPlaces)))
+    }
+}

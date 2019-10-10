@@ -19,13 +19,13 @@ class HostOrJoinViewController : UIViewController {
         //gameID = generateGameID()
         gameID = generateGameID()
         
-        while(networking.checkGameIDTaken(idToCheck: gameID)) {
+        while(networking.checkGameIDTaken(idToCheck: gameID, hostOrJoin: "h")) {
             print("\(gameID) taken")
             gameID = generateGameID()
         }
         
         print("\(gameID) not taken")
-        self.performSegue(withIdentifier: "HostGameIDSegue", sender: self)
+        self.performSegue(withIdentifier: "ShowCustomizeGame", sender: self)
     }
     
     @IBAction func JoinButton(_ sender: Any) {
@@ -48,48 +48,13 @@ class HostOrJoinViewController : UIViewController {
     
     func generateGameID()->String {
         var gameID:String = ""
-        let alphabet: [String] = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+        let alphabet: [String] = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
         
-        for i in 1...gameIDLength {
-            let rand:Int = Int(arc4random_uniform(36))
-            var add:String
-            
-            if (rand < 10) {
-                add = String(rand)
-            } else {
-                add = alphabet[rand - 10]
-            }
-            
-            gameID += add
+        for _ in 1...gameIDLength {
+            let rand:Int = Int(arc4random_uniform(26))
+            gameID += alphabet[rand]
         }
         
         return gameID
-    }
-    
-    func checkIDTakenFirebase() {
-        gameID = generateGameID()
-        let docRef:DocumentReference = db.document("\(gameCol)/\(gameID)")
-        
-        docRef.getDocument { (document, error) in
-            if let document = document {
-                if document.exists {
-                    print(gameID + " taken")
-                    self.checkIDTakenFirebase()
-                } else {
-                    db.document("\(gameCol)/\(gameID)").setData([
-                        "test": "test"
-                    ]) { err in
-                        if let err = err {
-                            print("Error writing document: \(err)")
-                        } else {
-                            print("Document successfully written!")
-                        }
-                    }
-                    
-                    print(gameID + " not taken")
-                    self.performSegue(withIdentifier: "HostGameIDSegue", sender: self)
-                }
-            }
-        }
     }
 }

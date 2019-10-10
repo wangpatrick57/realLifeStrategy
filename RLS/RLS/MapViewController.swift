@@ -29,9 +29,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     var playerDict: [String: Player] = [myPlayer.getName() : myPlayer] //dictionary of all players
     var deadNames: [String] = [] //list of the names of the dead players on "my" team
     var myPings: [String: Double] = [:] //dict of the names of my pings to their create times. the name is "\(myName)\(pingNum)"
-    var respawnPoints: [RespawnPoint] = []
     var border: BorderOverlay = BorderOverlay()
-    var boords: [CLLocation] = []
     var pingNum = 0
     var handleDataCounter = 0
     var myTeamPings: [Ping] = [] //list of pings to draw
@@ -61,8 +59,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         
         //other necessary stuff
         inGame = true
-        recBrd = true
+        sendRecBP = []
         recRP = true
+        networking.setSendBrdCt(sbc: true)
         
         //check if spectator
         if (myPlayer.getName() == ".SPECTATOR") {
@@ -89,28 +88,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         
         if (!debug) {
             debugLabel.text = ""
-        }
-        
-        print("col Ref initialized")
-        /*[UIView animateWithDuration:0.3f
-         animations:^{
-         myAnnotation.coordinate = newCoordinate;
-         }]*/
-        
-        //respawn point array
-        db.collection("\(gameCol)/\(gameID)/RespawnPoints").getDocuments() { (querySnapshot, error) in
-            if let error = error{
-                print(error)
-            } else {
-                for document in querySnapshot!.documents {
-                    let data = document.data()
-                    let name = document.documentID
-                    let coordinate = CLLocationCoordinate2D(latitude: data["lat"] as? Double ?? 0, longitude: data["long"] as? Double ?? 0)
-                    let point = RespawnPoint(name: name, coordinate: coordinate)
-                    self.respawnPoints.append(point)
-                    self.map.addAnnotation(point)
-                }
-            }
         }
         
         if (debug) {
@@ -178,7 +155,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         stepTimer.invalidate()
         mapViewController = nil //this must be set to nil here so that when the client receives team or dead info from other players after the checkName screen (since after the client checks name the server creates a player object with connected = true, so it starts sending info to that player), the client won't send back teamCk or deadCk. if the client did send back teamCk or deadCk, the server would stop sending team and dead info when the client can actually use it (when you're in the map screen)
         inGame = false
-        recBrd = false
         recRP = false
         self.performSegue(withIdentifier: "ShowHostOrJoin", sender: nil)
     }
@@ -203,6 +179,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             myPlayer.setDead(dead: true)
         }
         
+        map.removeAnnotation(myPlayer)
         networking.setSendDead(sd: true)
     }
     
@@ -266,9 +243,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             debugLabel.text = gameStateString
         }
         
-        if (recBrd) {
-            networking.sendRecBrd()
-        }
+        //networking stuff
         
         if (recRP) {
             networking.sendRecRP()
@@ -307,10 +282,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         for thisName in playerDict.keys {
             if let thisPlayer = playerDict[thisName] {
                 if (thisPlayer.getConnected() && thisPlayer.getTeam() == myPlayer.getTeam()) {
-                    //getDead is separate because you draw wards of dead players
-                    if (!thisPlayer.getDead()) {
-                        targetAnnDict[thisName] = thisPlayer
-                    }
+                    targetAnnDict[thisName] = thisPlayer
                     
                     if let thisWard = thisPlayer.getWard() {
                         targetAnnDict[thisWard.getName()] = thisWard
@@ -323,10 +295,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         for thisName in playerDict.keys {
             if let thisPlayer = playerDict[thisName] {
                 if (thisPlayer.getConnected() && thisPlayer.getTeam() != myPlayer.getTeam() && (hasVisionOf(playerToCheck: thisPlayer) || isSpec)) {
-                    //getDead is separate in case we wanna draw enemy wards later on
-                    if (!thisPlayer.getDead()) {
-                        targetAnnDict[thisName] = thisPlayer
-                    }
+                    targetAnnDict[thisName] = thisPlayer
                 }
                 
                 if (isSpec) {
@@ -544,11 +513,19 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         return false
     }
     
-    //a new borderOverlay has to be created everytime because you can't add new points to an mkpolygon. also, the boords have to be sent individually because if they were all sent as once as a list of coordinates after "boords" we don't know how much to increment when receiving "boords". even if we have a length value right after boords like "boords:5:[coordinates]", it would crash if there is no integer right after boords
-    func addBoord(boord: CLLocation) {
+    //a new borderOverlay has to be created everytime because you can't add new points to an mkpolygon. also, the borderPoints have to be sent individually because if they were all sent as once as a list of coordinates after "bp" we don't know how much to increment when receiving "bp". even if we have a length value right after bp like "bp:5:[coordinates]", it would crash if there is no integer right after bp
+    func addBoord(index: Int, coord: CLLocationCoordinate2D) {
+        print("added boord #\(index)")
         map.removeOverlay(border)
-        boords.append(boord)
-        border = BorderOverlay(vertices: boords)
+        let borderPoint = BorderPoint(coord: coord)
+        
+        while (borderPoints.count <= index) {
+            borderPoints.append(borderPoint)
+        }
+        
+        borderPoints[index] = borderPoint
+        
+        border = BorderOverlay(bp: borderPoints)
         map.addOverlay(border)
     }
     
@@ -598,6 +575,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     func updatePlayerDead(name: String, dead: Bool) {
         if let thisPlayer = playerDict[name] {
             thisPlayer.setDead(dead: dead)
+            map.removeAnnotation(thisPlayer)
         } else {
             let newPlayer = Player(name: name)
             newPlayer.setDead(dead: dead)

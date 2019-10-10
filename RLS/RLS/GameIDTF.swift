@@ -20,7 +20,7 @@ class GameIDTF: UIViewController {
     @IBAction func EnterButton(_ sender: Any) {
         gameID = idTF.text ?? ""
         
-        if (networking.checkGameIDTaken(idToCheck: gameID)) {
+        if (networking.checkGameIDTaken(idToCheck: gameID, hostOrJoin: "j")) {
             self.performSegue(withIdentifier: "JoinEnterNicknameSegue", sender: self)
         } else {
             print("\(gameID) doesn't exists")

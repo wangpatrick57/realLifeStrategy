@@ -5,4 +5,4 @@ else
     port="$2"
 fi
 
-echo "$1" | nc -p "$port" -w 0 -u "10.0.1.128" 8889
+echo "$1" | nc -p "$port" -w 0 -u "73.189.41.182" 8889

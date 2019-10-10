@@ -15,6 +15,7 @@ class Ward: MKPointAnnotation{
     private var team: String
     private var locChanged: Bool
     private var circleOverlay: ColorCircleOverlay?
+    let math = SpecMath()
     
     init(name:String,team:String,coordinate:CLLocationCoordinate2D){
         self.name=name
@@ -22,7 +23,8 @@ class Ward: MKPointAnnotation{
         self.locChanged = false
         super.init()
         self.title = self.name
-        self.coordinate=coordinate
+        let truncatedCoord = CLLocationCoordinate2D(latitude: math.truncate(num: coordinate.latitude), longitude: math.truncate(num: coordinate.longitude))
+        self.coordinate = truncatedCoord
     }
     
     func setCoordinate(coordinate: CLLocationCoordinate2D) -> Void {
@@ -31,7 +33,8 @@ class Ward: MKPointAnnotation{
             locChanged = true
         }
         
-        self.coordinate=coordinate
+        let truncatedCoord = CLLocationCoordinate2D(latitude: math.truncate(num: coordinate.latitude), longitude: math.truncate(num: coordinate.longitude))
+        self.coordinate = truncatedCoord
     }
     
     func getCoordinate()->CLLocationCoordinate2D {

@@ -43,8 +43,11 @@ class MapViewDelegate: NSObject, MKMapViewDelegate {
         
         if let annotation = annotation as? Player{
             if annotation.getTeam() == "red" {
-                annotationView?.image = UIImage(named: "Red Player")
-                //annotation.title = annotation.getName()
+                if (!annotation.getDead()) {
+                    annotationView?.image = UIImage(named: "Red Player")
+                } else {
+                    annotationView?.image = UIImage(named: "Red Ward")
+                }
                 
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
@@ -54,8 +57,11 @@ class MapViewDelegate: NSObject, MKMapViewDelegate {
             }
             
             if annotation.getTeam() == "blue" {
-                annotationView?.image = UIImage(named: "Blue Player")
-                //annotation.title = annotation.getName()
+                if (!annotation.getDead()) {
+                    annotationView?.image = UIImage(named: "Blue Player")
+                } else {
+                    annotationView?.image = UIImage(named: "Blue Ward")
+                }
                 
                 if #available(iOS 11.0, *) {
                     annotationView?.displayPriority = .required
@@ -76,7 +82,7 @@ class MapViewDelegate: NSObject, MKMapViewDelegate {
             }
         }
         
-        if let annotation = annotation as? Ward{
+        if let annotation = annotation as? Ward {
             print("\(annotation.getName())")
             
             //delete old overlay if overlay already exists
@@ -85,7 +91,6 @@ class MapViewDelegate: NSObject, MKMapViewDelegate {
             }
             
             let circleOverlay = ColorCircleOverlay(annotation: annotation, radius: wardVisionDist, color: UIColor.black)
-            
             annotation.setOverlay(circleOverlay: circleOverlay)
             
             if annotation.getTeam() == "red" {
@@ -131,6 +136,7 @@ class MapViewDelegate: NSObject, MKMapViewDelegate {
         
         if let annotation = annotation as? RespawnPoint {
             let circleOverlay = ColorCircleOverlay(annotation: annotation, radius: respawnDist, color: UIColor.black)
+            annotation.setOverlay(overlay: circleOverlay)
             
             annotationView?.image = UIImage(named: "Respawn Point")
             //annotation.title = annotation.getName()

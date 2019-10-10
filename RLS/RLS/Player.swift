@@ -17,6 +17,7 @@ class Player: MKPointAnnotation{
     private var dead: Bool
     private var connected: Bool
     let visionDist: Double = 20 //meters
+    let math = SpecMath()
     
     init (name: String) {
         self.name = name
@@ -30,7 +31,8 @@ class Player: MKPointAnnotation{
     }
     
     func setCoordinate(coordinate: CLLocationCoordinate2D) -> Void {
-        self.coordinate=coordinate
+        let truncatedCoord = CLLocationCoordinate2D(latitude: math.truncate(num: coordinate.latitude), longitude: math.truncate(num: coordinate.longitude))
+        self.coordinate = truncatedCoord
     }
     
     func getCoordinate()->CLLocationCoordinate2D {

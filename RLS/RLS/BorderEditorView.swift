@@ -6,18 +6,15 @@
 //
 import Foundation
 import UIKit
-import FirebaseFirestore
 import MapKit
 
-class HostGameIDView : UIViewController, CLLocationManagerDelegate, UIGestureRecognizerDelegate {
+class BorderEditorView : UIViewController, CLLocationManagerDelegate, UIGestureRecognizerDelegate {
     @IBOutlet weak var mapView: MKMapView!
-    @IBOutlet weak var HostGameID: UILabel!
-    
     let manager = CLLocationManager()
     var once = false
     var border: BorderOverlay = BorderOverlay()
-    var boords: [CLLocation] = []
     let mapViewDelegate = MapViewDelegate()
+    var myBorderPoints = borderPoints
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,12 +26,17 @@ class HostGameIDView : UIViewController, CLLocationManagerDelegate, UIGestureRec
         manager.startUpdatingLocation()
         mapView.delegate = mapViewDelegate
         
+        //draw game elements
+        redrawBorder(bp: myBorderPoints)
+        
+        for rp in respawnPoints {
+            mapView.addAnnotation(rp)
+        }
+        
         //tap recognizer
         let tgr = UITapGestureRecognizer(target: self, action: #selector(handleTap(gestureRecognizer:)))
         tgr.delegate = self
         mapView.addGestureRecognizer(tgr)
-        
-        HostGameID.text = "Game ID: " + gameID
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -50,32 +52,55 @@ class HostGameIDView : UIViewController, CLLocationManagerDelegate, UIGestureRec
         }
     }
     
-    //ping with long press
     @objc func handleTap(gestureRecognizer: UITapGestureRecognizer) {
         let touchLocation = gestureRecognizer.location(in: mapView)
-        let locationCoordinate = mapView.convert(touchLocation,toCoordinateFrom: mapView)
-        addBoord(boord: CLLocation(latitude: locationCoordinate.latitude, longitude: locationCoordinate.longitude))
+        let touchCoord = mapView.convert(touchLocation,toCoordinateFrom: mapView)
+        addBorderPoint(bp: BorderPoint(coord: touchCoord))
     }
     
-    func addBoord(boord: CLLocation) {
+    func addBorderPoint(bp: BorderPoint) {
+        myBorderPoints.append(bp)
+        redrawBorder(bp: myBorderPoints)
+    }
+    
+    func redrawBorder(bp: [BorderPoint]) {
         mapView.removeOverlay(border)
-        boords.append(boord)
-        border = BorderOverlay(vertices: boords)
+        border = BorderOverlay(bp: bp)
         mapView.addOverlay(border)
     }
     
-    @IBAction func NextButton(_ sender: Any) {
-        print("Next Button clicked")
+    @IBAction func savePressed(_ sender: Any) {
         //stop the location manager
         manager.stopUpdatingLocation()
-        //send game data like rp and boords
-        for boord in boords {
-            //make boord object later
-            networking.sendBoord(boord: boord)
-        }
+        
+        //save
+        borderPoints = myBorderPoints
+        
+        //send game data like rp and borderPoints
+        networking.newSendBoords()
         
         //go to nickname view
-        self.performSegue(withIdentifier: "EnterNicknameSegue", sender: self)
+        self.performSegue(withIdentifier: "ShowCustomizeGame", sender: self)
+    }
+    
+    @IBAction func cancelPressed(_ sender: Any) {
+        //don't save (don't do anything)
+        
+        //stop the location manager
+        manager.stopUpdatingLocation()
+        
+        //go to nickname view
+        self.performSegue(withIdentifier: "ShowCustomizeGame", sender: self)
+    }
+    
+    @IBAction func undoPressed(_ sender: Any) {
+        myBorderPoints = Array(myBorderPoints[0..<(myBorderPoints.count - 1)])
+        redrawBorder(bp: myBorderPoints)
+    }
+    
+    @IBAction func trashPressed(_ sender: Any) {
+        myBorderPoints = []
+        redrawBorder(bp: myBorderPoints)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

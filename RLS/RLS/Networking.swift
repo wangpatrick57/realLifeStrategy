@@ -18,20 +18,22 @@ class Networking {
     var idExists: Bool? = nil
     var nameExists: Bool? = nil
     var dataString = ""
-    var locPlaces = 5
     var controlPoint: ControlPoint? = nil
     var connection: NWConnection?
     let hostUDP: NWEndpoint.Host = "73.189.41.182"
     var portUDP: NWEndpoint.Port = 8889
+    var sendBoords: [Bool] = []
+    var sendBrdCt = false
     var sendWard = false
     var sendTeam = false
     var sendDead = false
     var sendDC = false
+    let math: SpecMath = SpecMath()
     
     let posInc: [String: Int] = [
         "bt": 1,
         "rp": 3,
-        "brd": 3,
+        "brd": 4,
         "checkID": 2,
         "checkName": 2,
         "loc": 4,
@@ -39,6 +41,8 @@ class Networking {
         "dead": 3,
         "ward": 4,
         "dc": 2,
+        "brdCt": 2,
+        "brdCk": 4,
         "wardCk": 3,
         "teamCk": 2,
         "deadCk": 2,
@@ -164,17 +168,25 @@ class Networking {
                     print("team packet: mvc doesn't exist")
                 }
             case "brd":
-                if let thisLat = Double(stringArray[posInArray + 1]) {
-                    if let thisLong = Double(stringArray[posInArray + 2]) {
-                        mapViewController?.addBoord(boord: CLLocation(latitude: thisLat, longitude: thisLong))
+                if let index = Int(stringArray[posInArray + 1]) {
+                    if let thisLat = Double(stringArray[posInArray + 2]) {
+                        if let thisLong = Double(stringArray[posInArray + 3]) {
+                            mapViewController?.addBoord(index: index, coord: CLLocationCoordinate2D(latitude: thisLat, longitude: thisLong))
+                            
+                            while (sendRecBP.count <= index) {
+                                sendRecBP.append(true)
+                            }
+                            
+                            sendRecBP[index] = false
+                        } else {
+                            print("brd long wrong")
+                        }
                     } else {
-                        print("brd long wrong")
+                        print("brd lat wrong")
                     }
                 } else {
-                    print("brd lat wrong")
+                    print("index wrong")
                 }
-                
-                recBrd = false
             case "rp":
                 if let thisLat = Double(stringArray[posInArray + 1]) {
                     if let thisLong = Double(stringArray[posInArray + 2]) {
@@ -187,13 +199,46 @@ class Networking {
                 }
                 
                 recRP = false
+            case "brdCt":
+                if let count = Int(stringArray[posInArray + 1]) {
+                    sendRecBP = []
+                    
+                    for _ in 0..<count {
+                        sendRecBP.append(true)
+                    }
+                    
+                    sendBrdCt = false
+                } else {
+                   print("count for brdCt error")
+                }
+            case "brdCk":
+                if let index = Int(stringArray[posInArray + 1]) {
+                    if let thisLat = Double(stringArray[posInArray + 2]) {
+                        if let thisLong = Double(stringArray[posInArray + 3]) {
+                            let coord = borderPoints[index].getCoord()
+                            print("brdCk \(thisLat) \(coord.latitude) \(thisLong) \(coord.longitude)")
+                            
+                            if (thisLat == coord.latitude && thisLong == coord.longitude) {
+                                sendBoords[index] = false
+                            } else {
+                                sendBoords[index] = true
+                            }
+                        } else {
+                            print("brdCk lat bad")
+                        }
+                    } else {
+                        print("brdCk long bad")
+                    }
+                } else {
+                    print("index for brdCk error")
+                }
             case "wardCk":
                 if let thisLat = Double(stringArray[posInArray + 1]) {
                     if let thisLong = Double(stringArray[posInArray + 2]) {
                         if let myWard = myPlayer.getWard() {
                             let coord = myWard.getCoordinate()
                             
-                            if (thisLat == truncate(num: coord.latitude, places: locPlaces) && thisLong == truncate(num: coord.longitude, places: locPlaces)) {
+                            if (thisLat == coord.latitude && thisLong == coord.longitude) {
                                 sendWard = false
                             } else {
                                 sendWard = true
@@ -241,6 +286,22 @@ class Networking {
     }
     
     func broadcastOneTimers() {
+        for i in 0..<sendBoords.count {
+            if (sendBoords[i]) {
+                sendBoord(index: i)
+            }
+        }
+        
+        if (sendBrdCt) {
+            sendBorderCount()
+        }
+        
+        for i in 0..<sendRecBP.count {
+            if (sendRecBP[i]) {
+                sendRecBPFunc(index: i)
+            }
+        }
+        
         if (sendWard) {
             if let myWard = myPlayer.getWard() {
                 sendWardLoc(coord: myWard.getCoordinate())
@@ -305,12 +366,12 @@ class Networking {
         write("hrt:")
     }
     
-    func checkGameIDTaken(idToCheck: String) -> Bool {
+    func checkGameIDTaken(idToCheck: String, hostOrJoin: String) -> Bool {
         var ret = true
         idExists = nil
         
         while (true) {
-            write("checkID:\(idToCheck):")
+            write("checkID\(hostOrJoin):\(idToCheck):")
             readAllData()
             
             if let exists = idExists {
@@ -321,7 +382,7 @@ class Networking {
                 print("idExists is nil")
             }
             
-            usleep(500000)
+            usleep(500000) //0.5 seconds
         }
         
         return ret
@@ -351,11 +412,11 @@ class Networking {
     }
     
     func sendLocation(coord: CLLocationCoordinate2D) {
-        write("loc:\(truncate(num: coord.latitude, places: locPlaces)):\(truncate(num: coord.longitude, places: locPlaces)):")
+        write("loc:\(coord.latitude):\(coord.longitude):")
     }
     
     func sendWardLoc(coord: CLLocationCoordinate2D) {
-        write("ward:\(truncate(num: coord.latitude, places: locPlaces)):\(truncate(num: coord.longitude, places: locPlaces)):")
+        write("ward:\(coord.latitude):\(coord.longitude):")
     }
     
     func sendDead(dead: Bool) {
@@ -389,14 +450,19 @@ class Networking {
         }
     }
     
-    func sendBoord(boord: CLLocation) {
-        let lat = truncate(num: boord.coordinate.latitude, places: locPlaces)
-        let long = truncate(num: boord.coordinate.longitude, places: locPlaces)
-        write("brd:\(lat):\(long):")
+    func sendBoord(index: Int) {
+        let coord = borderPoints[index].getCoord()
+        let lat = math.truncate(num: coord.latitude)
+        let long = math.truncate(num: coord.longitude)
+        write("brd:\(index):\(lat):\(long):")
     }
     
-    func sendRecBrd() {
-        write("recBrd:")
+    func sendBorderCount() {
+        write("brdCt:")
+    }
+    
+    func sendRecBPFunc(index: Int) {
+        write("recBrd:\(index):")
     }
     
     func sendRecRP() {
@@ -404,7 +470,7 @@ class Networking {
     }
     
     func sendWardCheck(name: String, coord: CLLocationCoordinate2D) {
-        write("wardCk:\(name):\(truncate(num: coord.latitude, places: locPlaces)):\(truncate(num: coord.longitude, places: locPlaces)):")
+        write("wardCk:\(name):\(coord.latitude):\(coord.longitude):")
     }
     
     func sendTeamCheck(name: String, team: String) {
@@ -417,6 +483,22 @@ class Networking {
     
     func sendDCCheck(name: String) {
         write("dcCk:\(name):")
+    }
+    
+    func setSendBoords(sb: Bool, index: Int) {
+        sendBoords[index] = sb
+    }
+    
+    func newSendBoords() {
+        sendBoords = []
+        
+        for _ in 0..<borderPoints.count {
+            sendBoords.append(true)
+        }
+    }
+    
+    func setSendBrdCt(sbc: Bool) {
+        sendBrdCt = sbc
     }
     
     func setSendWard(sw: Bool) {
@@ -434,9 +516,5 @@ class Networking {
     
     func setSendDC(sd: Bool) {
         sendDC = sd
-    }
-    
-    func truncate(num: Double, places: Int) -> Double {
-        return Double(round(pow(10.0, Double(places)) * num) / pow(10.0, Double(places)))
     }
 }

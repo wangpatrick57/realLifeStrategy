@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MapKit
 
 let networking = Networking()
 var stepTimer: Timer!
@@ -19,8 +20,10 @@ let wardVisionDist = 30.0 //meters
 let packetLossChance: Float = 0.5
 let font : String = "San Francisco"
 var inGame = false
-var recBrd = false
+var sendRecBP: [Bool] = []
 var recRP = false
+var borderPoints: [BorderPoint] = []
+var respawnPoints: [RespawnPoint] = []
 
 class StartView: UIViewController {
     override func viewDidLoad() {
