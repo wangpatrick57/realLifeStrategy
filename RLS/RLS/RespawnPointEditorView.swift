@@ -16,7 +16,7 @@ class RespawnPointEditorView : UIViewController, CLLocationManagerDelegate, UIGe
     var once = false
     var border: BorderOverlay = BorderOverlay()
     let mapViewDelegate = MapViewDelegate()
-    var myRespawnPoints = respawnPoints
+    var myRespawnPoints = createdRespawnPoints
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +29,7 @@ class RespawnPointEditorView : UIViewController, CLLocationManagerDelegate, UIGe
         mapView.delegate = mapViewDelegate
         
         //draw game elements
-        redrawBorder(bp: borderPoints)
+        redrawBorder(bp: createdBorderPoints)
         
         for rp in myRespawnPoints {
             addRespawnPoint(rp: rp)
@@ -57,13 +57,13 @@ class RespawnPointEditorView : UIViewController, CLLocationManagerDelegate, UIGe
     @objc func handleTap(gestureRecognizer: UITapGestureRecognizer) {
         let touchLocation = gestureRecognizer.location(in: mapView)
         let touchCoord = mapView.convert(touchLocation,toCoordinateFrom: mapView)
-        let newRP = RespawnPoint(name: "point\(myRespawnPoints.count)", coordinate: touchCoord)
+        let newRP = RespawnPoint(index: myRespawnPoints.count, coordinate: touchCoord)
         addRespawnPoint(rp: newRP)
     }
     
     @IBAction func savePressed(_ sender: Any) {
         //set the global respawn point array to the local one
-        respawnPoints = myRespawnPoints
+        createdRespawnPoints = myRespawnPoints
         
         //stop the location manager
         manager.stopUpdatingLocation()

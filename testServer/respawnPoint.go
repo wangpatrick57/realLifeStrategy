@@ -5,9 +5,20 @@ import (
 )
 
 type RespawnPoint struct {
+    Index int
     Lat float64
     Long float64
     Mutex sync.Mutex //lock this for actions regarding lat and long
+}
+
+func (respawnPoint *RespawnPoint) getIndex() int {
+    respawnPoint.mutexLock()
+    return respawnPoint.Index
+}
+
+func (respawnPoint *RespawnPoint) setIndex(index int) {
+    respawnPoint.mutexLock()
+    respawnPoint.Index = index
 }
 
 func (respawnPoint *RespawnPoint) getLoc() (float64, float64) {

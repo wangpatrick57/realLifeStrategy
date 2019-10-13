@@ -20,10 +20,16 @@ let wardVisionDist = 30.0 //meters
 let packetLossChance: Float = 0.5
 let font : String = "San Francisco"
 var inGame = false
-var sendRecBP: [Bool] = []
 var recRP = false
 var borderPoints: [BorderPoint] = []
 var respawnPoints: [RespawnPoint] = []
+var createdBorderPoints: [BorderPoint] = []
+var createdRespawnPoints: [RespawnPoint] = []
+var gameID:String = "generating"
+var nickname:String = ""
+var gameCol = "Games"
+let gameIDLength:Int = 5
+let debug = true
 
 class StartView: UIViewController {
     override func viewDidLoad() {

@@ -19,7 +19,7 @@ class BorderOverlay: MKPolygon {
         let math = SpecMath()
         
         for i in 0..<bp.count {
-            let coord = bp[i].getCoord()
+            let coord = bp[i].getCoordinate()
             let truncatedCoord = CLLocationCoordinate2D(latitude: math.truncate(num: coord.latitude), longitude: math.truncate(num: coord.longitude))
             truncatedCoords.append(truncatedCoord)
         }

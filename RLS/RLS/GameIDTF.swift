@@ -27,23 +27,6 @@ class GameIDTF: UIViewController {
         }
     }
     
-    func checkGameExistsFirebase() {
-        gameID = idTF.text!
-        
-        let docRef:DocumentReference = db.document("\(gameCol)/\(gameID)")
-        
-        docRef.getDocument { (document, error) in
-            if let document = document {
-                if document.exists {
-                    print(gameID + " exists")
-                    self.performSegue(withIdentifier: "JoinEnterNicknameSegue", sender: self)
-                } else {
-                    print(gameID + " doesn't exists")
-                }
-            }
-        }
-    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         if idTF.text != "" {

@@ -282,7 +282,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Customize Game" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8sR-W3-eVi">
-                                <rect key="frame" x="95" y="73" width="185" height="30"/>
+                                <rect key="frame" x="95" y="51" width="185" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <nil key="textColor"/>
@@ -304,14 +304,31 @@
                                     <action selector="editRespawnPointsPressed:" destination="pYp-Ka-3qm" eventType="touchUpInside" id="hw4-sf-Qks"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yig-5o-Sav">
+                                <rect key="frame" x="169" y="555" width="37" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Done"/>
+                                <connections>
+                                    <action selector="donePressed:" destination="pYp-Ka-3qm" eventType="touchUpInside" id="I0g-gR-8Pa"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Game ID: mmmmm" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Nb-em-RBI">
+                                <rect key="frame" x="114" y="89" width="147" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <viewLayoutGuide key="safeArea" id="a57-IU-vtw"/>
                     </view>
                     <navigationItem key="navigationItem" id="5WC-ok-Adh"/>
                     <connections>
+                        <outlet property="gameIDLabel" destination="2Nb-em-RBI" id="kwh-Fl-jwi"/>
                         <segue destination="hrO-SK-6aB" kind="show" identifier="ShowBorderEditor" id="YoI-nR-AJm"/>
                         <segue destination="CNx-ka-ohT" kind="show" identifier="ShowRespawnPointEditor" id="WYa-Ly-pHL"/>
+                        <segue destination="nP5-Pd-5pS" kind="show" identifier="ShowNickname" id="aZ7-46-IqN"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2Ps-rN-Jtq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -406,8 +423,8 @@
                                     <action selector="JoinButton:" destination="nP5-Pd-5pS" eventType="touchUpInside" id="ecZ-ce-GCQ"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Game ID: XXXXX" textAlignment="center" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4d0-fR-0xm" userLabel="IDLabel">
-                                <rect key="frame" x="122" y="162" width="130.5" height="52"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Game ID: mmmmm" textAlignment="center" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4d0-fR-0xm" userLabel="IDLabel">
+                                <rect key="frame" x="114" y="162" width="147" height="52"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="52" id="nE1-ED-I8V"/>
                                 </constraints>
@@ -696,8 +713,9 @@
         <image name="rlsLogo.png" width="306" height="396"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="33A-tr-XmC"/>
+        <segue reference="YoI-nR-AJm"/>
+        <segue reference="aZ7-46-IqN"/>
         <segue reference="ENW-AW-jX8"/>
-        <segue reference="D1b-4c-cdS"/>
+        <segue reference="i05-3P-dzg"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -59,9 +59,10 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         
         //other necessary stuff
         inGame = true
-        sendRecBP = []
-        recRP = true
-        networking.setSendBrdCt(sbc: true)
+        networking.clearSendRecBP()
+        networking.clearSendRecRP()
+        networking.setSendBPCt(sbc: true)
+        networking.setSendRPCt(src: true)
         
         //check if spectator
         if (myPlayer.getName() == ".SPECTATOR") {
@@ -155,7 +156,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         stepTimer.invalidate()
         mapViewController = nil //this must be set to nil here so that when the client receives team or dead info from other players after the checkName screen (since after the client checks name the server creates a player object with connected = true, so it starts sending info to that player), the client won't send back teamCk or deadCk. if the client did send back teamCk or deadCk, the server would stop sending team and dead info when the client can actually use it (when you're in the map screen)
         inGame = false
-        recRP = false
+        borderPoints = []
+        respawnPoints = []
         self.performSegue(withIdentifier: "ShowHostOrJoin", sender: nil)
     }
     
@@ -243,12 +245,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             debugLabel.text = gameStateString
         }
         
-        //networking stuff
-        
-        if (recRP) {
-            networking.sendRecRP()
-        }
-        
         //RESPAWN
         let currTime = CACurrentMediaTime()
         
@@ -257,6 +253,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                 if (currTime > respawnEnterTime + respawnTime) {
                     myPlayer.setDead(dead: false)
                     networking.setSendDead(sd: true)
+                    map.removeAnnotation(myPlayer)
                 }
                 
                 print("in respawn area")
@@ -514,10 +511,9 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     }
     
     //a new borderOverlay has to be created everytime because you can't add new points to an mkpolygon. also, the borderPoints have to be sent individually because if they were all sent as once as a list of coordinates after "bp" we don't know how much to increment when receiving "bp". even if we have a length value right after bp like "bp:5:[coordinates]", it would crash if there is no integer right after bp
-    func addBoord(index: Int, coord: CLLocationCoordinate2D) {
-        print("added boord #\(index)")
+    func addBorderPoint(index: Int, coordinate: CLLocationCoordinate2D) {
         map.removeOverlay(border)
-        let borderPoint = BorderPoint(coord: coord)
+        let borderPoint = BorderPoint(coordinate: coordinate)
         
         while (borderPoints.count <= index) {
             borderPoints.append(borderPoint)
@@ -529,10 +525,15 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         map.addOverlay(border)
     }
     
-    func addRP(name: String, coordinate: CLLocationCoordinate2D) {
-        let point = RespawnPoint(name: name, coordinate: coordinate)
-        respawnPoints.append(point)
-        map.addAnnotation(point)
+    func addRespawnPoint(index: Int, coordinate: CLLocationCoordinate2D) {
+        let respawnPoint = RespawnPoint(index: index, coordinate: coordinate)
+        
+        while (respawnPoints.count <= index) {
+            respawnPoints.append(respawnPoint)
+        }
+        
+        respawnPoints[index] = respawnPoint
+        map.addAnnotation(respawnPoint)
     }
     
     func updatePlayerTeam(name: String, team: String) {

@@ -8,13 +8,17 @@
 import UIKit
 import FirebaseFirestore
 
-var gameID:String = "generating"
-var gameCol = "Games"
-let gameIDLength:Int = 5
-let db = Firestore.firestore()
-let debug = true
-
 class HostOrJoinViewController : UIViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        //reset everything
+        createdBorderPoints = []
+        createdRespawnPoints = []
+        gameID = ""
+        nickname = ""
+    }
+    
     @IBAction func HostButton(_ sender: Any) {
         //gameID = generateGameID()
         gameID = generateGameID()
@@ -31,14 +35,6 @@ class HostOrJoinViewController : UIViewController {
     @IBAction func JoinButton(_ sender: Any) {
         print("Join Button clicked")
         self.performSegue(withIdentifier: "JoinGameIDSegue", sender: self)
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        if (debug) {
-            gameCol = "TestingGames"
-        }
     }
     
     override func didReceiveMemoryWarning() {

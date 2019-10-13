@@ -22,6 +22,7 @@ const (
     Port = "8889" //8888 is for stable server. 8889 is for test server. in the future we may need different ports for each person
     ConnType = "udp"
     LocPlaces int = 5
+    PacketLossChance = 0.5
 )
 
 //dictionary of conn objects to client objects
@@ -33,7 +34,6 @@ var posInc map[string]int
 var mutex sync.Mutex //lock this with actions regarding connToClient or printPeriodicals
 var printPeriodicals bool
 var packetConn net.PacketConn
-var packetLossChance float64 = 0.5
 
 func main() {
     /*initializes the addrToClient array. the design is kinda weird, i basically treat
@@ -63,9 +63,11 @@ func main() {
         "dead": 2,
         "dc": 1,
         "reset": 1,
-        "brd": 4,
-        "recBrd": 2,
-        "brdCt": 1,
+        "bp": 4,
+        "rp": 4,
+        "bpCt": 1,
+        "rpCt": 1,
+        "recBP": 2,
         "recRP": 1,
         "wardCk": 4,
         "teamCk": 3,
@@ -336,55 +338,89 @@ func processData(addr string) {
                 printString += additionalString
             case "reset":
                 client.getGame().resetSettings()
-            case "brd":
+            case "bp":
                 index, err1 := strconv.ParseInt(info[posInSlice + 1], 10, 64)
                 lat, err2 := strconv.ParseFloat(info[posInSlice + 2], 64)
                 long, err3 := strconv.ParseFloat(info[posInSlice + 3], 64)
 
                 if (err1 == nil && err2 == nil && err3 == nil) {
                     if (client.getGame() != nil) {
-                        client.getGame().addBoord(int(index), lat, long)
-                        additionalString := fmt.Sprintf("brdCk:%d:%f:%f:", index, lat, long)
+                        client.getGame().addBorderPoint(int(index), lat, long)
+                        additionalString := fmt.Sprintf("bpCk:%d:%f:%f:", index, lat, long)
                         writeString += additionalString
                         printString += additionalString
                     } else {
-                        fmt.Printf("A client without a game is trying to add a boord\n")
+                        fmt.Printf("A client without a game is trying to add a border point\n")
                     }
                 } else {
-                    fmt.Printf("Error parsing boord location. Index error: %v; lat error: %v; long error: %v\n", err1, err2, err3)
+                    fmt.Printf("Error parsing border point location. Index error: %v; lat error: %v; long error: %v\n", err1, err2, err3)
                     /*setting validBuffer on a failed parse makes sure any commands after loc are kept
                     for example, if loc:ward:1:1: is sent*/
                     validBuffer = false
                 }
-            case "brdCt":
+            case "rp":
+                index, err1 := strconv.ParseInt(info[posInSlice + 1], 10, 64)
+                lat, err2 := strconv.ParseFloat(info[posInSlice + 2], 64)
+                long, err3 := strconv.ParseFloat(info[posInSlice + 3], 64)
+
+                if (err1 == nil && err2 == nil && err3 == nil) {
+                    if (client.getGame() != nil) {
+                        client.getGame().addRespawnPoint(int(index), lat, long)
+                        additionalString := fmt.Sprintf("rpCk:%d:%f:%f:", index, lat, long)
+                        writeString += additionalString
+                        printString += additionalString
+                    } else {
+                        fmt.Printf("A client without a game is trying to add a respawn point\n")
+                    }
+                } else {
+                    fmt.Printf("Error parsing respawn point location. Index error: %v; lat error: %v; long error: %v\n", err1, err2, err3)
+                    /*setting validBuffer on a failed parse makes sure any commands after loc are kept
+                    for example, if loc:ward:1:1: is sent*/
+                    validBuffer = false
+                }
+            case "bpCt":
                 /*the design is that the client asks for the server to send game element packets instead of
                 the server continously sending packets until the client asks it to stop. this way, the more
                 expensive game element packet is sent after the less expensive request packet. it's like
                 why you put less expensive checks first in an if statement.*/
                 if (client.getPlayer() != nil && client.getGame() != nil) {
-                    additionalString := fmt.Sprintf("brdCt:%d:", len(client.getGame().getBoords()))
+                    additionalString := fmt.Sprintf("bpCt:%d:", len(client.getGame().getBorderPoints()))
                     writeString += additionalString
                     printString += additionalString
                 } else {
-                    fmt.Printf("A client without a game/player is trying to set brdCt\n")
+                    fmt.Printf("A client without a game/player is trying to set bpCt\n")
                 }
-            case "recBrd":
+            case "rpCt":
+                if (client.getPlayer() != nil && client.getGame() != nil) {
+                    additionalString := fmt.Sprintf("rpCt:%d:", len(client.getGame().getRespawnPoints()))
+                    writeString += additionalString
+                    printString += additionalString
+                } else {
+                    fmt.Printf("A client without a game/player is trying to set rpCt\n")
+                }
+            case "recBP":
                 index, err := strconv.ParseInt(info[posInSlice + 1], 10, 64)
 
                 if (err == nil) {
                     if (client.getPlayer() != nil && client.getGame() != nil) {
-                        client.setReceivingBorder(int(index), true)
+                        client.setReceivingBP(int(index), true)
                     } else {
-                        fmt.Printf("A client without a game/player is trying to set recBrd\n")
+                        fmt.Printf("A client without a game/player is trying to set recBP\n")
                     }
                 } else {
-                    fmt.Printf("Error parsing index for recBrd: %v\n", err)
+                    fmt.Printf("Error parsing index for recBP: %v\n", err)
                 }
             case "recRP":
-                if (client.getPlayer() != nil && client.getGame() != nil) {
-                    client.setReceivingRP(true)
+                index, err := strconv.ParseInt(info[posInSlice + 1], 10, 64)
+
+                if (err == nil) {
+                    if (client.getPlayer() != nil && client.getGame() != nil) {
+                        client.setReceivingRP(int(index), true)
+                    } else {
+                        fmt.Printf("A client without a game/player is trying to set recRP\n")
+                    }
                 } else {
-                    fmt.Printf("A client without a game/player is trying to set recBrd\n")
+                    fmt.Printf("Error parsing index for recRP: %v\n", err)
                 }
             case "wardCk": //ward check
                 name := info[posInSlice + 1]
@@ -518,26 +554,29 @@ func broadcast() {
                 continue
             }
 
-            //game elements
-            numBoords := len(recClient.getGame().getBoords())
+            //dealing with game elements
+            numBorderPoints := len(recClient.getGame().getBorderPoints())
 
-            for i := 0; i < numBoords; i++ {
-                if (recClient.getReceivingBorder(i)) {
-                    writeString := recClient.getGame().boordString(i)
+            for i := 0; i < numBorderPoints; i++ {
+                if (recClient.getReceivingBP(i)) {
+                    writeString := recClient.getGame().bpString(i)
                     write(recAddr, writeString)
                     printString := writeString
                     printWrote(recAddr, printString)
-                    recClient.setReceivingBorder(i, false)
+                    recClient.setReceivingBP(i, false)
                 }
             }
 
-            //change rp to match border's design
-            if (recClient.getReceivingRP()) {
-                writeString := recClient.getGame().rpString()
-                write(recAddr, writeString)
-                printString := writeString
-                printWrote(recAddr, printString)
-                recClient.setReceivingRP(false)
+            numRespawnPoints := len(recClient.getGame().getRespawnPoints())
+
+            for i := 0; i < numRespawnPoints; i++ {
+                if (recClient.getReceivingRP(i)) {
+                    writeString := recClient.getGame().rpString(i)
+                    write(recAddr, writeString)
+                    printString := writeString
+                    printWrote(recAddr, printString)
+                    recClient.setReceivingRP(i, false)
+                }
             }
 
             recPlayer := recClient.getPlayer()
@@ -645,7 +684,7 @@ func writeSimClientStuff(addr string, client *Client) {
 }
 
 func write(addr string, writeString string) {
-    if (rand.Float64() > packetLossChance) {
+    if (rand.Float64() > PacketLossChance) {
         addrObject, err := net.ResolveUDPAddr("udp", addr)
 
         if err != nil {
@@ -724,7 +763,7 @@ func baseMaster() *Master {
                     },
                 },
 
-                Boords: []*Coord {
+                BorderPoints: []*Coord {
                     &Coord {
                         Lat: 38,
                         Long: -120,

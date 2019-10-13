@@ -10,19 +10,19 @@ import Foundation
 import MapKit
 
 class BorderPoint {
-    var coord = CLLocationCoordinate2D(latitude: 200, longitude: 200)
+    var coordinate = CLLocationCoordinate2D(latitude: 200, longitude: 200)
     let math = SpecMath()
     
-    init(coord: CLLocationCoordinate2D) {
-        self.coord = CLLocationCoordinate2D(latitude: math.truncate(num: coord.latitude), longitude: math.truncate(num: coord.longitude))
+    init(coordinate: CLLocationCoordinate2D) {
+        self.coordinate = CLLocationCoordinate2D(latitude: math.truncate(num: coordinate.latitude), longitude: math.truncate(num: coordinate.longitude))
     }
     
     init(lat: CLLocationDegrees, long: CLLocationDegrees) {
-        self.coord = CLLocationCoordinate2D(latitude: lat, longitude: long)
+        self.coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
     }
     
-    func getCoord() -> CLLocationCoordinate2D {
-        return coord
+    func getCoordinate() -> CLLocationCoordinate2D {
+        return coordinate
     }
 }
 

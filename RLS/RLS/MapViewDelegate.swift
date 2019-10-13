@@ -46,7 +46,7 @@ class MapViewDelegate: NSObject, MKMapViewDelegate {
                 if (!annotation.getDead()) {
                     annotationView?.image = UIImage(named: "Red Player")
                 } else {
-                    annotationView?.image = UIImage(named: "Red Ward")
+                    annotationView?.image = UIImage(named: "Red Player Dead")
                 }
                 
                 if #available(iOS 11.0, *) {
@@ -60,7 +60,7 @@ class MapViewDelegate: NSObject, MKMapViewDelegate {
                 if (!annotation.getDead()) {
                     annotationView?.image = UIImage(named: "Blue Player")
                 } else {
-                    annotationView?.image = UIImage(named: "Blue Ward")
+                    annotationView?.image = UIImage(named: "Blue Player Dead")
                 }
                 
                 if #available(iOS 11.0, *) {

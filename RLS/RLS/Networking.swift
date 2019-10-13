@@ -22,8 +22,12 @@ class Networking {
     var connection: NWConnection?
     let hostUDP: NWEndpoint.Host = "73.189.41.182"
     var portUDP: NWEndpoint.Port = 8889
-    var sendBoords: [Bool] = []
-    var sendBrdCt = false
+    var sendBorderPoints: [Bool] = []
+    var sendRespawnPoints: [Bool] = []
+    var sendRecBP: [Bool] = []
+    var sendRecRP: [Bool] = []
+    var sendBPCt = false
+    var sendRPCt = false
     var sendWard = false
     var sendTeam = false
     var sendDead = false
@@ -32,8 +36,8 @@ class Networking {
     
     let posInc: [String: Int] = [
         "bt": 1,
-        "rp": 3,
-        "brd": 4,
+        "bp": 4,
+        "rp": 4,
         "checkID": 2,
         "checkName": 2,
         "loc": 4,
@@ -41,8 +45,10 @@ class Networking {
         "dead": 3,
         "ward": 4,
         "dc": 2,
-        "brdCt": 2,
-        "brdCk": 4,
+        "bpCt": 2,
+        "rpCt": 2,
+        "bpCk": 4,
+        "rpCk": 4,
         "wardCk": 3,
         "teamCk": 2,
         "deadCk": 2,
@@ -167,11 +173,11 @@ class Networking {
                 } else {
                     print("team packet: mvc doesn't exist")
                 }
-            case "brd":
+            case "bp":
                 if let index = Int(stringArray[posInArray + 1]) {
                     if let thisLat = Double(stringArray[posInArray + 2]) {
                         if let thisLong = Double(stringArray[posInArray + 3]) {
-                            mapViewController?.addBoord(index: index, coord: CLLocationCoordinate2D(latitude: thisLat, longitude: thisLong))
+                            mapViewController?.addBorderPoint(index: index, coordinate: CLLocationCoordinate2D(latitude: thisLat, longitude: thisLong))
                             
                             while (sendRecBP.count <= index) {
                                 sendRecBP.append(true)
@@ -179,27 +185,35 @@ class Networking {
                             
                             sendRecBP[index] = false
                         } else {
-                            print("brd long wrong")
+                            print("bp long wrong")
                         }
                     } else {
-                        print("brd lat wrong")
+                        print("bp lat wrong")
                     }
                 } else {
                     print("index wrong")
                 }
             case "rp":
-                if let thisLat = Double(stringArray[posInArray + 1]) {
-                    if let thisLong = Double(stringArray[posInArray + 2]) {
-                        mapViewController?.addRP(name: "Respawn Point", coordinate: CLLocationCoordinate2D(latitude: thisLat, longitude: thisLong))
+                if let index = Int(stringArray[posInArray + 1]) {
+                    if let thisLat = Double(stringArray[posInArray + 2]) {
+                        if let thisLong = Double(stringArray[posInArray + 3]) {
+                            mapViewController?.addRespawnPoint(index: index, coordinate: CLLocationCoordinate2D(latitude: thisLat, longitude: thisLong))
+                            
+                            while (sendRecRP.count <= index) {
+                                sendRecRP.append(true)
+                            }
+                            
+                            sendRecRP[index] = false
+                        } else {
+                            print("rp long wrong")
+                        }
                     } else {
-                        print("rp long wrong")
+                        print("rp lat wrong")
                     }
                 } else {
-                    print("rp lat wrong")
+                    print("rp index wrong")
                 }
-                
-                recRP = false
-            case "brdCt":
+            case "bpCt":
                 if let count = Int(stringArray[posInArray + 1]) {
                     sendRecBP = []
                     
@@ -207,30 +221,65 @@ class Networking {
                         sendRecBP.append(true)
                     }
                     
-                    sendBrdCt = false
+                    sendBPCt = false
                 } else {
-                   print("count for brdCt error")
+                   print("count for bpCt error")
                 }
-            case "brdCk":
+            case "rpCt":
+                if let count = Int(stringArray[posInArray + 1]) {
+                    sendRecRP = []
+                    
+                    for _ in 0..<count {
+                        sendRecRP.append(true)
+                    }
+                    
+                    sendRPCt = false
+                } else {
+                   print("count for bpCt error")
+                }
+            case "bpCk":
                 if let index = Int(stringArray[posInArray + 1]) {
                     if let thisLat = Double(stringArray[posInArray + 2]) {
                         if let thisLong = Double(stringArray[posInArray + 3]) {
-                            let coord = borderPoints[index].getCoord()
-                            print("brdCk \(thisLat) \(coord.latitude) \(thisLong) \(coord.longitude)")
+                            let coord = createdBorderPoints[index].getCoordinate()
                             
                             if (thisLat == coord.latitude && thisLong == coord.longitude) {
-                                sendBoords[index] = false
+                                sendBorderPoints[index] = false
                             } else {
-                                sendBoords[index] = true
+                                sendBorderPoints[index] = true
                             }
                         } else {
-                            print("brdCk lat bad")
+                            print("bpCk lat bad")
                         }
                     } else {
-                        print("brdCk long bad")
+                        print("bpCk long bad")
                     }
                 } else {
-                    print("index for brdCk error")
+                    print("index for bpCk error")
+                }
+            case "rpCk":
+                if let index = Int(stringArray[posInArray + 1]) {
+                    if let thisLat = Double(stringArray[posInArray + 2]) {
+                        if let thisLong = Double(stringArray[posInArray + 3]) {
+                            if (createdRespawnPoints.indices.contains(index)) {
+                                let coord = createdRespawnPoints[index].getCoordinate()
+                                
+                                if (thisLat == coord.latitude && thisLong == coord.longitude) {
+                                    sendRespawnPoints[index] = false
+                                } else {
+                                    sendRespawnPoints[index] = true
+                                }
+                            } else {
+                                print("index for rpCk oob")
+                            }
+                        } else {
+                            print("rpCk lat bad")
+                        }
+                    } else {
+                        print("rpCk long bad")
+                    }
+                } else {
+                    print("index for rpCk error")
                 }
             case "wardCk":
                 if let thisLat = Double(stringArray[posInArray + 1]) {
@@ -286,19 +335,35 @@ class Networking {
     }
     
     func broadcastOneTimers() {
-        for i in 0..<sendBoords.count {
-            if (sendBoords[i]) {
-                sendBoord(index: i)
+        for i in 0..<sendBorderPoints.count {
+            if (sendBorderPoints[i]) {
+                sendBorderPoint(index: i)
             }
         }
         
-        if (sendBrdCt) {
-            sendBorderCount()
+        for i in 0..<sendRespawnPoints.count {
+            if (sendRespawnPoints[i]) {
+                sendRespawnPoint(index: i)
+            }
+        }
+        
+        if (sendBPCt) {
+            sendBorderPointCount()
+        }
+        
+        if (sendRPCt) {
+            sendRespawnPointCount()
         }
         
         for i in 0..<sendRecBP.count {
             if (sendRecBP[i]) {
                 sendRecBPFunc(index: i)
+            }
+        }
+        
+        for i in 0..<sendRecRP.count {
+            if (sendRecRP[i]) {
+                sendRecRPFunc(index: i)
             }
         }
         
@@ -450,23 +515,43 @@ class Networking {
         }
     }
     
-    func sendBoord(index: Int) {
-        let coord = borderPoints[index].getCoord()
+    func sendBorderPoint(index: Int) {
+        let coord = createdBorderPoints[index].getCoordinate()
         let lat = math.truncate(num: coord.latitude)
         let long = math.truncate(num: coord.longitude)
-        write("brd:\(index):\(lat):\(long):")
+        write("bp:\(index):\(lat):\(long):")
     }
     
-    func sendBorderCount() {
-        write("brdCt:")
+    func sendRespawnPoint(index: Int) {
+        let respawnPoint = createdRespawnPoints[index]
+        let coord = respawnPoint.getCoordinate()
+        let lat = math.truncate(num: coord.latitude)
+        let long = math.truncate(num: coord.longitude)
+        write("rp:\(index):\(lat):\(long):")
+    }
+    
+    func sendBorderPointCount() {
+        write("bpCt:")
+    }
+    
+    func sendRespawnPointCount() {
+        write("rpCt:")
     }
     
     func sendRecBPFunc(index: Int) {
-        write("recBrd:\(index):")
+        write("recBP:\(index):")
     }
     
-    func sendRecRP() {
-        write("recRP:")
+    func sendRecRPFunc(index: Int) {
+        write("recRP:\(index):")
+    }
+    
+    func clearSendRecBP() {
+        sendRecBP = []
+    }
+    
+    func clearSendRecRP() {
+        sendRecRP = []
     }
     
     func sendWardCheck(name: String, coord: CLLocationCoordinate2D) {
@@ -485,20 +570,28 @@ class Networking {
         write("dcCk:\(name):")
     }
     
-    func setSendBoords(sb: Bool, index: Int) {
-        sendBoords[index] = sb
-    }
-    
-    func newSendBoords() {
-        sendBoords = []
-        
-        for _ in 0..<borderPoints.count {
-            sendBoords.append(true)
+    func setSendBP(sb: Bool, index: Int) {
+        while (sendBorderPoints.count <= index) {
+            sendBorderPoints.append(false)
         }
+        
+        sendBorderPoints[index] = sb
     }
     
-    func setSendBrdCt(sbc: Bool) {
-        sendBrdCt = sbc
+    func setSendRP(sr: Bool, index: Int) {
+        while (sendRespawnPoints.count <= index) {
+            sendRespawnPoints.append(false)
+        }
+        
+        sendRespawnPoints[index] = sr
+    }
+    
+    func setSendBPCt(sbc: Bool) {
+        sendBPCt = sbc
+    }
+    
+    func setSendRPCt(src: Bool) {
+        sendRPCt = src
     }
     
     func setSendWard(sw: Bool) {

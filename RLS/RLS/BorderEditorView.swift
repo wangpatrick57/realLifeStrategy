@@ -14,7 +14,7 @@ class BorderEditorView : UIViewController, CLLocationManagerDelegate, UIGestureR
     var once = false
     var border: BorderOverlay = BorderOverlay()
     let mapViewDelegate = MapViewDelegate()
-    var myBorderPoints = borderPoints
+    var myBorderPoints = createdBorderPoints
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +29,7 @@ class BorderEditorView : UIViewController, CLLocationManagerDelegate, UIGestureR
         //draw game elements
         redrawBorder(bp: myBorderPoints)
         
-        for rp in respawnPoints {
+        for rp in createdRespawnPoints {
             mapView.addAnnotation(rp)
         }
         
@@ -55,7 +55,7 @@ class BorderEditorView : UIViewController, CLLocationManagerDelegate, UIGestureR
     @objc func handleTap(gestureRecognizer: UITapGestureRecognizer) {
         let touchLocation = gestureRecognizer.location(in: mapView)
         let touchCoord = mapView.convert(touchLocation,toCoordinateFrom: mapView)
-        addBorderPoint(bp: BorderPoint(coord: touchCoord))
+        addBorderPoint(bp: BorderPoint(coordinate: touchCoord))
     }
     
     func addBorderPoint(bp: BorderPoint) {
@@ -74,10 +74,7 @@ class BorderEditorView : UIViewController, CLLocationManagerDelegate, UIGestureR
         manager.stopUpdatingLocation()
         
         //save
-        borderPoints = myBorderPoints
-        
-        //send game data like rp and borderPoints
-        networking.newSendBoords()
+        createdBorderPoints = myBorderPoints
         
         //go to nickname view
         self.performSegue(withIdentifier: "ShowCustomizeGame", sender: self)

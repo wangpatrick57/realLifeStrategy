@@ -9,7 +9,7 @@ type Game struct {
     GameID string
     Players map[string]*Player
     RespawnPoints []*RespawnPoint
-    Boords []*Coord //short for border coords
+    BorderPoints []*Coord //short for border coords
     Mutex sync.Mutex //lock this for actions regarding these vars and arrays
 }
 
@@ -17,7 +17,7 @@ func (game *Game) constructor() {
     game.mutexLock()
     game.Players = make(map[string]*Player)
     game.RespawnPoints = make([]*RespawnPoint, 0)
-    game.Boords = make([]*Coord, 0)
+    game.BorderPoints = make([]*Coord, 0)
 }
 
 func (game *Game) checkNameTaken(nameToCheck string) bool {
@@ -62,37 +62,48 @@ func (game *Game) addPlayer(player *Player) {
     }
 }
 
-func (game *Game) addBoord(index int, lat float64, long float64) {
+func (game *Game) addBorderPoint(index int, lat float64, long float64) {
     game.mutexLock()
-    boord := &Coord{Lat: lat, Long: long}
+    borderPoint := &Coord{Lat: lat, Long: long}
 
-    for (len(game.Boords) <= index) {
-        game.Boords = append(game.Boords, boord)
+    for (len(game.BorderPoints) <= index) {
+        game.BorderPoints = append(game.BorderPoints, borderPoint)
     }
 
-    game.Boords[index] = boord
+    game.BorderPoints[index] = borderPoint
 }
 
-func (game *Game) getBoords() []*Coord {
+func (game *Game) getBorderPoints() []*Coord {
     game.mutexLock()
-    return game.Boords
+    return game.BorderPoints
 }
 
-func (game *Game) rpString() string {
+func (game *Game) addRespawnPoint(index int, lat float64, long float64) {
     game.mutexLock()
-    ret := ""
+    borderPoint := &RespawnPoint{Index: index, Lat: lat, Long: long}
 
-    for _, rp := range game.RespawnPoints {
-        ret += fmt.Sprintf("rp:%f:%f:", rp.getLat(), rp.getLong())
+    for (len(game.RespawnPoints) <= index) {
+        game.RespawnPoints = append(game.RespawnPoints, borderPoint)
     }
 
-    return ret
+    game.RespawnPoints[index] = borderPoint
 }
 
-func (game *Game) boordString(index int) string {
+func (game *Game) getRespawnPoints() []*RespawnPoint {
     game.mutexLock()
-    coord := game.Boords[index]
-    return fmt.Sprintf("brd:%d:%f:%f:", index, coord.getLat(), coord.getLong())
+    return game.RespawnPoints
+}
+
+func (game *Game) bpString(index int) string {
+    game.mutexLock()
+    coord := game.BorderPoints[index]
+    return fmt.Sprintf("bp:%d:%f:%f:", index, coord.getLat(), coord.getLong())
+}
+
+func (game *Game) rpString(index int) string {
+    game.mutexLock()
+    respawnPoint := game.RespawnPoints[index]
+    return fmt.Sprintf("rp:%d:%f:%f:", index, respawnPoint.getLat(), respawnPoint.getLong())
 }
 
 //cleans the players in a game but not the settings for hardcoded games
@@ -118,7 +129,7 @@ func (game *Game) tryClean() {
 func (game *Game) resetSettings() {
     game.mutexLock()
     game.RespawnPoints = make([]*RespawnPoint, 0)
-    game.Boords = make([]*Coord, 0)
+    game.BorderPoints = make([]*Coord, 0)
 }
 
 func (game *Game) mutexLock() {

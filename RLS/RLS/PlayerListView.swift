@@ -33,30 +33,6 @@ class PlayerListView : UIViewController{
         blueButton.backgroundColor = blueUnselected
         nicknameLabel.text = "Hi, " + nickname + "! Choose a team below:"
         idLabel.text = "Game ID: " + gameID
-        
-        if (nickname == "host") {
-            let docRef = db.collection(gameCol).document(gameID)
-            
-            docRef.getDocument { (document, error) in
-                if let document = document, document.exists {
-                    let data = document.data()
-                    
-                    if let data = data {
-                        self.respawnPointNum = data["respawnPointNum"] as? Int ?? 0
-                    }
-                    
-                    for i in 0..<self.respawnPointNum {
-                        print(i)
-                        db.document("\(gameCol)/\(gameID)/RespawnPoints/point\(i)").setData([
-                            "lat": 0,
-                            "long": 0
-                            ])
-                    }
-                } else {
-                    print("document doesn't exist")
-                }
-            }
-        }
     }
     
     @IBAction func redSelected(_ sender: Any) {

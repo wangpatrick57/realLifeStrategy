@@ -11,20 +11,20 @@ import MapKit
 import CoreLocation
 
 class RespawnPoint: MKPointAnnotation{
-    private var name: String
     private var circleOverlay: ColorCircleOverlay? = nil
+    private var index: Int = -1
+    private var name: String = ""
     
     override init() {
-        self.name = ""
         super.init()
-        self.title = name
         self.coordinate = coordinate
     }
     
-    init(name:String,coordinate:CLLocationCoordinate2D){
-        self.name=name
+    init(index: Int, coordinate:CLLocationCoordinate2D){
         super.init()
-        self.title = name
+        self.index = index
+        self.name = "Point \(self.index)"
+        self.title = self.name
         let math = SpecMath()
         let truncatedCoord = CLLocationCoordinate2D(latitude: math.truncate(num: coordinate.latitude), longitude: math.truncate(num: coordinate.longitude))
         self.coordinate = truncatedCoord
@@ -45,7 +45,7 @@ class RespawnPoint: MKPointAnnotation{
     }
     
     func getCoordinate()->CLLocationCoordinate2D {
-        return self.coordinate
+        return coordinate
     }
     
     func getName() -> String {
