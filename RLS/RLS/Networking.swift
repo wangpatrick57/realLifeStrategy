@@ -11,8 +11,6 @@ import MapKit
 import Network
 
 class Networking {
-    var inputStream: InputStream!
-    var outputStream: OutputStream!
     var username = ""
     var maxReadLength = 1024
     var idExists: Bool? = nil
@@ -28,11 +26,13 @@ class Networking {
     var sendRecRP: [Bool] = []
     var sendBPCt = false
     var sendRPCt = false
+    var sendUUID = false
     var sendWard = false
     var sendTeam = false
     var sendDead = false
     var sendDC = false
     let math: SpecMath = SpecMath()
+    var timeSinceLastMessage = 0
     
     let posInc: [String: Int] = [
         "bt": 1,
@@ -47,6 +47,7 @@ class Networking {
         "dc": 2,
         "bpCt": 2,
         "rpCt": 2,
+        "uuidCk": 2,
         "bpCk": 4,
         "rpCk": 4,
         "wardCk": 3,
@@ -76,11 +77,17 @@ class Networking {
         }
         
         self.connection?.start(queue: .global())
+        sendUUID = true
     }
     
     func readAllData() {
         let stringArray = read()
-        print("rad stringArray = \(stringArray)")
+        print("read \(stringArray)")
+        
+        if (stringArray.count > 1) {
+            timeSinceLastMessage = 0
+        }
+        
         var posInArray = 0
         
         while (posInArray < stringArray.count - 1) {
@@ -237,6 +244,14 @@ class Networking {
                 } else {
                    print("count for bpCt error")
                 }
+            case "uuidCk":
+                let recUUID = stringArray[posInArray + 1]
+                
+                if (recUUID == uuid) {
+                    sendUUID = false
+                } else {
+                    sendUUID = true
+                }
             case "bpCk":
                 if let index = Int(stringArray[posInArray + 1]) {
                     if let thisLat = Double(stringArray[posInArray + 2]) {
@@ -334,6 +349,19 @@ class Networking {
         }
     }
     
+    func reconnectIfNecessary() {
+        timeSinceLastMessage += 1
+        
+        if (timeSinceLastMessage >= disconnectTimeout) {
+            print("rec if nec called")
+            networking.closeNetworkComms()
+            networking.setupNetworkComms()
+            
+            //reinitialize
+            timeSinceLastMessage = 0
+        }
+    }
+    
     func broadcastOneTimers() {
         for i in 0..<sendBorderPoints.count {
             if (sendBorderPoints[i]) {
@@ -345,6 +373,10 @@ class Networking {
             if (sendRespawnPoints[i]) {
                 sendRespawnPoint(index: i)
             }
+        }
+        
+        if (sendUUID) {
+            sendUUIDFunc()
         }
         
         if (sendBPCt) {
@@ -387,15 +419,13 @@ class Networking {
     }
     
     func closeNetworkComms() {
-        inputStream.close()
-        outputStream.close()
     }
     
     func read() -> [String] {
         for _ in 1...5 {
             self.connection?.receiveMessage { (data, context, isComplete, error) in
-                if (data != nil) {
-                    self.dataString += String(decoding: data!, as: UTF8.self)
+                if let thisData = data {
+                    self.dataString += String(decoding: thisData, as: UTF8.self)
                 } else {
                     print("Data is nil")
                 }
@@ -472,6 +502,10 @@ class Networking {
         return ret
     }
     
+    func sendUUIDFunc() {
+        write("uuid:\(uuid):")
+    }
+    
     func sendReceiving() {
         write("rec:")
     }
@@ -490,6 +524,15 @@ class Networking {
     
     func sendTeam(team: String) {
         write("team:\(team):")
+    }
+    
+    func sendFiveDC() {
+        for _ in 1...5 {
+            print("sending dc")
+            sendDCFunc()
+        }
+        
+        usleep(1000000)
     }
     
     func sendDCFunc() { //it can't be called sendDC cuz there's a variable called sendDC and this function has no parameters

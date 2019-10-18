@@ -26,6 +26,7 @@ const (
 )
 
 //dictionary of conn objects to client objects
+var addrToChannel map[string]chan string
 var addrToClient map[string]*Client
 //the master json object
 var master *Master
@@ -41,6 +42,7 @@ func main() {
     don't forget use mutex before accessing or changing any data since locking the
     mutex is built in (by the code, not by golang) to all getters and setters*/
     setAddrToClient(make(map[string]*Client))
+    setAddrToChannel(make(map[string]chan string))
 
     //sets print periodicals to true. you might prefer to set this to false by default
     setPrintPeriodicals(false)
@@ -48,6 +50,7 @@ func main() {
     //position increment. the amount of cells to increment in the string array after every command
     posInc = map[string]int {
         //explanations of commands are in the simulated client guide doc
+        "uuid": 2,
         "hrt": 1,
         "connected": 1,
         "toggleRDL": 1,
@@ -107,21 +110,19 @@ func main() {
         _, addrObject, err := packetConn.ReadFrom(buf)
         addr := addrObject.String()
         bufString := string(bytes.Trim(buf, "\x00"))
-        client, ok := getClient(addr)
+        _, ok := getClient(addr)
 
         if (!ok) {
-            client := &(Client{})
-            setClient(addr, client)
             channel := make(chan string)
-            client.setChannel(channel)
+            setChannel(addr, channel)
 
             //if this is a new address, create a new routine that listens for data from that connection
             go processData(addr)
 
             //send the data to the new goroutine
-            client.getChannel() <- bufString
+            getChannel(addr) <- bufString
         } else {
-            client.getChannel() <- bufString
+            getChannel(addr) <- bufString
         }
 
         if err != nil {
@@ -136,8 +137,7 @@ func main() {
 
 func processData(addr string) {
     rdlEnabled := true
-    client, _ := getClient(addr)
-    channel := client.getChannel()
+    channel := getChannel(addr)
 
     for {
         content := <-channel
@@ -146,11 +146,23 @@ func processData(addr string) {
         printString := ""
         posInSlice := 0
         pp := getPrintPeriodicals()
-        printRead(client, info, pp, addr)
+
+        client, ok := getClient(addr)
+
+        if (ok) {
+            printRead(client, info, pp, addr)
+        }
 
         for ;posInSlice < len(info) - 1; {
             validBuffer := true
             bufType := info[posInSlice]
+
+            //skips everything except uuid, togglePP, toggleRDL, and connected if client is nil
+            if (!ok && (bufType != "uuid" && bufType != "togglePP" && bufType != "toggleRDL" && bufType != "connected")) {
+                fmt.Printf("client doesn't exist and non-non-client specific command sent\n")
+                posInSlice++
+                continue
+            }
 
             //protects against valid types without enough data following them
             if (posInSlice + posInc[bufType] >= len(info)) {
@@ -162,6 +174,26 @@ func processData(addr string) {
             }
 
             switch bufType {
+            case "uuid":
+                uuid := info[posInSlice + 1]
+                foundUUID := false
+
+                for _, thisClient := range getAddrToClient() {
+                    if (thisClient.getUUID() == uuid) {
+                        setClient(addr, thisClient)
+                        foundUUID = true
+                    }
+                }
+
+                if (!foundUUID) {
+                    client = &Client{}
+                    client.setUUID(uuid)
+                    setClient(addr, client)
+                }
+
+                additionalString := fmt.Sprintf("uuidCk:%s:", uuid)
+                writeString += additionalString
+                printString += additionalString
             case "hrt":
                 additionalString := "bt:"
                 writeString += additionalString
@@ -848,6 +880,26 @@ func getAddrToClient() map[string]*Client {
 func setAddrToClient(newMap map[string]*Client) {
     mutexLock()
     addrToClient = newMap
+}
+
+func getAddrToChannel() map[string]chan string {
+    mutexLock()
+    return addrToChannel
+}
+
+func setAddrToChannel(newMap map[string]chan string) {
+    mutexLock()
+    addrToChannel = newMap
+}
+
+func getChannel(addr string) chan string {
+    mutexLock()
+    return addrToChannel[addr]
+}
+
+func setChannel(addr string, channel chan string) {
+    mutexLock()
+    addrToChannel[addr] = channel
 }
 
 func setClient(addr string, client *Client) {

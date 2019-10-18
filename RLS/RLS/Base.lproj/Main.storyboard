@@ -359,7 +359,7 @@
                                 </accessibility>
                                 <state key="normal" title="Enter"/>
                                 <connections>
-                                    <action selector="EnterButton:" destination="SpX-Kg-5vU" eventType="touchUpInside" id="biK-Cx-DOu"/>
+                                    <action selector="enterPressed:" destination="SpX-Kg-5vU" eventType="touchUpInside" id="rvX-m8-nq4"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7xk-X0-Aiv" userLabel="ReturnButton">
@@ -369,7 +369,8 @@
                                 </accessibility>
                                 <state key="normal" title="Return"/>
                                 <connections>
-                                    <segue destination="qoq-Th-0eg" kind="show" id="D1b-4c-cdS"/>
+                                    <action selector="returnPressed:" destination="SpX-Kg-5vU" eventType="touchUpInside" id="5Hf-96-6iZ"/>
+                                    <segue destination="qoq-Th-0eg" kind="show" identifier="ShowHostOrJoin" id="D1b-4c-cdS"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -713,9 +714,8 @@
         <image name="rlsLogo.png" width="306" height="396"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="YoI-nR-AJm"/>
-        <segue reference="aZ7-46-IqN"/>
-        <segue reference="ENW-AW-jX8"/>
-        <segue reference="i05-3P-dzg"/>
+        <segue reference="f0Y-Id-UZu"/>
+        <segue reference="U6A-Ws-CuV"/>
+        <segue reference="D1b-4c-cdS"/>
     </inferredMetricsTieBreakers>
 </document>

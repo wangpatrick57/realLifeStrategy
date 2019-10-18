@@ -39,12 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        for _ in 1...5 {
-            print("sending dc")
-            networking.sendDCFunc()
-        }
-        
-        usleep(1000000)
+        networking.sendFiveDC()
     }
 }
 

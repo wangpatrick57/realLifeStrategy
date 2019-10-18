@@ -17,7 +17,7 @@ class GameIDTF: UIViewController {
         super.viewDidLoad()
     }
     
-    @IBAction func EnterButton(_ sender: Any) {
+    @IBAction func enterPressed(_ sender: Any) {
         gameID = idTF.text ?? ""
         
         if (networking.checkGameIDTaken(idToCheck: gameID, hostOrJoin: "j")) {
@@ -27,11 +27,7 @@ class GameIDTF: UIViewController {
         }
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        if idTF.text != "" {
-            let DestViewController : NicknameTFView = segue.destination as! NicknameTFView
-            DestViewController.id = idTF.text!
-        }
+    @IBAction func returnPressed(_ sender: Any) {
+        self.performSegue(withIdentifier: "ShowHostOrJoin", sender: nil)
     }
 }

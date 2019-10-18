@@ -125,10 +125,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             map.setRegion(region, animated: true)
             print(location.coordinate.latitude, " and ", location.coordinate.longitude)
             
-            if (!isSpec) {
-                self.map.showsUserLocation = true
-            } else {
-                self.map.showsUserLocation = false
+            if (isSpec) {
                 myPlayer.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: 200, longitude: 200))
                 networking.sendLocation(coord: myPlayer.getCoordinate())
             }

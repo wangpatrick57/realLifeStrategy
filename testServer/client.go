@@ -2,10 +2,10 @@ package main
 
 import (
     "sync"
-    "fmt"
 )
 
 type Client struct {
+    UUID string
     Game *Game
     Player *Player
     Receiving bool
@@ -14,6 +14,16 @@ type Client struct {
     Channel chan string
     SimClient bool
     Mutex sync.Mutex //lock this for actions regarding receiving, game, or player
+}
+
+func (client *Client) getUUID() string {
+    client.mutexLock()
+    return client.UUID
+}
+
+func (client *Client) setUUID(uuid string) {
+    client.mutexLock()
+    client.UUID = uuid
 }
 
 func (client *Client) getGame() *Game {
@@ -117,7 +127,6 @@ func (client *Client) playerDisconnectActions() {
     if (client.Player != nil) {
         client.Player.setConnected(false)
         client.Player.makeSendTrue("dc", client.Game.getPlayers())
-        fmt.Printf("hi\n")
         client.Player = nil
     }
 

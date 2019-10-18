@@ -17,7 +17,8 @@ var respawnTime = 15.0 //seconds
 let respawnDist = 20.0 //meters
 let cpDist = 50.0 //meters
 let wardVisionDist = 30.0 //meters
-let packetLossChance: Float = 0.5
+let packetLossChance: Float = 0
+let disconnectTimeout: Int = 5
 let font : String = "San Francisco"
 var inGame = false
 var recRP = false
@@ -29,11 +30,15 @@ var gameID:String = "generating"
 var nickname:String = ""
 var gameCol = "Games"
 let gameIDLength:Int = 5
-let debug = true
+let debug = false
+var uuid: String = ""
 
 class StartView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("setting uuid")
+        uuid = UIDevice.current.identifierForVendor!.uuidString
+        print("uuid set successfully")
         
         //setup client
         print("networking in start")
@@ -44,8 +49,9 @@ class StartView: UIViewController {
     }
     
     @objc func serverStep() {
-        networking.readAllData() //read all data to check if bt was received to know whether or not to send hrt
         networking.sendHeartbeat()
+        networking.readAllData() //read all data to check if bt was received to know whether or not to send hrt
+        networking.reconnectIfNecessary()
         networking.broadcastOneTimers()
     }
 
