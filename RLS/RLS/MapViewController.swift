@@ -186,7 +186,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     @objc func handleLongPress(gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state == UIGestureRecognizer.State.began {
             let touchLocation = gestureRecognizer.location(in: map)
-            let locationCoordinate = map.convert(touchLocation,toCoordinateFrom: map)
+            //let locationCoordinate = map.convert(touchLocation,toCoordinateFrom: map)
             let currTime = CACurrentMediaTime()
             let pingName = "\(myPlayer.getName())\(pingNum)"
             pingNum += 1

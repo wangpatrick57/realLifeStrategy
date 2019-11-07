@@ -12,47 +12,50 @@ type RespawnPoint struct {
 }
 
 func (respawnPoint *RespawnPoint) getIndex() int {
-    respawnPoint.mutexLock()
+    respawnPoint.Mutex.Lock()
+    defer respawnPoint.Mutex.Unlock()
     return respawnPoint.Index
 }
 
 func (respawnPoint *RespawnPoint) setIndex(index int) {
-    respawnPoint.mutexLock()
+    respawnPoint.Mutex.Lock()
+    defer respawnPoint.Mutex.Unlock()
     respawnPoint.Index = index
 }
 
 func (respawnPoint *RespawnPoint) getLoc() (float64, float64) {
-    respawnPoint.mutexLock()
+    respawnPoint.Mutex.Lock()
+    defer respawnPoint.Mutex.Unlock()
     return respawnPoint.Lat, respawnPoint.Long
 }
 
 func (respawnPoint *RespawnPoint) setLoc(lat, long float64) {
-    respawnPoint.mutexLock()
+    respawnPoint.Mutex.Lock()
+    defer respawnPoint.Mutex.Unlock()
     respawnPoint.Lat = lat
     respawnPoint.Long = long
 }
 
 func (respawnPoint *RespawnPoint) getLat() float64 {
-    respawnPoint.mutexLock()
+    respawnPoint.Mutex.Lock()
+    defer respawnPoint.Mutex.Unlock()
     return respawnPoint.Lat
 }
 
 func (respawnPoint *RespawnPoint) setLat(lat float64) {
-    respawnPoint.mutexLock()
+    respawnPoint.Mutex.Lock()
+    defer respawnPoint.Mutex.Unlock()
     respawnPoint.Lat = lat
 }
 
 func (respawnPoint *RespawnPoint) getLong() float64 {
-    respawnPoint.mutexLock()
+    respawnPoint.Mutex.Lock()
+    defer respawnPoint.Mutex.Unlock()
     return respawnPoint.Long
 }
 
 func (respawnPoint *RespawnPoint) setLong(long float64) {
-    respawnPoint.mutexLock()
-    respawnPoint.Long = long
-}
-
-func (respawnPoint *RespawnPoint) mutexLock() {
     respawnPoint.Mutex.Lock()
     defer respawnPoint.Mutex.Unlock()
+    respawnPoint.Long = long
 }

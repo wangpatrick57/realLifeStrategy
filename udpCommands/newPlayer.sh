@@ -11,6 +11,8 @@ else
     gameID="$2"
 fi
 
-port="$3"
+uuid="$3"
 
-./send.sh checkID:"$gameID":checkName:"$name":loc:1:1:team:red:conn:true:simClient: "$port"
+port="$4"
+
+./send.sh uuid:"$uuid":checkIDj:"$gameID":checkName:"$name":loc:1:1:team:red:simClient: "$port"

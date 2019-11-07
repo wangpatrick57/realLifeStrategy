@@ -1,0 +1,2 @@
+#!/bin/bash
+GORACE="log_path=./race_logs" go run -race *.go

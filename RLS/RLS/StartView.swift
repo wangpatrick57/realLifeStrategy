@@ -18,7 +18,7 @@ let respawnDist = 20.0 //meters
 let cpDist = 50.0 //meters
 let wardVisionDist = 30.0 //meters
 let packetLossChance: Float = 0
-let disconnectTimeout: Int = 5
+let disconnectTimeout: Int = 10
 let font : String = "San Francisco"
 var inGame = false
 var recRP = false
@@ -30,7 +30,7 @@ var gameID:String = "generating"
 var nickname:String = ""
 var gameCol = "Games"
 let gameIDLength:Int = 5
-let debug = false
+let debug = true
 var uuid: String = ""
 
 class StartView: UIViewController {
@@ -44,15 +44,30 @@ class StartView: UIViewController {
         print("networking in start")
         networking.setupNetworkComms()
         
-        //start serverStep timer
-        _ = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(serverStep), userInfo: nil, repeats: true)
+        //networking background step
+        let networkingStepQueue = DispatchQueue(label: "networkingStepQueue", qos: .background)
+        
+        networkingStepQueue.async {
+            self.runNetworkingBackgroundStep()
+        }
+        
+        //networking foreground step
+        _ = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(networkingForegroundStep), userInfo: nil, repeats: true)
     }
     
-    @objc func serverStep() {
-        networking.sendHeartbeat()
-        networking.readAllData() //read all data to check if bt was received to know whether or not to send hrt
-        networking.reconnectIfNecessary()
-        networking.broadcastOneTimers()
+    func runNetworkingBackgroundStep() {
+        while (true) {
+            networking.networkingBackgroundStep()
+            usleep(1000000)
+        }
+    }
+    
+    @objc func networkingForegroundStep() {
+        networking.networkingForegroundStep()
+    }
+    
+    func printStuff(_ content: String) {
+        print("hi")
     }
 
     override func didReceiveMemoryWarning() {

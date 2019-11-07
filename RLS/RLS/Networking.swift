@@ -17,9 +17,9 @@ class Networking {
     var nameExists: Bool? = nil
     var dataString = ""
     var controlPoint: ControlPoint? = nil
-    var connection: NWConnection?
     let hostUDP: NWEndpoint.Host = "73.189.41.182"
     var portUDP: NWEndpoint.Port = 8889
+    var connection: NWConnection? = nil
     var sendBorderPoints: [Bool] = []
     var sendRespawnPoints: [Bool] = []
     var sendRecBP: [Bool] = []
@@ -33,6 +33,7 @@ class Networking {
     var sendDC = false
     let math: SpecMath = SpecMath()
     var timeSinceLastMessage = 0
+    var writeString = ""
     
     let posInc: [String: Int] = [
         "bt": 1,
@@ -59,12 +60,12 @@ class Networking {
     func setupNetworkComms() {
         connection = NWConnection(host: hostUDP, port: portUDP, using: .udp)
         
-        self.connection?.stateUpdateHandler = { (newState) in
+        connection?.stateUpdateHandler = { (newState) in
             print("This is stateUpdateHandler:")
             switch (newState) {
             case .ready:
                 print("State: Ready\n")
-                self.write("connected:")
+                self.addToWriteString("connected:")
             case .setup:
                 print("State: Setup\n")
             case .cancelled:
@@ -76,12 +77,30 @@ class Networking {
             }
         }
         
-        self.connection?.start(queue: .global())
+        connection?.start(queue: .global())
         sendUUID = true
+        
+        let readQueue = DispatchQueue(label: "readQueue", qos: .background)
+        
+        readQueue.async {
+            self.readData()
+        }
     }
     
-    func readAllData() {
-        let stringArray = read()
+    func networkingBackgroundStep() {
+        networking.sendHeartbeat()
+        networking.reconnectIfNecessary()
+        networking.broadcastOneTimers()
+        networking.write()
+    }
+    
+    func networkingForegroundStep() {
+        networking.processData()
+    }
+    
+    func processData() {
+        let stringArray = dataString.components(separatedBy: ":")
+        dataString = ""
         print("read \(stringArray)")
         
         if (stringArray.count > 1) {
@@ -230,7 +249,7 @@ class Networking {
                     
                     sendBPCt = false
                 } else {
-                   print("count for bpCt error")
+                    print("count for bpCt error")
                 }
             case "rpCt":
                 if let count = Int(stringArray[posInArray + 1]) {
@@ -242,7 +261,7 @@ class Networking {
                     
                     sendRPCt = false
                 } else {
-                   print("count for bpCt error")
+                    print("count for bpCt error")
                 }
             case "uuidCk":
                 let recUUID = stringArray[posInArray + 1]
@@ -345,6 +364,7 @@ class Networking {
             } else {
                 print("bufType \(bufType) does not exist")
                 print("buffer that gave error: \(stringArray)")
+                posInArray += 1
             }
         }
     }
@@ -421,34 +441,51 @@ class Networking {
     func closeNetworkComms() {
     }
     
-    func read() -> [String] {
-        for _ in 1...5 {
-            self.connection?.receiveMessage { (data, context, isComplete, error) in
-                if let thisData = data {
-                    self.dataString += String(decoding: thisData, as: UTF8.self)
-                } else {
-                    print("Data is nil")
-                }
+    func readData() {
+        connection?.receive(minimumIncompleteLength: 1, maximumLength: 65536) { (data, contentContext, isComplete, error) in
+            if let error = error {
+                print("\(error)")
+                return
             }
+            
+            if let thisData = data {
+                let thisDataString = String(decoding: thisData, as: UTF8.self)
+                print("thisDataString: \(thisDataString)")
+                self.dataString += thisDataString
+            } else {
+                print("Data is nil")
+            }
+            
+            self.readData()
+            return
         }
-        
-        let stringArray = dataString.components(separatedBy: ":")
-        dataString = ""
-        return stringArray
     }
     
-    func write(_ content: String) {
+    func addToWriteString(_ content: String) {
+        writeString += content
+    }
+    
+    func write() {
         if (Float.random(in: 0 ..< 1) > packetLossChance) {
-            let contentToSendUDP = content.data(using: String.Encoding.utf8)
+            let contentToSendUDP = writeString.data(using: String.Encoding.utf8)
+            print("Wrote \(self.writeString)")
+            writeString = ""
             
             if let connObj = self.connection {
-                connObj.send(content: contentToSendUDP, completion: NWConnection.SendCompletion.contentProcessed(({ (NWError) in
+                /*connObj.send(content: contentToSendUDP, completion: NWConnection.SendCompletion.contentProcessed(({ (NWError) in
                     if (NWError == nil) {
                         print("Wrote \(content)")
                     } else {
                         print("ERROR! Error when data (Type: Data) sending. NWError: \n \(NWError!)")
                     }
-                })))
+                })))*/
+                connObj.send(content: contentToSendUDP, completion: .contentProcessed( { error in
+                    if let error = error {
+                        print("Error in sending: \(error)")
+                        return
+                    } else {
+                    }
+                }))
             } else {
                 print("connObj is nil")
             }
@@ -458,7 +495,7 @@ class Networking {
     }
     
     func sendHeartbeat() {
-        write("hrt:")
+        addToWriteString("hrt:")
     }
     
     func checkGameIDTaken(idToCheck: String, hostOrJoin: String) -> Bool {
@@ -466,8 +503,9 @@ class Networking {
         idExists = nil
         
         while (true) {
-            write("checkID\(hostOrJoin):\(idToCheck):")
-            readAllData()
+            addToWriteString("checkID\(hostOrJoin):\(idToCheck):")
+            write()
+            processData()
             
             if let exists = idExists {
                 print("idExists = \(exists)")
@@ -488,8 +526,9 @@ class Networking {
         nameExists = nil
         
         while (true) {
-            write("checkName:\(nameToCheck):")
-            readAllData()
+            addToWriteString("checkName:\(nameToCheck):")
+            write()
+            processData()
             
             if let exists = nameExists {
                 ret = exists
@@ -503,27 +542,27 @@ class Networking {
     }
     
     func sendUUIDFunc() {
-        write("uuid:\(uuid):")
+        addToWriteString("uuid:\(uuid):")
     }
     
     func sendReceiving() {
-        write("rec:")
+        addToWriteString("rec:")
     }
     
     func sendLocation(coord: CLLocationCoordinate2D) {
-        write("loc:\(coord.latitude):\(coord.longitude):")
+        addToWriteString("loc:\(coord.latitude):\(coord.longitude):")
     }
     
     func sendWardLoc(coord: CLLocationCoordinate2D) {
-        write("ward:\(coord.latitude):\(coord.longitude):")
+        addToWriteString("ward:\(coord.latitude):\(coord.longitude):")
     }
     
     func sendDead(dead: Bool) {
-        write("dead:\(dead):")
+        addToWriteString("dead:\(dead):")
     }
     
     func sendTeam(team: String) {
-        write("team:\(team):")
+        addToWriteString("team:\(team):")
     }
     
     func sendFiveDC() {
@@ -536,25 +575,25 @@ class Networking {
     }
     
     func sendDCFunc() { //it can't be called sendDC cuz there's a variable called sendDC and this function has no parameters
-        write("dc:")
+        addToWriteString("dc:")
     }
     
     func sendRedPoint(point: Double) {
-        write("redPoint:\(point):")
+        addToWriteString("redPoint:\(point):")
     }
     
     func sendBluePoint(point: Double) {
-        write("bluePoint:\(point):")
+        addToWriteString("bluePoint:\(point):")
     }
     
     func sendCPNums(numRed: Int, numBlue: Int) {
-        write("cp:\( controlPoint?.getLocation().latitude):\(controlPoint?.getLocation().longitude):\(numRed):\(numBlue):")
+        addToWriteString("cp:\( controlPoint?.getLocation().latitude):\(controlPoint?.getLocation().longitude):\(numRed):\(numBlue):")
     }
     
     //have to send lat and long as cllocationcoordinate2d so that .latitude and .longitude are cllocationdegrees
     func sendCPLoc(lat: Double, long: Double) {
         if let cp = controlPoint {
-            write("cp:\(lat):\(long):\(cp.getNumRed()):\(cp.getNumBlue()):")
+            addToWriteString("cp:\(lat):\(long):\(cp.getNumRed()):\(cp.getNumBlue()):")
         }
     }
     
@@ -562,7 +601,7 @@ class Networking {
         let coord = createdBorderPoints[index].getCoordinate()
         let lat = math.truncate(num: coord.latitude)
         let long = math.truncate(num: coord.longitude)
-        write("bp:\(index):\(lat):\(long):")
+        addToWriteString("bp:\(index):\(lat):\(long):")
     }
     
     func sendRespawnPoint(index: Int) {
@@ -570,23 +609,23 @@ class Networking {
         let coord = respawnPoint.getCoordinate()
         let lat = math.truncate(num: coord.latitude)
         let long = math.truncate(num: coord.longitude)
-        write("rp:\(index):\(lat):\(long):")
+        addToWriteString("rp:\(index):\(lat):\(long):")
     }
     
     func sendBorderPointCount() {
-        write("bpCt:")
+        addToWriteString("bpCt:")
     }
     
     func sendRespawnPointCount() {
-        write("rpCt:")
+        addToWriteString("rpCt:")
     }
     
     func sendRecBPFunc(index: Int) {
-        write("recBP:\(index):")
+        addToWriteString("recBP:\(index):")
     }
     
     func sendRecRPFunc(index: Int) {
-        write("recRP:\(index):")
+        addToWriteString("recRP:\(index):")
     }
     
     func clearSendRecBP() {
@@ -598,19 +637,19 @@ class Networking {
     }
     
     func sendWardCheck(name: String, coord: CLLocationCoordinate2D) {
-        write("wardCk:\(name):\(coord.latitude):\(coord.longitude):")
+        addToWriteString("wardCk:\(name):\(coord.latitude):\(coord.longitude):")
     }
     
     func sendTeamCheck(name: String, team: String) {
-        write("teamCk:\(name):\(team):")
+        addToWriteString("teamCk:\(name):\(team):")
     }
     
     func sendDeadCheck(name: String, dead: Bool) {
-        write("deadCk:\(name):\(dead):")
+        addToWriteString("deadCk:\(name):\(dead):")
     }
     
     func sendDCCheck(name: String) {
-        write("dcCk:\(name):")
+        addToWriteString("dcCk:\(name):")
     }
     
     func setSendBP(sb: Bool, index: Int) {

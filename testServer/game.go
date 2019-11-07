@@ -14,14 +14,16 @@ type Game struct {
 }
 
 func (game *Game) constructor() {
-    game.mutexLock()
+    game.Mutex.Lock()
+    defer game.Mutex.Unlock()
     game.Players = make(map[string]*Player)
     game.RespawnPoints = make([]*RespawnPoint, 0)
     game.BorderPoints = make([]*Coord, 0)
 }
 
 func (game *Game) checkNameTaken(nameToCheck string) bool {
-    game.mutexLock()
+    game.Mutex.Lock()
+    defer game.Mutex.Unlock()
 
     for _, p := range game.Players {
         if p.getConnected() && p.getName() == nameToCheck {
@@ -33,27 +35,46 @@ func (game *Game) checkNameTaken(nameToCheck string) bool {
 }
 
 func (game *Game) getGameID() string {
-    game.mutexLock()
+    game.Mutex.Lock()
+    defer game.Mutex.Unlock()
     return game.GameID
 }
 
 func (game *Game) setGameID(gameID string) {
-    game.mutexLock()
+    game.Mutex.Lock()
+    defer game.Mutex.Unlock()
     game.GameID = gameID
 }
 
 func (game *Game) getPlayer(name string) *Player {
-    game.mutexLock()
+    game.Mutex.Lock()
+    defer game.Mutex.Unlock()
     return game.Players[name]
 }
 
 func (game *Game) getPlayers() map[string]*Player {
-    game.mutexLock()
+    game.Mutex.Lock()
+    defer game.Mutex.Unlock()
     return game.Players
 }
 
+func (game *Game) getPlayerNames() []string {
+    game.Mutex.Lock()
+    defer game.Mutex.Unlock()
+    names := make([]string, len(game.Players))
+    index := 0
+
+    for name, _ := range game.Players {
+        names[index] = name
+        index++
+    }
+
+    return names
+}
+
 func (game *Game) addPlayer(player *Player) {
-    game.mutexLock()
+    game.Mutex.Lock()
+    defer game.Mutex.Unlock()
 
     if (player.getName() == "") {
         fmt.Printf("player has no name\n")
@@ -63,7 +84,8 @@ func (game *Game) addPlayer(player *Player) {
 }
 
 func (game *Game) addBorderPoint(index int, lat float64, long float64) {
-    game.mutexLock()
+    game.Mutex.Lock()
+    defer game.Mutex.Unlock()
     borderPoint := &Coord{Lat: lat, Long: long}
 
     for (len(game.BorderPoints) <= index) {
@@ -74,12 +96,14 @@ func (game *Game) addBorderPoint(index int, lat float64, long float64) {
 }
 
 func (game *Game) getBorderPoints() []*Coord {
-    game.mutexLock()
+    game.Mutex.Lock()
+    defer game.Mutex.Unlock()
     return game.BorderPoints
 }
 
 func (game *Game) addRespawnPoint(index int, lat float64, long float64) {
-    game.mutexLock()
+    game.Mutex.Lock()
+    defer game.Mutex.Unlock()
     borderPoint := &RespawnPoint{Index: index, Lat: lat, Long: long}
 
     for (len(game.RespawnPoints) <= index) {
@@ -90,18 +114,21 @@ func (game *Game) addRespawnPoint(index int, lat float64, long float64) {
 }
 
 func (game *Game) getRespawnPoints() []*RespawnPoint {
-    game.mutexLock()
+    game.Mutex.Lock()
+    defer game.Mutex.Unlock()
     return game.RespawnPoints
 }
 
 func (game *Game) bpString(index int) string {
-    game.mutexLock()
+    game.Mutex.Lock()
+    defer game.Mutex.Unlock()
     coord := game.BorderPoints[index]
     return fmt.Sprintf("bp:%d:%f:%f:", index, coord.getLat(), coord.getLong())
 }
 
 func (game *Game) rpString(index int) string {
-    game.mutexLock()
+    game.Mutex.Lock()
+    defer game.Mutex.Unlock()
     respawnPoint := game.RespawnPoints[index]
     return fmt.Sprintf("rp:%d:%f:%f:", index, respawnPoint.getLat(), respawnPoint.getLong())
 }
@@ -109,7 +136,8 @@ func (game *Game) rpString(index int) string {
 //cleans the players in a game but not the settings for hardcoded games
 //for user created games it deletes the game when it is empty
 func (game *Game) tryClean() {
-    game.mutexLock()
+    game.Mutex.Lock()
+    defer game.Mutex.Unlock()
 
     for _, p := range game.Players {
         if (p.getConnected()) {
@@ -127,12 +155,8 @@ func (game *Game) tryClean() {
 
 //resets the settings, but doesn't clean players or try to delete the game
 func (game *Game) resetSettings() {
-    game.mutexLock()
-    game.RespawnPoints = make([]*RespawnPoint, 0)
-    game.BorderPoints = make([]*Coord, 0)
-}
-
-func (game *Game) mutexLock() {
     game.Mutex.Lock()
     defer game.Mutex.Unlock()
+    game.RespawnPoints = make([]*RespawnPoint, 0)
+    game.BorderPoints = make([]*Coord, 0)
 }

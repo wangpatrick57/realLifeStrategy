@@ -21,8 +21,7 @@ type Player struct {
     Mutex sync.Mutex //lock this for actions regarding any of these variables
 }
 
-func (player *Player) constructor(players map[string]*Player) {
-    //can't use mutexLock() function because I need to unlock before doing makeSendTrue
+func (player *Player) constructor(playerNames []string) {
     player.Mutex.Lock()
     player.Connected = true
     player.Dead = false //this is redundant cuz dead is false by default but it shows that it's supposed to have a default value
@@ -32,123 +31,140 @@ func (player *Player) constructor(players map[string]*Player) {
     player.SendDCTo = make(map[string]bool)
     player.Mutex.Unlock()
 
-    player.makeSendTrue("ward", players)
-    player.makeSendTrue("team", players)
-    player.makeSendTrue("dead", players)
+    //can't lock mutex here cuz i wanna use the makeSendTrue function
+    player.makeSendTrue("ward", playerNames)
+    player.makeSendTrue("team", playerNames)
+    player.makeSendTrue("dead", playerNames)
 
-    myName := player.Name
-
-    for _, p := range players {
-        p.setSendTo("ward", myName, true)
-        p.setSendTo("team", myName, true)
-        p.setSendTo("dead", myName, true)
-    }
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
 }
 
 func (player *Player) getName() string {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     return player.Name
 }
 
 func (player *Player) setName(name string) {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     player.Name = name
 }
 
 func (player *Player) getLoc() (float64, float64) {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     return player.Lat, player.Long
 }
 
 func (player *Player) setLoc(lat, long float64) {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     player.Lat = lat
     player.Long = long
 }
 
 func (player *Player) getLat() float64 {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     return player.Lat
 }
 
 func (player *Player) setLat(lat float64) {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     player.Lat = lat
 }
 
 func (player *Player) getLong() float64 {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     return player.Long
 }
 
 func (player *Player) setLong(long float64) {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     player.Long = long
 }
 
 func (player *Player) getWardLoc() (float64, float64) {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     return player.WardLat, player.WardLong
 }
 
 func (player *Player) setWardLoc(lat, long float64) {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     player.WardLat = lat
     player.WardLong = long
 }
 
 func (player *Player) getWardLat() float64 {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     return player.WardLat
 }
 
 func (player *Player) setWardLat(lat float64) {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     player.WardLat = lat
 }
 
 func (player *Player) getWardLong() float64 {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     return player.WardLong
 }
 
 func (player *Player) setWardLong(long float64) {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     player.WardLong = long
 }
 
 func (player *Player) getTeam() string {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     return player.Team
 }
 
 func (player *Player) setTeam(team string) {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     player.Team = team
 }
 
 func (player *Player) getDead() bool {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     return player.Dead
 }
 
 func (player *Player) setDead(dead bool) {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     player.Dead = dead
 }
 
 func (player *Player) getConnected() bool {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     return player.Connected
 }
 
 func (player *Player) setConnected(connected bool) {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     player.Connected = connected
 }
 
 func (player *Player) getSendTo(sendMapString string, name string) (bool, bool) {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     var sendMap map[string]bool
 
     if (sendMapString == "ward") {
@@ -168,7 +184,8 @@ func (player *Player) getSendTo(sendMapString string, name string) (bool, bool) 
 }
 
 func (player *Player) setSendTo(sendMapString string, name string, sendTo bool) {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     var sendMap map[string]bool
 
     if (sendMapString == "ward") {
@@ -186,8 +203,9 @@ func (player *Player) setSendTo(sendMapString string, name string, sendTo bool) 
     sendMap[name] = sendTo
 }
 
-func (player *Player) makeSendTrue(sendMapString string, players map[string]*Player) {
-    player.mutexLock()
+func (player *Player) makeSendTrue(sendMapString string, playerNames []string) {
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     var sendMap map[string]bool
 
     if (sendMapString == "ward") {
@@ -203,15 +221,16 @@ func (player *Player) makeSendTrue(sendMapString string, players map[string]*Pla
         return
     }
 
-    for _, p := range players {
-        if p != player { //checking p != player so that there's no mutex lock within a mutex lock
-            sendMap[p.getName()] = true
+    for _, name := range playerNames {
+        if name != player.Name { //checking p != player so that there's no mutex lock within a mutex lock
+            sendMap[name] = true
         }
     }
 }
 
 func (player *Player) initialPlayerString() string {
-    player.mutexLock()
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
     //conn has to be before everything and team has to be before ward
     ret := fmt.Sprintf("loc:%s:%f:%f:team:%s:%s:dead:%s:%t:", player.Name, player.Lat, player.Long,
         player.Name, player.Team, player.Name, player.Dead)
@@ -221,9 +240,4 @@ func (player *Player) initialPlayerString() string {
     }
 
     return ret
-}
-
-func (player *Player) mutexLock() {
-    player.Mutex.Lock()
-    defer player.Mutex.Unlock()
 }

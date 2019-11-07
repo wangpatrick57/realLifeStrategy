@@ -11,22 +11,26 @@ type Master struct {
 }
 
 func (master *Master) constructor() {
-    master.mutexLock()
+    master.Mutex.Lock()
+    defer master.Mutex.Unlock()
     master.Games = make(map[string]*Game)
 }
 
 func (master *Master) getGames() map[string]*Game {
-    master.mutexLock()
+    master.Mutex.Lock()
+    defer master.Mutex.Unlock()
     return master.Games
 }
 
 func (master *Master) getGame(gameID string) *Game {
-    master.mutexLock()
+    master.Mutex.Lock()
+    defer master.Mutex.Unlock()
     return master.Games[gameID]
 }
 
 func (master *Master) addGame(game *Game) {
-    master.mutexLock()
+    master.Mutex.Lock()
+    defer master.Mutex.Unlock()
 
     if game.getGameID() == "" {
         fmt.Printf("game has no gameID")
@@ -36,7 +40,8 @@ func (master *Master) addGame(game *Game) {
 }
 
 func (master *Master) removeGame(gameID string) {
-    master.mutexLock()
+    master.Mutex.Lock()
+    defer master.Mutex.Unlock()
     _, ok := master.Games[gameID]
 
     if ok {
@@ -45,7 +50,8 @@ func (master *Master) removeGame(gameID string) {
 }
 
 func (master *Master) checkIDTaken(idToCheck string) bool {
-    master.mutexLock()
+    master.Mutex.Lock()
+    defer master.Mutex.Unlock()
 
     for _, g := range master.Games {
         if g.getGameID() == idToCheck {
@@ -54,9 +60,4 @@ func (master *Master) checkIDTaken(idToCheck string) bool {
     }
 
     return false
-}
-
-func (master *Master) mutexLock() {
-    master.Mutex.Lock()
-    defer master.Mutex.Unlock()
 }

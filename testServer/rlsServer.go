@@ -22,7 +22,7 @@ const (
     Port = "8889" //8888 is for stable server. 8889 is for test server. in the future we may need different ports for each person
     ConnType = "udp"
     LocPlaces int = 5
-    PacketLossChance = 0.5
+    PacketLossChance = 0
 )
 
 //dictionary of conn objects to client objects
@@ -35,6 +35,7 @@ var posInc map[string]int
 var mutex sync.Mutex //lock this with actions regarding connToClient or printPeriodicals
 var printPeriodicals bool
 var packetConn net.PacketConn
+var debug = true
 
 func main() {
     /*initializes the addrToClient array. the design is kinda weird, i basically treat
@@ -147,13 +148,15 @@ func processData(addr string) {
         posInSlice := 0
         pp := getPrintPeriodicals()
 
-        client, ok := getClient(addr)
+        printReadClient, printReadOk := getClient(addr)
 
-        if (ok) {
-            printRead(client, info, pp, addr)
+        if (printReadOk) {
+            printRead(printReadClient, info, pp, addr)
         }
 
         for ;posInSlice < len(info) - 1; {
+            client, ok := getClient(addr)
+
             validBuffer := true
             bufType := info[posInSlice]
 
@@ -278,8 +281,15 @@ func processData(addr string) {
                                 client.setPlayer(thisPlayer)
                                 thisGame := client.getGame()
                                 thisGame.addPlayer(thisPlayer)
-                                //the constructor also sets the sendTo arrays of all other players to true
-                                thisPlayer.constructor(thisGame.getPlayers())
+                                thisPlayer.constructor(thisGame.getPlayerNames())
+
+                                myName := thisPlayer.getName()
+
+                                for _, name := range thisGame.getPlayerNames() {
+                                    thisGame.getPlayer(name).setSendTo("ward", myName, true)
+                                    thisGame.getPlayer(name).setSendTo("team", myName, true)
+                                    thisGame.getPlayer(name).setSendTo("dead", myName, true)
+                                }
                             }
                         }
 
@@ -297,15 +307,14 @@ func processData(addr string) {
 
                 if (client.getPlayer() != nil && client.getGame() != nil) {
                     thisPlayer := client.getPlayer()
-                    players := client.getGame().getPlayers()
 
                     if (team != thisPlayer.getTeam()) {
                         thisPlayer.setWardLoc(200, 200)
-                        thisPlayer.makeSendTrue("ward", players)
+                        thisPlayer.makeSendTrue("ward", client.getGame().getPlayerNames())
                     }
 
                     thisPlayer.setTeam(team)
-                    thisPlayer.makeSendTrue("team", players)
+                    thisPlayer.makeSendTrue("team", client.getGame().getPlayerNames())
                     additionalString := fmt.Sprintf("teamCk:%s:", team)
                     writeString += additionalString
                     printString += additionalString
@@ -335,7 +344,7 @@ func processData(addr string) {
                 if (err1 == nil && err2 == nil) {
                     if (client.getPlayer() != nil && client.getGame() != nil) {
                         client.getPlayer().setWardLoc(lat, long)
-                        client.getPlayer().makeSendTrue("ward", client.getGame().getPlayers())
+                        client.getPlayer().makeSendTrue("ward", client.getGame().getPlayerNames())
                         additionalString := fmt.Sprintf("wardCk:%f:%f:", lat, long)
                         writeString += additionalString
                         printString += additionalString
@@ -352,7 +361,7 @@ func processData(addr string) {
                 if (err == nil) {
                     if (client.getPlayer() != nil && client.getGame() != nil) {
                         client.getPlayer().setDead(dead)
-                        client.getPlayer().makeSendTrue("dead", client.getGame().getPlayers())
+                        client.getPlayer().makeSendTrue("dead", client.getGame().getPlayerNames())
                         additionalString := fmt.Sprintf("deadCk:%t:", dead)
                         writeString += additionalString
                         printString += additionalString
@@ -575,9 +584,16 @@ func processData(addr string) {
 func broadcast() {
     for {
         pp := getPrintPeriodicals()
+        addrs := getAddrs()
 
-        for recAddr, recClient := range getAddrToClient() {
-            if (recClient.getSimClient()) {
+        for _, recAddr := range addrs {
+            recClient, ok := getClient(recAddr)
+
+            if (!ok) {
+                continue
+            }
+
+            if (recClient.getSimClient() && recClient.getGame() != nil) {
                 writeSimClientStuff(recAddr, recClient)
                 continue
             }
@@ -671,16 +687,18 @@ func broadcast() {
         }
 
         //writing to json file is here so that it's done regularly regardless of disconnects
-        jsonFile, err := json.MarshalIndent(*getMaster(), "", " ")
+        if (debug) {
+            jsonFile, err := json.MarshalIndent(getMaster(), "", " ")
 
-        if (err == nil) {
-            err = ioutil.WriteFile("master.json", jsonFile, 0644)
+            if (err == nil) {
+                err = ioutil.WriteFile("master.json", jsonFile, 0644)
 
-            if (err != nil) {
-                fmt.Printf("Error writing json file: %v\n", err)
+                if (err != nil) {
+                    fmt.Printf("Error writing json file: %v\n", err)
+                }
+            } else {
+                fmt.Printf("Error converting master to json: %v\n", err)
             }
-        } else {
-            fmt.Printf("Error converting master to json: %v\n", err)
         }
 
         time.Sleep(1 * time.Second)
@@ -688,15 +706,17 @@ func broadcast() {
 }
 
 func writeSimClientStuff(addr string, client *Client) {
-    for _, thisPlayer := range client.getGame().getPlayers() {
-        if thisPlayer != client.getPlayer() {
+    for _, thisName := range client.getGame().getPlayerNames() {
+        if client.getGame().getPlayer(thisName) != client.getPlayer() {
             writeString := ""
             printString := ""
 
             //checking that they're in game (connected means in game)
-            if (thisPlayer.getConnected()) {
+            if (client.getGame().getPlayer(thisName).getConnected()) {
                 //sending location
-                additionalString := fmt.Sprintf("loc:%s:%f:%f:", thisPlayer.getName(), thisPlayer.getLat(), thisPlayer.getLong())
+                thisLat, thisLong := client.getGame().getPlayer(thisName).getLoc()
+
+                additionalString := fmt.Sprintf("loc:%s:%f:%f:", thisName, thisLat, thisLong)
                 writeString += additionalString
 
                 if (getPrintPeriodicals()) {
@@ -864,67 +884,95 @@ func baseMaster() *Master {
 }
 
 func getMaster() *Master {
-    mutexLock()
+    mutex.Lock()
+    defer mutex.Unlock()
     return master
 }
 
 func setMaster(masterToSet *Master) {
+    mutex.Lock()
+    defer mutex.Unlock()
     master = masterToSet
 }
 
+func getAddrs() []string {
+    mutex.Lock()
+    defer mutex.Unlock()
+    addrs := make([]string, len(addrToClient))
+    index := 0
+
+    for addr, _ := range addrToClient {
+        addrs[index] = addr
+        index++
+    }
+
+    return addrs
+}
+
 func getAddrToClient() map[string]*Client {
-    mutexLock()
+    mutex.Lock()
+    defer mutex.Unlock()
     return addrToClient
 }
 
 func setAddrToClient(newMap map[string]*Client) {
-    mutexLock()
+    mutex.Lock()
+    defer mutex.Unlock()
     addrToClient = newMap
 }
 
 func getAddrToChannel() map[string]chan string {
-    mutexLock()
+    mutex.Lock()
+    defer mutex.Unlock()
     return addrToChannel
 }
 
 func setAddrToChannel(newMap map[string]chan string) {
-    mutexLock()
+    mutex.Lock()
+    defer mutex.Unlock()
     addrToChannel = newMap
 }
 
 func getChannel(addr string) chan string {
-    mutexLock()
+    mutex.Lock()
+    defer mutex.Unlock()
     return addrToChannel[addr]
 }
 
 func setChannel(addr string, channel chan string) {
-    mutexLock()
+    mutex.Lock()
+    defer mutex.Unlock()
     addrToChannel[addr] = channel
 }
 
 func setClient(addr string, client *Client) {
-    mutexLock()
+    mutex.Lock()
+    defer mutex.Unlock()
     addrToClient[addr] = client
 }
 
 func getClient(addr string) (*Client, bool) {
-    mutexLock()
+    mutex.Lock()
+    defer mutex.Unlock()
     client, ok := addrToClient[addr]
     return client, ok
 }
 
 func deleteAddr(addr string) {
-    mutexLock()
+    mutex.Lock()
+    defer mutex.Unlock()
     delete(addrToClient, addr)
 }
 
 func getPrintPeriodicals() bool {
-    mutexLock()
+    mutex.Lock()
+    defer mutex.Unlock()
     return printPeriodicals
 }
 
 func setPrintPeriodicals(val bool) {
-    mutexLock()
+    mutex.Lock()
+    defer mutex.Unlock()
     printPeriodicals = val
 }
 
@@ -932,9 +980,4 @@ func truncate(num float64, places int) string {
     tenPowerNum := math.Pow(10, float64(places))
     ret := strconv.FormatFloat(math.Round(num * tenPowerNum) / tenPowerNum, 'f', -1, 64)
     return ret
-}
-
-func mutexLock() {
-    mutex.Lock()
-    defer mutex.Unlock()
 }
