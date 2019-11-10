@@ -16,6 +16,7 @@ import (
     "math"
 )
 
+//general constants
 const (
     HostName = "10.0.1.128"
     //HostName = "127.0.0.1"
@@ -25,13 +26,48 @@ const (
     PacketLossChance = 0
 )
 
+//networking protocol codes
+const (
+	UUID uint8 = 0
+	UUID_CK uint8 = 1
+	HEART uint8 = 2
+	BEAT uint8 = 3
+	CONN uint8 = 4
+	TOGGLE_RDL uint8 = 5
+	TOGGLE_PP uint8 = 6
+	SIM_CLIENT uint8 = 7
+	CHECK_ID uint8 = 8
+	CHECK_ID_H uint8 = 9
+	CHECK_ID_J uint8 = 10
+	CHECK_NAME uint8 = 11
+	REC uint8 = 12
+	TEAM uint8 = 13
+	LOC uint8 = 14
+	WARD uint8 = 15
+	DEAD uint8 = 16
+	DC uint8 = 17
+	RESET uint8 = 18
+	BP uint8 = 19
+	RP uint8 = 20
+	BP_CK uint8 = 21
+	RP_CK uint8 = 22
+	BP_CT uint8 = 23
+	RP_CT uint8 = 24
+	REC_BP uint8 = 25
+	REC_RP uint8 = 26
+	WARD_CK uint8 = 27
+	TEAM_CK uint8 = 28
+	DEAD_CK uint8 = 29
+	DC_CK uint8 = 30
+)
+
 //dictionary of conn objects to client objects
 var addrToChannel map[string]chan string
 var addrToClient map[string]*Client
 //the master json object
 var master *Master
 //this is explained below
-var posInc map[string]int
+var posInc map[uint8]int
 var mutex sync.Mutex //lock this with actions regarding connToClient or printPeriodicals
 var printPeriodicals bool
 var packetConn net.PacketConn
@@ -49,34 +85,34 @@ func main() {
     setPrintPeriodicals(false)
 
     //position increment. the amount of cells to increment in the string array after every command
-    posInc = map[string]int {
+    posInc = map[uint8]int {
         //explanations of commands are in the simulated client guide doc
-        "uuid": 2,
-        "hrt": 1,
-        "connected": 1,
-        "toggleRDL": 1,
-        "togglePP": 1,
-        "simClient": 1,
-        "checkIDh": 2,
-        "checkIDj": 2,
-        "checkName": 2,
-        "rec": 1,
-        "team": 2,
-        "loc": 3,
-        "ward": 3,
-        "dead": 2,
-        "dc": 1,
-        "reset": 1,
-        "bp": 4,
-        "rp": 4,
-        "bpCt": 1,
-        "rpCt": 1,
-        "recBP": 2,
-        "recRP": 1,
-        "wardCk": 4,
-        "teamCk": 3,
-        "deadCk": 3,
-        "dcCk": 2,
+        UUID: 2,
+        HEART: 1,
+        CONN: 1,
+        TOGGLE_RDL: 1,
+        TOGGLE_PP: 1,
+        SIM_CLIENT: 1,
+        CHECK_ID_H: 2,
+        CHECK_ID_J: 2,
+        CHECK_NAME: 2,
+        REC: 1,
+        TEAM: 2,
+        LOC: 3,
+        WARD: 3,
+        DEAD: 2,
+        DC: 1,
+        RESET: 1,
+        BP: 4,
+        RP: 4,
+        BP_CT: 1,
+        RP_CT: 1,
+        REC_BP: 2,
+        REC_RP: 1,
+        WARD_CK: 4,
+        TEAM_CK: 3,
+        DEAD_CK: 3,
+        DC_CK: 2,
     }
 
     //sets the default state of the master json
@@ -155,13 +191,20 @@ func processData(addr string) {
         }
 
         for ;posInSlice < len(info) - 1; {
-            client, ok := getClient(addr)
-
             validBuffer := true
-            bufType := info[posInSlice]
+
+            bufType, err := convertBufType(info[posInSlice])
+
+            if (err != nil) {
+                fmt.Printf("buffer type convert to int error: %v\n", err)
+                posInSlice++
+                continue
+            }
+
+            client, clientOk := getClient(addr)
 
             //skips everything except uuid, togglePP, toggleRDL, and connected if client is nil
-            if (!ok && (bufType != "uuid" && bufType != "togglePP" && bufType != "toggleRDL" && bufType != "connected")) {
+            if (!clientOk && (bufType != UUID && bufType != TOGGLE_PP && bufType != TOGGLE_RDL && bufType != CONN)) {
                 fmt.Printf("client doesn't exist and non-non-client specific command sent\n")
                 posInSlice++
                 continue
@@ -170,14 +213,14 @@ func processData(addr string) {
             //protects against valid types without enough data following them
             if (posInSlice + posInc[bufType] >= len(info)) {
                 //it's ++ instead of break in the case that loc:toggleRDL: or smth is sent
-                //this can never happen
+                //theoretically this can never happen
                 fmt.Printf("Valid type sent without enough data\n")
                 posInSlice++
                 continue
             }
 
             switch bufType {
-            case "uuid":
+            case UUID:
                 uuid := info[posInSlice + 1]
                 foundUUID := false
 
@@ -194,28 +237,28 @@ func processData(addr string) {
                     setClient(addr, client)
                 }
 
-                additionalString := fmt.Sprintf("uuidCk:%s:", uuid)
+                additionalString := fmt.Sprintf("%d:%s:", UUID_CK, uuid)
                 writeString += additionalString
                 printString += additionalString
-            case "hrt":
-                additionalString := "bt:"
+            case HEART:
+                additionalString := fmt.Sprintf("%d:", BEAT)
                 writeString += additionalString
 
                 if (pp) {
                     printString += additionalString
                 }
-            case "connected": //why is connected used
-            case "toggleRDL":
+            case CONN: //why is connected used
+            case TOGGLE_RDL:
                 rdlEnabled = !rdlEnabled
 
                 if (!rdlEnabled) {
                     //conn.SetReadDeadline(time.Time{})
                 }
-            case "togglePP":
+            case TOGGLE_PP:
                 setPrintPeriodicals(!getPrintPeriodicals())
-            case "simClient":
+            case SIM_CLIENT:
                 client.setSimClient(true)
-            case "checkIDh": //h stands for host
+            case CHECK_ID_H: //h stands for host
                 readGameID := info[posInSlice + 1]
 
                 if (readGameID != "") {
@@ -234,15 +277,15 @@ func processData(addr string) {
                     additionalString := ""
 
                     if (client.getGame().getGameID() == readGameID) { //special case of client not receiving checkID:false: the first time
-                        additionalString = "checkID:false:"
+                        additionalString = fmt.Sprintf("%d:false:", CHECK_ID)
                     } else {
-                        additionalString = fmt.Sprintf("checkID:%t:", idTaken)
+                        additionalString = fmt.Sprintf("%d:%t:", CHECK_ID, idTaken)
                     }
 
                     writeString += additionalString
                     printString += additionalString
                 }
-            case "checkIDj": //j stands for join
+            case CHECK_ID_J: //j stands for join
                 readGameID := info[posInSlice + 1]
 
                 if (readGameID != "") {
@@ -255,15 +298,15 @@ func processData(addr string) {
                     additionalString := ""
 
                     if (client.getGame() != nil && client.getGame().getGameID() == readGameID) { //special case of client not receiving checkID:false: the first time
-                        additionalString = "checkID:true:"
+                        additionalString = fmt.Sprintf("%d:true:", CHECK_ID)
                     } else {
-                        additionalString = fmt.Sprintf("checkID:%t:", idTaken)
+                        additionalString = fmt.Sprintf("%d:%t:", CHECK_ID, idTaken)
                     }
 
                     writeString += additionalString
                     printString += additionalString
                 }
-            case "checkName":
+            case CHECK_NAME:
                 var readName = info[posInSlice + 1]
 
                 if (readName != "") {
@@ -293,16 +336,16 @@ func processData(addr string) {
                             }
                         }
 
-                        additionalString := fmt.Sprintf("checkName:%t:", nameTaken)
+                        additionalString := fmt.Sprintf("%d:%t:", CHECK_NAME, nameTaken)
                         writeString += additionalString
                         printString += additionalString
                     } else {
                         fmt.Printf("A client without a game is trying to add a player\n")
                     }
                 }
-            case "rec":
+            case REC:
                 client.setReceiving(true)
-            case "team":
+            case TEAM:
                 team := info[posInSlice + 1]
 
                 if (client.getPlayer() != nil && client.getGame() != nil) {
@@ -315,13 +358,13 @@ func processData(addr string) {
 
                     thisPlayer.setTeam(team)
                     thisPlayer.makeSendTrue("team", client.getGame().getPlayerNames())
-                    additionalString := fmt.Sprintf("teamCk:%s:", team)
+                    additionalString := fmt.Sprintf("%d:%s:", TEAM_CK, team)
                     writeString += additionalString
                     printString += additionalString
                 } else {
                     fmt.Printf("A client without a game/player is trying to set team\n")
                 }
-            case "loc":
+            case LOC:
                 lat, err1 := strconv.ParseFloat(info[posInSlice + 1], 64)
                 long, err2 := strconv.ParseFloat(info[posInSlice + 2], 64)
 
@@ -337,7 +380,7 @@ func processData(addr string) {
                     //for example, if loc:ward:1:1: is sent
                     validBuffer = false
                 }
-            case "ward":
+            case WARD:
                 lat, err1 := strconv.ParseFloat(info[posInSlice + 1], 64)
                 long, err2 := strconv.ParseFloat(info[posInSlice + 2], 64)
 
@@ -345,7 +388,7 @@ func processData(addr string) {
                     if (client.getPlayer() != nil && client.getGame() != nil) {
                         client.getPlayer().setWardLoc(lat, long)
                         client.getPlayer().makeSendTrue("ward", client.getGame().getPlayerNames())
-                        additionalString := fmt.Sprintf("wardCk:%f:%f:", lat, long)
+                        additionalString := fmt.Sprintf("%d:%f:%f:", WARD_CK, lat, long)
                         writeString += additionalString
                         printString += additionalString
                     } else {
@@ -355,14 +398,14 @@ func processData(addr string) {
                     fmt.Printf("Error parsing ward location. Lat error: %v; long error: %v\n", err1, err2)
                     validBuffer = false
                 }
-            case "dead":
+            case DEAD:
                 dead, err := strconv.ParseBool(info[posInSlice + 1])
 
                 if (err == nil) {
                     if (client.getPlayer() != nil && client.getGame() != nil) {
                         client.getPlayer().setDead(dead)
                         client.getPlayer().makeSendTrue("dead", client.getGame().getPlayerNames())
-                        additionalString := fmt.Sprintf("deadCk:%t:", dead)
+                        additionalString := fmt.Sprintf("%d:%t:", DEAD_CK, dead)
                         writeString += additionalString
                         printString += additionalString
                     } else {
@@ -372,14 +415,14 @@ func processData(addr string) {
                     fmt.Printf("Error parsing dead: %v\n", err)
                     validBuffer = false
                 }
-            case "dc":
+            case DC:
                 client.playerDisconnectActions()
-                additionalString := "dcCk:"
+                additionalString := fmt.Sprintf("%d", DC_CK)
                 writeString += additionalString
                 printString += additionalString
-            case "reset":
+            case RESET:
                 client.getGame().resetSettings()
-            case "bp":
+            case BP:
                 index, err1 := strconv.ParseInt(info[posInSlice + 1], 10, 64)
                 lat, err2 := strconv.ParseFloat(info[posInSlice + 2], 64)
                 long, err3 := strconv.ParseFloat(info[posInSlice + 3], 64)
@@ -387,7 +430,7 @@ func processData(addr string) {
                 if (err1 == nil && err2 == nil && err3 == nil) {
                     if (client.getGame() != nil) {
                         client.getGame().addBorderPoint(int(index), lat, long)
-                        additionalString := fmt.Sprintf("bpCk:%d:%f:%f:", index, lat, long)
+                        additionalString := fmt.Sprintf("%d:%d:%f:%f:", BP_CK, index, lat, long)
                         writeString += additionalString
                         printString += additionalString
                     } else {
@@ -399,7 +442,7 @@ func processData(addr string) {
                     for example, if loc:ward:1:1: is sent*/
                     validBuffer = false
                 }
-            case "rp":
+            case RP:
                 index, err1 := strconv.ParseInt(info[posInSlice + 1], 10, 64)
                 lat, err2 := strconv.ParseFloat(info[posInSlice + 2], 64)
                 long, err3 := strconv.ParseFloat(info[posInSlice + 3], 64)
@@ -407,7 +450,7 @@ func processData(addr string) {
                 if (err1 == nil && err2 == nil && err3 == nil) {
                     if (client.getGame() != nil) {
                         client.getGame().addRespawnPoint(int(index), lat, long)
-                        additionalString := fmt.Sprintf("rpCk:%d:%f:%f:", index, lat, long)
+                        additionalString := fmt.Sprintf("%d:%d:%f:%f:", RP_CK, index, lat, long)
                         writeString += additionalString
                         printString += additionalString
                     } else {
@@ -419,39 +462,39 @@ func processData(addr string) {
                     for example, if loc:ward:1:1: is sent*/
                     validBuffer = false
                 }
-            case "bpCt":
+            case BP_CT:
                 /*the design is that the client asks for the server to send game element packets instead of
                 the server continously sending packets until the client asks it to stop. this way, the more
                 expensive game element packet is sent after the less expensive request packet. it's like
                 why you put less expensive checks first in an if statement.*/
                 if (client.getPlayer() != nil && client.getGame() != nil) {
-                    additionalString := fmt.Sprintf("bpCt:%d:", len(client.getGame().getBorderPoints()))
+                    additionalString := fmt.Sprintf("%d:%d:", BP_CT, len(client.getGame().getBorderPoints()))
                     writeString += additionalString
                     printString += additionalString
                 } else {
-                    fmt.Printf("A client without a game/player is trying to set bpCt\n")
+                    fmt.Printf("A client without a game/player is trying to set bp count\n")
                 }
-            case "rpCt":
+            case RP_CT:
                 if (client.getPlayer() != nil && client.getGame() != nil) {
-                    additionalString := fmt.Sprintf("rpCt:%d:", len(client.getGame().getRespawnPoints()))
+                    additionalString := fmt.Sprintf("%d:%d:", RP_CT, len(client.getGame().getRespawnPoints()))
                     writeString += additionalString
                     printString += additionalString
                 } else {
-                    fmt.Printf("A client without a game/player is trying to set rpCt\n")
+                    fmt.Printf("A client without a game/player is trying to set rp count\n")
                 }
-            case "recBP":
+            case REC_BP:
                 index, err := strconv.ParseInt(info[posInSlice + 1], 10, 64)
 
                 if (err == nil) {
                     if (client.getPlayer() != nil && client.getGame() != nil) {
                         client.setReceivingBP(int(index), true)
                     } else {
-                        fmt.Printf("A client without a game/player is trying to set recBP\n")
+                        fmt.Printf("A client without a game/player is trying to set rec bp\n")
                     }
                 } else {
-                    fmt.Printf("Error parsing index for recBP: %v\n", err)
+                    fmt.Printf("Error parsing index for rec bp: %v\n", err)
                 }
-            case "recRP":
+            case REC_RP:
                 index, err := strconv.ParseInt(info[posInSlice + 1], 10, 64)
 
                 if (err == nil) {
@@ -463,7 +506,7 @@ func processData(addr string) {
                 } else {
                     fmt.Printf("Error parsing index for recRP: %v\n", err)
                 }
-            case "wardCk": //ward check
+            case WARD_CK: //ward check
                 name := info[posInSlice + 1]
                 wardLat, err1 := strconv.ParseFloat(info[posInSlice + 2], 64)
                 wardLong, err2 := strconv.ParseFloat(info[posInSlice + 3], 64)
@@ -490,7 +533,7 @@ func processData(addr string) {
                     fmt.Printf("Error parsing wardCk location. Lat error: %v; long error: %v\n", err1, err2)
                     validBuffer = false
                 }
-            case "teamCk":
+            case TEAM_CK:
                 name := info[posInSlice + 1]
                 team := info[posInSlice + 2]
                 myName := client.getPlayer().getName()
@@ -511,7 +554,7 @@ func processData(addr string) {
                 } else {
                     fmt.Printf("A client without a game/player is trying to check team\n")
                 }
-            case "deadCk":
+            case DEAD_CK:
                 name := info[posInSlice + 1]
                 dead, err := strconv.ParseBool(info[posInSlice + 2])
                 myName := client.getPlayer().getName()
@@ -534,10 +577,10 @@ func processData(addr string) {
                         fmt.Printf("A client without a game/player is trying to check dead\n")
                     }
                 } else {
-                    fmt.Printf("Error parsing deadCk: %v\n", err)
+                    fmt.Printf("Error parsing dead check: %v\n", err)
                     validBuffer = false
                 }
-            case "dcCk":
+            case DC_CK:
                 name := info[posInSlice + 1]
                 myName := client.getPlayer().getName()
                 myGame := client.getGame()
@@ -548,7 +591,7 @@ func processData(addr string) {
                     if (thisPlayer != nil) {
                         thisPlayer.setSendTo("dc", myName, false)
                     } else {
-                        fmt.Printf("Name %s sent in dcCk doesn't exist\n", name)
+                        fmt.Printf("Name %s sent in dc check doesn't exist\n", name)
                     }
                 } else {
                     fmt.Printf("A client without a game/player is trying to check dc\n")
@@ -636,7 +679,7 @@ func broadcast() {
                     printString := ""
 
                     if val, ok := thisPlayer.getSendTo("dc", recPlayer.getName()); ok && val {
-                        additionalString := fmt.Sprintf("dc:%s:", thisPlayer.getName())
+                        additionalString := fmt.Sprintf("%d:%s:", DC, thisPlayer.getName())
                         writeString += additionalString
                         printString += additionalString
                     }
@@ -644,7 +687,7 @@ func broadcast() {
                     //checking that they're in game (connected means in game)
                     if (thisPlayer.getConnected()) {
                         //sending location
-                        additionalString := fmt.Sprintf("loc:%s:%s:%s:", thisPlayer.getName(), truncate(thisPlayer.getLat(), LocPlaces), truncate(thisPlayer.getLong(), LocPlaces))
+                        additionalString := fmt.Sprintf("%d:%s:%s:%s:", LOC, thisPlayer.getName(), truncate(thisPlayer.getLat(), LocPlaces), truncate(thisPlayer.getLong(), LocPlaces))
                         writeString += additionalString
 
                         if (pp) {
@@ -654,19 +697,19 @@ func broadcast() {
                         sendTeam, stOk := thisPlayer.getSendTo("team", recPlayer.getName())
 
                         if stOk && sendTeam {
-                            additionalString := fmt.Sprintf("team:%s:%s:", thisPlayer.getName(), thisPlayer.getTeam())
+                            additionalString := fmt.Sprintf("%d:%s:%s:", TEAM, thisPlayer.getName(), thisPlayer.getTeam())
                             writeString += additionalString
                             printString += additionalString
                         }
 
                         if val, ok := thisPlayer.getSendTo("ward", recPlayer.getName()); ok && val && stOk && !sendTeam {
-                            additionalString := fmt.Sprintf("ward:%s:%s:%s:", thisPlayer.getName(), truncate(thisPlayer.getWardLat(), LocPlaces), truncate(thisPlayer.getWardLong(), LocPlaces))
+                            additionalString := fmt.Sprintf("%d:%s:%s:%s:", WARD, thisPlayer.getName(), truncate(thisPlayer.getWardLat(), LocPlaces), truncate(thisPlayer.getWardLong(), LocPlaces))
                             writeString += additionalString
                             printString += additionalString
                         }
 
                         if val, ok := thisPlayer.getSendTo("dead", recPlayer.getName()); ok && val {
-                            additionalString := fmt.Sprintf("dead:%s:%t:", thisPlayer.getName(), thisPlayer.getDead())
+                            additionalString := fmt.Sprintf("%d:%s:%t:", DEAD, thisPlayer.getName(), thisPlayer.getDead())
                             writeString += additionalString
                             printString += additionalString
                         }
@@ -716,7 +759,7 @@ func writeSimClientStuff(addr string, client *Client) {
                 //sending location
                 thisLat, thisLong := client.getGame().getPlayer(thisName).getLoc()
 
-                additionalString := fmt.Sprintf("loc:%s:%f:%f:", thisName, thisLat, thisLong)
+                additionalString := fmt.Sprintf("%d:%s:%f:%f:", LOC, thisName, thisLat, thisLong)
                 writeString += additionalString
 
                 if (getPrintPeriodicals()) {
@@ -772,10 +815,16 @@ func printRead(client *Client, info []string, periodicals bool, addr string) {
     posInSlice := 0
 
     for ;posInSlice < len(info) - 1; {
-        bufType := info[posInSlice]
+        bufType, err := convertBufType(info[posInSlice])
+
+        if (err != nil) {
+            fmt.Printf("buffer type convert to int error: %v\n", err)
+            posInSlice++
+            continue
+        }
 
         if _, ok := posInc[bufType]; ok {
-            if (periodicals || (bufType != "hrt" && bufType != "loc" && bufType != "rec")) {
+            if (periodicals || (bufType != HEART && bufType != LOC && bufType != REC)) {
                 for printPos := posInSlice; printPos < posInSlice + posInc[bufType] &&
                     printPos < len(info) - 1; printPos++ {
                     printString += info[printPos] + ":"
@@ -784,7 +833,7 @@ func printRead(client *Client, info []string, periodicals bool, addr string) {
 
             posInSlice += posInc[bufType]
         } else {
-            printString += bufType + ":"
+            printString += fmt.Sprintf("%d:", bufType)
             posInSlice++
         }
     }
@@ -800,6 +849,12 @@ func printRead(client *Client, info []string, periodicals bool, addr string) {
 
         fmt.Printf("Read %s from %s at %s\n", printString, idString, addr)
     }
+}
+
+func convertBufType(bufTypeStr string) (uint8, error) {
+    bufTypeUint64, err := strconv.ParseUint(bufTypeStr, 10, 8)
+    bufTypeUint8 := uint8(bufTypeUint64)
+    return bufTypeUint8, err
 }
 
 func baseMaster() *Master {

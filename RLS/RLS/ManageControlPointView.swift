@@ -16,8 +16,6 @@ class ManageControlPointView : UIViewController {
         print("Enter Button clicked")
         let latitude = Double(latTF.text ?? "") ?? 0
         let longitude = Double(longTF.text ?? "") ?? 0
-        
-        networking.sendCPLoc(lat: latitude, long: longitude)
     }
     
 }

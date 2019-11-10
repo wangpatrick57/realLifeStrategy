@@ -123,14 +123,14 @@ func (game *Game) bpString(index int) string {
     game.Mutex.Lock()
     defer game.Mutex.Unlock()
     coord := game.BorderPoints[index]
-    return fmt.Sprintf("bp:%d:%f:%f:", index, coord.getLat(), coord.getLong())
+    return fmt.Sprintf("%d:%d:%f:%f:", BP, index, coord.getLat(), coord.getLong())
 }
 
 func (game *Game) rpString(index int) string {
     game.Mutex.Lock()
     defer game.Mutex.Unlock()
     respawnPoint := game.RespawnPoints[index]
-    return fmt.Sprintf("rp:%d:%f:%f:", index, respawnPoint.getLat(), respawnPoint.getLong())
+    return fmt.Sprintf("%d:%d:%f:%f:", RP, index, respawnPoint.getLat(), respawnPoint.getLong())
 }
 
 //cleans the players in a game but not the settings for hardcoded games

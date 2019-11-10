@@ -10,6 +10,38 @@ import Foundation
 import MapKit
 import Network
 
+let UUID = 0
+let UUID_CK = 1
+let HEART = 2
+let BEAT = 3
+let CONN = 4
+let TOGGLE_RDL = 5
+let TOGGLE_PP = 6
+let SIM_CLIENT = 7
+let CHECK_ID = 8
+let CHECK_ID_H = 9
+let CHECK_ID_J = 10
+let CHECK_NAME = 11
+let REC = 12
+let TEAM = 13
+let LOC = 14
+let WARD = 15
+let DEAD = 16
+let DC = 17
+let RESET = 18
+let BP = 19
+let RP = 20
+let BP_CK = 21
+let RP_CK = 22
+let BP_CT = 23
+let RP_CT = 24
+let REC_BP = 25
+let REC_RP = 26
+let WARD_CK = 27
+let TEAM_CK = 28
+let DEAD_CK = 29
+let DC_CK = 30
+
 class Networking {
     var username = ""
     var maxReadLength = 1024
@@ -35,26 +67,26 @@ class Networking {
     var timeSinceLastMessage = 0
     var writeString = ""
     
-    let posInc: [String: Int] = [
-        "bt": 1,
-        "bp": 4,
-        "rp": 4,
-        "checkID": 2,
-        "checkName": 2,
-        "loc": 4,
-        "team": 3,
-        "dead": 3,
-        "ward": 4,
-        "dc": 2,
-        "bpCt": 2,
-        "rpCt": 2,
-        "uuidCk": 2,
-        "bpCk": 4,
-        "rpCk": 4,
-        "wardCk": 3,
-        "teamCk": 2,
-        "deadCk": 2,
-        "dcCk": 1,
+    let posInc: [Int: Int] = [
+        BEAT: 1,
+        BP: 4,
+        RP: 4,
+        CHECK_ID: 2,
+        CHECK_NAME: 2,
+        LOC: 4,
+        TEAM: 3,
+        DEAD: 3,
+        WARD: 4,
+        DC: 2,
+        BP_CT: 2,
+        RP_CT: 2,
+        UUID_CK: 2,
+        BP_CK: 4,
+        RP_CK: 4,
+        WARD_CK: 3,
+        TEAM_CK: 2,
+        DEAD_CK: 2,
+        DC_CK: 1,
     ]
     
     func setupNetworkComms() {
@@ -65,7 +97,7 @@ class Networking {
             switch (newState) {
             case .ready:
                 print("State: Ready\n")
-                self.addToWriteString("connected:")
+                self.sendConnected()
             case .setup:
                 print("State: Setup\n")
             case .cancelled:
@@ -110,24 +142,31 @@ class Networking {
         var posInArray = 0
         
         while (posInArray < stringArray.count - 1) {
-            let bufType = stringArray[posInArray]
+            var bufType = -1
+            
+            if let intBufType = Int(stringArray[posInArray]) {
+                bufType = intBufType
+            } else {
+                posInArray += 1
+                continue
+            }
             
             switch bufType {
-            case "bt":
+            case BEAT:
                 print("got beat")
-            case "checkID":
+            case CHECK_ID:
                 if let exists = Bool(stringArray[posInArray + 1]) {
                     idExists = exists
                 } else {
                     print("checkID gave an invalid value")
                 }
-            case "checkName":
+            case CHECK_NAME:
                 if let exists = Bool(stringArray[posInArray + 1]) {
                     nameExists = exists
                 } else {
                     print("checkName gave an invalid value")
                 }
-            case "team":
+            case TEAM:
                 let thisName = stringArray[posInArray + 1]
                 let thisTeam = stringArray[posInArray + 2]
                 
@@ -137,14 +176,14 @@ class Networking {
                 } else {
                     print("team packet: mvc doesn't exist")
                 }
-            case "loc":
+            case LOC:
                 if let thisLat = Double(stringArray[posInArray + 2]) {
                     if let thisLong = Double(stringArray[posInArray + 3]) {
                         let thisName = stringArray[posInArray + 1]
                         mapViewController?.updatePlayerLoc(name: thisName, lat: thisLat, long: thisLong)
                     }
                 }
-            case "dead":
+            case DEAD:
                 if let thisDead = Bool(stringArray[posInArray + 2]) {
                     let thisName = stringArray[posInArray + 1]
                     
@@ -155,7 +194,7 @@ class Networking {
                         print("team packet: mvc doesn't exist")
                     }
                 }
-            case "ward":
+            case WARD:
                 if let thisLat = Double(stringArray[posInArray + 2]) {
                     if let thisLong = Double(stringArray[posInArray + 3]) {
                         if (thisLat != 0 || thisLong != 0) {
@@ -170,28 +209,7 @@ class Networking {
                         }
                     }
                 }
-            case "redPoint":
-                if let p = Double(stringArray[posInArray + 1]){
-                    controlPoint?.setRedPoints(point: p)
-                }
-            case "bluePoint":
-                if let p = Double(stringArray[posInArray + 1]){
-                    controlPoint?.setBluePoints(point: p)
-                }
-            case "cp":
-                if let lat = Double(stringArray[posInArray + 1]){
-                    if let long = Double(stringArray[posInArray + 2]){
-                        controlPoint?.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
-                    }
-                }
-                if let nr = Int(stringArray[posInArray + 3]) {
-                    controlPoint?.setNumRed(numRed: nr)
-                }
-                if let nb = Int(stringArray[posInArray + 4]) {
-                    controlPoint?.setNumRed(numRed: nb)
-                }
-                
-            case "dc":
+            case DC:
                 let thisName = stringArray[posInArray + 1]
                 if let mvc = mapViewController {
                     mvc.playerDC(name: thisName)
@@ -199,7 +217,7 @@ class Networking {
                 } else {
                     print("team packet: mvc doesn't exist")
                 }
-            case "bp":
+            case BP:
                 if let index = Int(stringArray[posInArray + 1]) {
                     if let thisLat = Double(stringArray[posInArray + 2]) {
                         if let thisLong = Double(stringArray[posInArray + 3]) {
@@ -219,7 +237,7 @@ class Networking {
                 } else {
                     print("index wrong")
                 }
-            case "rp":
+            case RP:
                 if let index = Int(stringArray[posInArray + 1]) {
                     if let thisLat = Double(stringArray[posInArray + 2]) {
                         if let thisLong = Double(stringArray[posInArray + 3]) {
@@ -239,7 +257,7 @@ class Networking {
                 } else {
                     print("rp index wrong")
                 }
-            case "bpCt":
+            case BP_CT:
                 if let count = Int(stringArray[posInArray + 1]) {
                     sendRecBP = []
                     
@@ -251,7 +269,7 @@ class Networking {
                 } else {
                     print("count for bpCt error")
                 }
-            case "rpCt":
+            case RP_CT:
                 if let count = Int(stringArray[posInArray + 1]) {
                     sendRecRP = []
                     
@@ -263,7 +281,7 @@ class Networking {
                 } else {
                     print("count for bpCt error")
                 }
-            case "uuidCk":
+            case UUID_CK:
                 let recUUID = stringArray[posInArray + 1]
                 
                 if (recUUID == uuid) {
@@ -271,7 +289,7 @@ class Networking {
                 } else {
                     sendUUID = true
                 }
-            case "bpCk":
+            case BP_CK:
                 if let index = Int(stringArray[posInArray + 1]) {
                     if let thisLat = Double(stringArray[posInArray + 2]) {
                         if let thisLong = Double(stringArray[posInArray + 3]) {
@@ -291,7 +309,7 @@ class Networking {
                 } else {
                     print("index for bpCk error")
                 }
-            case "rpCk":
+            case RP_CK:
                 if let index = Int(stringArray[posInArray + 1]) {
                     if let thisLat = Double(stringArray[posInArray + 2]) {
                         if let thisLong = Double(stringArray[posInArray + 3]) {
@@ -315,7 +333,7 @@ class Networking {
                 } else {
                     print("index for rpCk error")
                 }
-            case "wardCk":
+            case WARD_CK:
                 if let thisLat = Double(stringArray[posInArray + 1]) {
                     if let thisLong = Double(stringArray[posInArray + 2]) {
                         if let myWard = myPlayer.getWard() {
@@ -333,7 +351,7 @@ class Networking {
                 } else {
                     print("wardCk lat wrong")
                 }
-            case "teamCk":
+            case TEAM_CK:
                 let thisTeam = stringArray[posInArray + 1]
                 
                 if (thisTeam == myPlayer.getTeam()) {
@@ -343,7 +361,7 @@ class Networking {
                 }
                 
                 print("sendTeam = \(sendTeam)")
-            case "deadCk":
+            case DEAD_CK:
                 if let thisDead = Bool(stringArray[posInArray + 1]) {
                     if (thisDead == myPlayer.getDead()) {
                         sendDead = false
@@ -353,7 +371,7 @@ class Networking {
                 } else {
                     print("deadCk dead wrong")
                 }
-            case "dcCk":
+            case DC_CK:
                 sendDC = false
             default:
                 _ = 1
@@ -494,16 +512,27 @@ class Networking {
         }
     }
     
+    func sendConnected() {
+        addToWriteString("\(CONN):")
+    }
+    
     func sendHeartbeat() {
-        addToWriteString("hrt:")
+        addToWriteString("\(HEART):")
     }
     
     func checkGameIDTaken(idToCheck: String, hostOrJoin: String) -> Bool {
         var ret = true
         idExists = nil
+        var checkIDCode = 0
+        
+        if (hostOrJoin == "h") {
+            checkIDCode = CHECK_ID_H
+        } else if (hostOrJoin == "j") {
+            checkIDCode = CHECK_ID_J
+        }
         
         while (true) {
-            addToWriteString("checkID\(hostOrJoin):\(idToCheck):")
+            addToWriteString("\(checkIDCode):\(idToCheck):")
             write()
             processData()
             
@@ -526,7 +555,7 @@ class Networking {
         nameExists = nil
         
         while (true) {
-            addToWriteString("checkName:\(nameToCheck):")
+            addToWriteString("\(CHECK_NAME):\(nameToCheck):")
             write()
             processData()
             
@@ -542,27 +571,27 @@ class Networking {
     }
     
     func sendUUIDFunc() {
-        addToWriteString("uuid:\(uuid):")
+        addToWriteString("\(UUID):\(uuid):")
     }
     
     func sendReceiving() {
-        addToWriteString("rec:")
+        addToWriteString("\(REC):")
     }
     
     func sendLocation(coord: CLLocationCoordinate2D) {
-        addToWriteString("loc:\(coord.latitude):\(coord.longitude):")
+        addToWriteString("\(LOC):\(coord.latitude):\(coord.longitude):")
     }
     
     func sendWardLoc(coord: CLLocationCoordinate2D) {
-        addToWriteString("ward:\(coord.latitude):\(coord.longitude):")
+        addToWriteString("\(WARD):\(coord.latitude):\(coord.longitude):")
     }
     
     func sendDead(dead: Bool) {
-        addToWriteString("dead:\(dead):")
+        addToWriteString("\(DEAD):\(dead):")
     }
     
     func sendTeam(team: String) {
-        addToWriteString("team:\(team):")
+        addToWriteString("\(TEAM):\(team):")
     }
     
     func sendFiveDC() {
@@ -575,33 +604,14 @@ class Networking {
     }
     
     func sendDCFunc() { //it can't be called sendDC cuz there's a variable called sendDC and this function has no parameters
-        addToWriteString("dc:")
-    }
-    
-    func sendRedPoint(point: Double) {
-        addToWriteString("redPoint:\(point):")
-    }
-    
-    func sendBluePoint(point: Double) {
-        addToWriteString("bluePoint:\(point):")
-    }
-    
-    func sendCPNums(numRed: Int, numBlue: Int) {
-        addToWriteString("cp:\( controlPoint?.getLocation().latitude):\(controlPoint?.getLocation().longitude):\(numRed):\(numBlue):")
-    }
-    
-    //have to send lat and long as cllocationcoordinate2d so that .latitude and .longitude are cllocationdegrees
-    func sendCPLoc(lat: Double, long: Double) {
-        if let cp = controlPoint {
-            addToWriteString("cp:\(lat):\(long):\(cp.getNumRed()):\(cp.getNumBlue()):")
-        }
+        addToWriteString("\(DC):")
     }
     
     func sendBorderPoint(index: Int) {
         let coord = createdBorderPoints[index].getCoordinate()
         let lat = math.truncate(num: coord.latitude)
         let long = math.truncate(num: coord.longitude)
-        addToWriteString("bp:\(index):\(lat):\(long):")
+        addToWriteString("\(BP):\(index):\(lat):\(long):")
     }
     
     func sendRespawnPoint(index: Int) {
@@ -609,23 +619,23 @@ class Networking {
         let coord = respawnPoint.getCoordinate()
         let lat = math.truncate(num: coord.latitude)
         let long = math.truncate(num: coord.longitude)
-        addToWriteString("rp:\(index):\(lat):\(long):")
+        addToWriteString("\(RP):\(index):\(lat):\(long):")
     }
     
     func sendBorderPointCount() {
-        addToWriteString("bpCt:")
+        addToWriteString("\(BP_CT):")
     }
     
     func sendRespawnPointCount() {
-        addToWriteString("rpCt:")
+        addToWriteString("\(RP_CT):")
     }
     
     func sendRecBPFunc(index: Int) {
-        addToWriteString("recBP:\(index):")
+        addToWriteString("\(REC_BP):\(index):")
     }
     
     func sendRecRPFunc(index: Int) {
-        addToWriteString("recRP:\(index):")
+        addToWriteString("\(REC_RP):\(index):")
     }
     
     func clearSendRecBP() {
@@ -637,19 +647,19 @@ class Networking {
     }
     
     func sendWardCheck(name: String, coord: CLLocationCoordinate2D) {
-        addToWriteString("wardCk:\(name):\(coord.latitude):\(coord.longitude):")
+        addToWriteString("\(WARD_CK):\(name):\(coord.latitude):\(coord.longitude):")
     }
     
     func sendTeamCheck(name: String, team: String) {
-        addToWriteString("teamCk:\(name):\(team):")
+        addToWriteString("\(TEAM_CK):\(name):\(team):")
     }
     
     func sendDeadCheck(name: String, dead: Bool) {
-        addToWriteString("deadCk:\(name):\(dead):")
+        addToWriteString("\(DEAD_CK):\(name):\(dead):")
     }
     
     func sendDCCheck(name: String) {
-        addToWriteString("dcCk:\(name):")
+        addToWriteString("\(DC_CK):\(name):")
     }
     
     func setSendBP(sb: Bool, index: Int) {

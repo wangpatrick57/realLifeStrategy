@@ -232,11 +232,11 @@ func (player *Player) initialPlayerString() string {
     player.Mutex.Lock()
     defer player.Mutex.Unlock()
     //conn has to be before everything and team has to be before ward
-    ret := fmt.Sprintf("loc:%s:%f:%f:team:%s:%s:dead:%s:%t:", player.Name, player.Lat, player.Long,
-        player.Name, player.Team, player.Name, player.Dead)
+    ret := fmt.Sprintf("%d:%s:%f:%f:%d:%s:%s:%d:%s:%t:", LOC, player.Name, player.Lat, player.Long,
+        TEAM, player.Name, player.Team, DEAD, player.Name, player.Dead)
 
     if (player.WardLat != 0 || player.WardLong != 0) {
-        ret += fmt.Sprintf("ward:%s:%f:%f:", player.Name, player.WardLat, player.WardLong)
+        ret += fmt.Sprintf("%d:%s:%f:%f:", WARD, player.Name, player.WardLat, player.WardLong)
     }
 
     return ret
