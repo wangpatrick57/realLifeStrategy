@@ -1,1 +1,0 @@
-s.source_files = 'Sources/*.{h,m}'

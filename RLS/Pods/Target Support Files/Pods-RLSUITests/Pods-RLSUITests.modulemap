@@ -1,6 +1,0 @@
-framework module Pods_RLSUITests {
-  umbrella header "Pods-RLSUITests-umbrella.h"
-
-  export *
-  module * { export * }
-}

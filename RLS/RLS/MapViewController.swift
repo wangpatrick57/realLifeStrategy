@@ -366,63 +366,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     
     //retrieve control point from server
     func getCPData(){
-        //print("getting CP data from server")
-        
-        /* firebase code
-         //initialize ControlPoint
-         db.collection("\(gameCol)/\(gameID)/CP").getDocuments() { (querySnapshot, error) in
-         if let error = error{
-         print(error)
-         } else {
-         //print("CP server collection path valid")
-         //this loop is to check for new players and update existing ones
-         //it first updates playerDict, then updates myTeam and otherTeam dicts
-         for document in querySnapshot!.documents {
-         var cpExist : Bool = false
-         for cp in self.cps {
-         if cp.getID() == document.documentID{
-         cpExist = true
-         }
-         }
-         if(!cpExist){
-         let newCP = ControlPoint()
-         let data = document.data()
-         newCP.setNumRed(numRed: data["numRed"] as? Int ?? 0)
-         newCP.setNumBlue(numBlue: data["numBlue"] as? Int ?? 0)
-         newCP.setID(id: document.documentID)
-         newCP.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: data["lat"] as? Double ?? 0, longitude: data["long"] as? Double ?? 0))
-         newCP.setTeam(team: data["team"] as? String ?? "")
-         newCP.setName(name: document.documentID)
-         newCP.setRadius(radius: data["radius"] as? Double ?? 0)
-         
-         //retrieve points for each team
-         db.collection("\(gameCol)/\(gameID)/Points").getDocuments() { (querySnapshot, error) in
-         if let error = error{
-         print(error)
-         } else {
-         for document in querySnapshot!.documents {
-         if document.documentID == "Red"{
-         newCP.setRedPoints(point: document.data()["points"] as! Double)
-         } else{
-         newCP.setBluePoints(point: document.data()["points"] as! Double)
-         }
-         }
-         }
-         }
-         
-         self.cps.append(newCP)
-         
-         //put CP on map
-         newCP.title = newCP.getName()
-         
-         
-         //print("New CP added: " + newCP.getID())
-         //print("new CP location: " + String(newCP.getLocation().latitude))
-         }
-         }
-         }
-         }
-         */
     }
     
     func existsInDict(annTitleToCheck: String) -> Bool {
