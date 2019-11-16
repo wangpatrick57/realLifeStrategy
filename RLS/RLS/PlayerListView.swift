@@ -9,7 +9,6 @@
 import Foundation
 import MapKit
 import UIKit
-import Firebase
 
 var myPlayer:Player = Player(name: "")
 

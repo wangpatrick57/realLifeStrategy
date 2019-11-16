@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Firebase
 
 class GameIDTF: UIViewController {
     @IBOutlet var idTF: UITextField!

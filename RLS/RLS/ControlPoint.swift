@@ -10,7 +10,6 @@
 
 import Foundation
 import MapKit
-import Firebase
 import CoreLocation
 
 class ControlPoint : MKPointAnnotation{

@@ -40,25 +40,26 @@ const (
 	CHECK_ID_H uint8 = 9
 	CHECK_ID_J uint8 = 10
 	CHECK_NAME uint8 = 11
-	REC uint8 = 12
-	TEAM uint8 = 13
-	LOC uint8 = 14
-	WARD uint8 = 15
-	DEAD uint8 = 16
-	DC uint8 = 17
-	RESET uint8 = 18
-	BP uint8 = 19
-	RP uint8 = 20
-	BP_CK uint8 = 21
-	RP_CK uint8 = 22
-	BP_CT uint8 = 23
-	RP_CT uint8 = 24
-	REC_BP uint8 = 25
-	REC_RP uint8 = 26
-	WARD_CK uint8 = 27
-	TEAM_CK uint8 = 28
-	DEAD_CK uint8 = 29
-	DC_CK uint8 = 30
+	BK uint8 = 12
+	BK_CK uint8 = 13
+	TEAM uint8 = 14
+	LOC uint8 = 15
+	WARD uint8 = 16
+	DEAD uint8 = 17
+	DC uint8 = 18
+	RESET uint8 = 19
+	BP uint8 = 20
+	RP uint8 = 21
+	BP_CK uint8 = 22
+	RP_CK uint8 = 23
+	BP_CT uint8 = 24
+	RP_CT uint8 = 25
+	REC_BP uint8 = 26
+	REC_RP uint8 = 27
+	WARD_CK uint8 = 28
+	TEAM_CK uint8 = 29
+	DEAD_CK uint8 = 30
+	DC_CK uint8 = 31
 )
 
 //dictionary of conn objects to client objects
@@ -96,7 +97,7 @@ func main() {
         CHECK_ID_H: 2,
         CHECK_ID_J: 2,
         CHECK_NAME: 2,
-        REC: 1,
+        BK: 2,
         TEAM: 2,
         LOC: 3,
         WARD: 3,
@@ -108,7 +109,7 @@ func main() {
         BP_CT: 1,
         RP_CT: 1,
         REC_BP: 2,
-        REC_RP: 1,
+        REC_RP: 2,
         WARD_CK: 4,
         TEAM_CK: 3,
         DEAD_CK: 3,
@@ -343,8 +344,23 @@ func processData(addr string) {
                         fmt.Printf("A client without a game is trying to add a player\n")
                     }
                 }
-            case REC:
-                client.setReceiving(true)
+            case BK:
+                bk, err := strconv.ParseBool(info[posInSlice + 1])
+
+                if (err == nil) {
+                    if (client.getPlayer() != nil && client.getGame() != nil) {
+                        client.getPlayer().setBK(bk)
+
+                        additionalString := fmt.Sprintf("%d:%t:", BK_CK, bk)
+                        writeString += additionalString
+                        printString += additionalString
+                    } else {
+                        fmt.Printf("A client without a game/player is trying to set bk\n")
+                    }
+                } else {
+                    fmt.Printf("Error parsing bk: %v\n", err)
+                    validBuffer = false
+                }
             case TEAM:
                 team := info[posInSlice + 1]
 
@@ -417,7 +433,7 @@ func processData(addr string) {
                 }
             case DC:
                 client.playerDisconnectActions()
-                additionalString := fmt.Sprintf("%d", DC_CK)
+                additionalString := fmt.Sprintf("%d:", DC_CK)
                 writeString += additionalString
                 printString += additionalString
             case RESET:
@@ -489,10 +505,10 @@ func processData(addr string) {
                     if (client.getPlayer() != nil && client.getGame() != nil) {
                         client.setReceivingBP(int(index), true)
                     } else {
-                        fmt.Printf("A client without a game/player is trying to set rec bp\n")
+                        fmt.Printf("A client without a game/player is trying to set recBP\n")
                     }
                 } else {
-                    fmt.Printf("Error parsing index for rec bp: %v\n", err)
+                    fmt.Printf("Error parsing index for recBP: %v\n", err)
                 }
             case REC_RP:
                 index, err := strconv.ParseInt(info[posInSlice + 1], 10, 64)
@@ -672,6 +688,11 @@ func broadcast() {
 
             recPlayer := recClient.getPlayer()
 
+            //don't send any player info if the recPlayer is in the background
+            if (recPlayer.getBK()) {
+                continue
+            }
+
             //looping through all the sendPlayers
             for _, thisPlayer := range recClient.getGame().getPlayers() {
                 if thisPlayer != recClient.getPlayer() {
@@ -824,7 +845,7 @@ func printRead(client *Client, info []string, periodicals bool, addr string) {
         }
 
         if _, ok := posInc[bufType]; ok {
-            if (periodicals || (bufType != HEART && bufType != LOC && bufType != REC)) {
+            if (periodicals || (bufType != HEART && bufType != LOC)) {
                 for printPos := posInSlice; printPos < posInSlice + posInc[bufType] &&
                     printPos < len(info) - 1; printPos++ {
                     printString += info[printPos] + ":"

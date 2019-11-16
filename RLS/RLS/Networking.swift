@@ -22,25 +22,26 @@ let CHECK_ID = 8
 let CHECK_ID_H = 9
 let CHECK_ID_J = 10
 let CHECK_NAME = 11
-let REC = 12
-let TEAM = 13
-let LOC = 14
-let WARD = 15
-let DEAD = 16
-let DC = 17
-let RESET = 18
-let BP = 19
-let RP = 20
-let BP_CK = 21
-let RP_CK = 22
-let BP_CT = 23
-let RP_CT = 24
-let REC_BP = 25
-let REC_RP = 26
-let WARD_CK = 27
-let TEAM_CK = 28
-let DEAD_CK = 29
-let DC_CK = 30
+let BK = 12
+let BK_CK = 13
+let TEAM = 14
+let LOC = 15
+let WARD = 16
+let DEAD = 17
+let DC = 18
+let RESET = 19
+let BP = 20
+let RP = 21
+let BP_CK = 22
+let RP_CK = 23
+let BP_CT = 24
+let RP_CT = 25
+let REC_BP = 26
+let REC_RP = 27
+let WARD_CK = 28
+let TEAM_CK = 29
+let DEAD_CK = 30
+let DC_CK = 31
 
 class Networking {
     var username = ""
@@ -56,6 +57,7 @@ class Networking {
     var sendRespawnPoints: [Bool] = []
     var sendRecBP: [Bool] = []
     var sendRecRP: [Bool] = []
+    var sendBK = false
     var sendBPCt = false
     var sendRPCt = false
     var sendUUID = false
@@ -73,6 +75,7 @@ class Networking {
         RP: 4,
         CHECK_ID: 2,
         CHECK_NAME: 2,
+        BK_CK: 2,
         LOC: 4,
         TEAM: 3,
         DEAD: 3,
@@ -90,6 +93,8 @@ class Networking {
     ]
     
     func setupNetworkComms() {
+        cleanup()
+        
         connection = NWConnection(host: hostUDP, port: portUDP, using: .udp)
         
         connection?.stateUpdateHandler = { (newState) in
@@ -117,6 +122,10 @@ class Networking {
         readQueue.async {
             self.readData()
         }
+    }
+    
+    func cleanup() {
+        writeString = ""
     }
     
     func networkingBackgroundStep() {
@@ -165,6 +174,16 @@ class Networking {
                     nameExists = exists
                 } else {
                     print("checkName gave an invalid value")
+                }
+            case BK_CK:
+                if let bk = Bool(stringArray[posInArray + 1]) {
+                    if bk == (UIApplication.shared.applicationState == .background) {
+                        sendBK = false
+                    } else {
+                        sendBK = true
+                    }
+                } else {
+                    print("bk_ck gave a non boolean value")
                 }
             case TEAM:
                 let thisName = stringArray[posInArray + 1]
@@ -372,6 +391,7 @@ class Networking {
                     print("deadCk dead wrong")
                 }
             case DC_CK:
+                print("dc ck received.ddxssxszsz xzxx z1q   awqs43e 54234")
                 sendDC = false
             default:
                 _ = 1
@@ -415,6 +435,10 @@ class Networking {
         
         if (sendUUID) {
             sendUUIDFunc()
+        }
+        
+        if (sendBK) {
+            sendBKFunc(bk: UIApplication.shared.applicationState == .background)
         }
         
         if (sendBPCt) {
@@ -574,8 +598,8 @@ class Networking {
         addToWriteString("\(UUID):\(uuid):")
     }
     
-    func sendReceiving() {
-        addToWriteString("\(REC):")
+    func sendBKFunc(bk: Bool) {
+        addToWriteString("\(BK):\(bk):")
     }
     
     func sendLocation(coord: CLLocationCoordinate2D) {
@@ -615,8 +639,7 @@ class Networking {
     }
     
     func sendRespawnPoint(index: Int) {
-        let respawnPoint = createdRespawnPoints[index]
-        let coord = respawnPoint.getCoordinate()
+        let coord = createdRespawnPoints[index].getCoordinate()
         let lat = math.truncate(num: coord.latitude)
         let long = math.truncate(num: coord.longitude)
         addToWriteString("\(RP):\(index):\(lat):\(long):")
@@ -636,6 +659,7 @@ class Networking {
     
     func sendRecRPFunc(index: Int) {
         addToWriteString("\(REC_RP):\(index):")
+        print("sendRecRPFunc called with index = \(index)")
     }
     
     func clearSendRecBP() {
@@ -660,6 +684,10 @@ class Networking {
     
     func sendDCCheck(name: String) {
         addToWriteString("\(DC_CK):\(name):")
+    }
+    
+    func setSendBK(sb: Bool) {
+        sendBK = sb
     }
     
     func setSendBP(sb: Bool, index: Int) {

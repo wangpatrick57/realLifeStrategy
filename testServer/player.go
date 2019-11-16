@@ -7,6 +7,7 @@ import (
 
 type Player struct {
     Name string
+    BK bool
     Lat float64
     Long float64
     WardLat float64
@@ -50,6 +51,18 @@ func (player *Player) setName(name string) {
     player.Mutex.Lock()
     defer player.Mutex.Unlock()
     player.Name = name
+}
+
+func (player *Player) getBK() bool {
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
+    return player.BK
+}
+
+func (player *Player) setBK(bk bool) {
+    player.Mutex.Lock()
+    defer player.Mutex.Unlock()
+    player.BK = bk
 }
 
 func (player *Player) getLoc() (float64, float64) {

@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import FirebaseFirestore
 
 class NicknameTFView: UIViewController {
     @IBOutlet weak var gameIDLabel: UILabel!

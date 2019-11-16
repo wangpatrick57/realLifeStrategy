@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import FirebaseFirestore
 
 class HostOrJoinViewController : UIViewController {
     override func viewDidLoad() {

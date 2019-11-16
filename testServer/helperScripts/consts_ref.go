@@ -1,0 +1,33 @@
+const (
+	UUID uint8 = 0
+	UUID_CK uint8 = 1
+	HEART uint8 = 2
+	BEAT uint8 = 3
+	CONN uint8 = 4
+	TOGGLE_RDL uint8 = 5
+	TOGGLE_PP uint8 = 6
+	SIM_CLIENT uint8 = 7
+	CHECK_ID uint8 = 8
+	CHECK_ID_H uint8 = 9
+	CHECK_ID_J uint8 = 10
+	CHECK_NAME uint8 = 11
+	REC uint8 = 12
+	TEAM uint8 = 13
+	LOC uint8 = 14
+	WARD uint8 = 15
+	DEAD uint8 = 16
+	DC uint8 = 17
+	RESET uint8 = 18
+	BP uint8 = 19
+	RP uint8 = 20
+	BP_CK uint8 = 21
+	RP_CK uint8 = 22
+	BP_CT uint8 = 23
+	RP_CT uint8 = 24
+	REC_BP uint8 = 25
+	REC_RP uint8 = 26
+	WARD_CK uint8 = 27
+	TEAM_CK uint8 = 28
+	DEAD_CK uint8 = 29
+	DC_CK uint8 = 30
+)
