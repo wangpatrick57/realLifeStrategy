@@ -15,4 +15,4 @@ uuid="$3"
 
 port="$4"
 
-./send.sh "0:${uuid}:10:${gameID}:11:${name}:14:1:1:13:red:7:" "${port}"
+./send.sh "0:${uuid}:10:${gameID}:11:${name}:15:1:1:14:red:7:" "${port}"

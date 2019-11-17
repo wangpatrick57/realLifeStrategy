@@ -332,36 +332,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
                 map.removeAnnotation(thisAnn)
             }
         }
-        
-        //Check if player is in the CP radius
-        /*for cp in self.cps{
-            if !cp.getStay() {      //skip section if player is staying in a control point
-                var incAmt : Int = 0
-                if cp.inArea(myPlayer: myPlayer) && !myPlayer.getDead(){
-                    cp.setStay(s: true) //indicate that the player has already entered the area
-                    incAmt = 1
-                } else{ //if player left the cp or is dead
-                    incAmt = -1
-                }
-                
-                //update number of player in the control point if player leaves or enters the control point
-                //if player is in radius, update number in server
-                if myPlayer.getTeam() == "red"{
-                    cp.addNumRed(num: incAmt)
-                    redPtLabel.text = "red: " + String(cp.getRedPoints())   //update red points on mapView
-                    networking.sendRedPoint(point: cp.getRedPoints())
-                    //print("updated numRed in server")
-                } else if myPlayer.getTeam() == "red"{
-                    cp.addNumBlue(num: incAmt)
-                    bluePtLabel.text = "blue: " + String(cp.getBluePoints())   //update blue points on mapView
-                    networking.sendBluePoint(point: cp.getBluePoints())
-                    //print("updated numBlue in server")
-                }
-                networking.sendCP(numRed: cp.getNumRed(), numBlue: cp.getNumBlue())
-                
-                //add points to team: 1 point per second to the team cp belongs to
-            }
-        }*/
     }
     
     //retrieve control point from server
