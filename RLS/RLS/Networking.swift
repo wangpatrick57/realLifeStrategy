@@ -102,7 +102,6 @@ class Networking {
             switch (newState) {
             case .ready:
                 print("State: Ready\n")
-                self.sendConnected()
             case .setup:
                 print("State: Setup\n")
             case .cancelled:
@@ -481,6 +480,7 @@ class Networking {
     }
     
     func closeNetworkComms() {
+        connection?.cancel()
     }
     
     func readData() {
