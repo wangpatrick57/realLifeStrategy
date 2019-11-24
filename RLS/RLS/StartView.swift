@@ -21,6 +21,7 @@ let packetLossChance: Float = 0
 let disconnectTimeout: Int = 10
 let font : String = "San Francisco"
 var inGame = false
+var inBackground = false
 var recRP = false
 var borderPoints: [BorderPoint] = []
 var respawnPoints: [RespawnPoint] = []

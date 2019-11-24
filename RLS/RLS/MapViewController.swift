@@ -53,6 +53,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         manager.startUpdatingLocation()
         manager.allowsBackgroundLocationUpdates = true
         manager.pausesLocationUpdatesAutomatically = false
+        manager.distanceFilter = CLLocationDistance(5.0)
         mapViewController = self
         map.delegate = mapViewDelegate
         

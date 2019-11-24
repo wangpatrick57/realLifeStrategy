@@ -437,7 +437,7 @@ class Networking {
         }
         
         if (sendBK) {
-            sendBKFunc(bk: UIApplication.shared.applicationState == .background)
+            sendBKFunc(bk: inBackground)
         }
         
         if (sendBPCt) {
