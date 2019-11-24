@@ -16,6 +16,7 @@ class Player: MKPointAnnotation{
     private var ward: Ward?
     private var dead: Bool
     private var connected: Bool
+    private var lastShadowDate: Date
     let visionDist: Double = 20 //meters
     let math = SpecMath()
     
@@ -24,6 +25,7 @@ class Player: MKPointAnnotation{
         self.team = "none"
         self.dead = false
         self.connected = true
+        self.lastShadowDate = Date()
         super.init()
         self.title = name
         let coord = CLLocationCoordinate2D(latitude: 200, longitude: 200)
@@ -65,6 +67,14 @@ class Player: MKPointAnnotation{
     
     func setConnected(connected: Bool) {
         self.connected = connected
+    }
+    
+    func getLastShadowDate() -> Date {
+        return lastShadowDate
+    }
+    
+    func setLastShadowDate(lastShadowDate: Date) {
+        self.lastShadowDate = lastShadowDate
     }
     
     func addWard() {

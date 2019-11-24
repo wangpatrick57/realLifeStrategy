@@ -17,6 +17,7 @@ var respawnTime = 15.0 //seconds
 let respawnDist = 20.0 //meters
 let cpDist = 50.0 //meters
 let wardVisionDist = 30.0 //meters
+let shadowInterval = 1.0 // seconds
 let packetLossChance: Float = 0
 let disconnectTimeout: Int = 10
 let font : String = "San Francisco"

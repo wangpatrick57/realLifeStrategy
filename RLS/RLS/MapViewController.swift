@@ -26,6 +26,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     //other vars
     let manager = CLLocationManager()
     var playerDict: [String: Player] = [myPlayer.getName() : myPlayer] //dictionary of all players
+    var shadowDict: [String: Player] = [:] //dictionary of all shadows
     var deadNames: [String] = [] //list of the names of the dead players on "my" team
     var myPings: [String: Double] = [:] //dict of the names of my pings to their create times. the name is "\(myName)\(pingNum)"
     var border: BorderOverlay = BorderOverlay()
@@ -126,7 +127,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             print(location.coordinate.latitude, " and ", location.coordinate.longitude)
             
             if (isSpec) {
-                myPlayer.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: 200, longitude: 200))
+                setPlayerCoordinate(player: myPlayer, coordinate: CLLocationCoordinate2D(latitude: 200, longitude: 200))
                 networking.sendLocation(coord: myPlayer.getCoordinate())
             }
             
@@ -136,7 +137,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         //write data
         //set coordinates and death status
         if (!isSpec) {
-            myPlayer.setCoordinate(coordinate: location.coordinate)
+            setPlayerCoordinate(player: myPlayer, coordinate: location.coordinate)
             networking.sendLocation(coord: myPlayer.getCoordinate())
         }
     }
@@ -300,6 +301,19 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             }
         }
         
+        //shadows
+        for thisName in shadowDict.keys {
+            if let thisPlayer = shadowDict[thisName] {
+                if (thisPlayer.getTeam() == myPlayer.getTeam()) {
+                    targetAnnDict[thisName] = thisPlayer
+                } else {
+                    if (hasVisionOf(playerToCheck: thisPlayer)) {
+                        targetAnnDict[thisName] = thisPlayer
+                    }
+                }
+            }
+        }
+        
         //add annotations that aren't currently present but need to be
         let currAnnArray = map.annotations
         
@@ -420,6 +434,24 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         return false
     }
     
+    func setPlayerCoordinate(player: Player, coordinate: CLLocationCoordinate2D) {
+        player.setCoordinate(coordinate: coordinate)
+        print("spc")
+        
+        // add shadow player
+        if (Date().timeIntervalSince(player.getLastShadowDate()) > shadowInterval) {
+            print("date")
+            // adding the annotation
+            let shadowPlayer = Player(name: "\(player.getName()) \(Date().timeIntervalSince1970)")
+            shadowPlayer.setTeam(team: player.getTeam())
+            shadowPlayer.setCoordinate(coordinate: player.getCoordinate())
+            shadowDict[shadowPlayer.getName()] = shadowPlayer
+            
+            // resetting the player's lastShadowDate
+            player.setLastShadowDate(lastShadowDate: Date())
+        }
+    }
+    
     //a new borderOverlay has to be created everytime because you can't add new points to an mkpolygon. also, the borderPoints have to be sent individually because if they were all sent as once as a list of coordinates after "bp" we don't know how much to increment when receiving "bp". even if we have a length value right after bp like "bp:5:[coordinates]", it would crash if there is no integer right after bp
     func addBorderPoint(index: Int, coordinate: CLLocationCoordinate2D) {
         map.removeOverlay(border)
@@ -479,7 +511,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     
     func updatePlayerLoc(name: String, lat: Double, long: Double) {
         if let thisPlayer = playerDict[name] {
-            thisPlayer.setCoordinate(coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
+            setPlayerCoordinate(player: thisPlayer, coordinate: CLLocationCoordinate2D(latitude: lat, longitude: long))
         }
     }
     
