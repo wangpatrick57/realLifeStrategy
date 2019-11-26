@@ -42,6 +42,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     @IBOutlet weak var gameIDLabel: UILabel!
     var cps = [ControlPoint]() //collection of control points - date retrieve from server
     var isSpec = false
+    let startDate = Date()
     let mapViewDelegate = MapViewDelegate()
     
     override func viewDidLoad() {
@@ -436,13 +437,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
     
     func setPlayerCoordinate(player: Player, coordinate: CLLocationCoordinate2D) {
         player.setCoordinate(coordinate: coordinate)
-        print("spc")
         
         // add shadow player
         if (Date().timeIntervalSince(player.getLastShadowDate()) > shadowInterval) {
-            print("date")
             // adding the annotation
-            let shadowPlayer = Player(name: "\(player.getName()) \(Date().timeIntervalSince1970)")
+            let shadowPlayer = Player(name: "\(player.getName()): \(Int(round(Date().timeIntervalSince(startDate))))")
             shadowPlayer.setTeam(team: player.getTeam())
             shadowPlayer.setCoordinate(coordinate: player.getCoordinate())
             shadowDict[shadowPlayer.getName()] = shadowPlayer
