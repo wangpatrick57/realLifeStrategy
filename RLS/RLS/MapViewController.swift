@@ -444,6 +444,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             let shadowPlayer = Player(name: "\(player.getName()): \(Int(round(Date().timeIntervalSince(startDate))))")
             shadowPlayer.setTeam(team: player.getTeam())
             shadowPlayer.setCoordinate(coordinate: player.getCoordinate())
+            shadowPlayer.setDead(dead: true)
             shadowDict[shadowPlayer.getName()] = shadowPlayer
             
             // resetting the player's lastShadowDate
