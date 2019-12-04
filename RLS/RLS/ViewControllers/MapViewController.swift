@@ -439,7 +439,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         player.setCoordinate(coordinate: coordinate)
         
         // add shadow player
-        if (Date().timeIntervalSince(player.getLastShadowDate()) > shadowInterval) {
+        if (enableShadows && Date().timeIntervalSince(player.getLastShadowDate()) > shadowInterval) {
             // adding the annotation
             let shadowPlayer = Player(name: "\(player.getName()): \(Int(round(Date().timeIntervalSince(startDate))))")
             shadowPlayer.setTeam(team: player.getTeam())

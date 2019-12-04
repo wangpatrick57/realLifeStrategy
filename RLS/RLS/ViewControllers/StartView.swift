@@ -18,6 +18,7 @@ let respawnDist = 20.0 //meters
 let cpDist = 50.0 //meters
 let wardVisionDist = 30.0 //meters
 let shadowInterval = 1.0 // seconds
+let enableShadows = false
 let packetLossChance: Float = 0
 let disconnectTimeout: Int = 10
 let font : String = "San Francisco"
@@ -32,7 +33,7 @@ var gameID:String = "generating"
 var nickname:String = ""
 var gameCol = "Games"
 let gameIDLength:Int = 5
-let debug = true
+let debug = false
 var uuid: String = ""
 
 class StartView: UIViewController {
@@ -45,27 +46,7 @@ class StartView: UIViewController {
         //setup client
         print("networking in start")
         networking.setupNetworkComms()
-        
-        //networking background step
-        let networkingStepQueue = DispatchQueue(label: "networkingStepQueue", qos: .background)
-        
-        networkingStepQueue.async {
-            self.runNetworkingBackgroundStep()
-        }
-        
-        //networking foreground step
-        _ = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(networkingForegroundStep), userInfo: nil, repeats: true)
-    }
-    
-    func runNetworkingBackgroundStep() {
-        while (true) {
-            networking.networkingBackgroundStep()
-            usleep(1000000)
-        }
-    }
-    
-    @objc func networkingForegroundStep() {
-        networking.networkingForegroundStep()
+        networking.startNetworkingSteps()
     }
     
     func printStuff(_ content: String) {

@@ -68,6 +68,8 @@ class Networking {
     let math: SpecMath = SpecMath()
     var timeSinceLastMessage = 0
     var writeString = ""
+    let readQueue = DispatchQueue(label: "readQueue", qos: .background)
+    let networkingStepQueue = DispatchQueue(label: "networkingStepQueue", qos: .background)
     
     let posInc: [Int: Int] = [
         BEAT: 1,
@@ -93,8 +95,6 @@ class Networking {
     ]
     
     func setupNetworkComms() {
-        cleanup()
-        
         connection = NWConnection(host: hostUDP, port: portUDP, using: .udp)
         
         connection?.stateUpdateHandler = { (newState) in
@@ -115,16 +115,24 @@ class Networking {
         
         connection?.start(queue: .global())
         sendUUID = true
-        
-        let readQueue = DispatchQueue(label: "readQueue", qos: .background)
-        
+    }
+    
+    func startNetworkingSteps() {
         readQueue.async {
             self.readData()
         }
+        
+        //networking step
+        _ = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(networkingStep), userInfo: nil, repeats: true)
     }
     
-    func cleanup() {
-        writeString = ""
+    @objc func networkingStep() {
+        networkingForegroundStep()
+        networkingBackgroundStep()
+    }
+    
+    func networkingForegroundStep() {
+        networking.processData()
     }
     
     func networkingBackgroundStep() {
@@ -134,14 +142,9 @@ class Networking {
         networking.write()
     }
     
-    func networkingForegroundStep() {
-        networking.processData()
-    }
-    
     func processData() {
         let stringArray = dataString.components(separatedBy: ":")
         dataString = ""
-        print("read \(stringArray)")
         
         if (stringArray.count > 1) {
             timeSinceLastMessage = 0
@@ -160,8 +163,6 @@ class Networking {
             }
             
             switch bufType {
-            case BEAT:
-                print("got beat")
             case CHECK_ID:
                 if let exists = Bool(stringArray[posInArray + 1]) {
                     idExists = exists
@@ -176,7 +177,7 @@ class Networking {
                 }
             case BK_CK:
                 if let bk = Bool(stringArray[posInArray + 1]) {
-                    if bk == (UIApplication.shared.applicationState == .background) {
+                    if bk == inBackground {
                         sendBK = false
                     } else {
                         sendBK = true
@@ -481,21 +482,21 @@ class Networking {
     
     func closeNetworkComms() {
         connection?.cancel()
+        writeString = ""
     }
     
     func readData() {
         connection?.receive(minimumIncompleteLength: 1, maximumLength: 65536) { (data, contentContext, isComplete, error) in
             if let error = error {
-                print("\(error)")
-                return
-            }
-            
-            if let thisData = data {
-                let thisDataString = String(decoding: thisData, as: UTF8.self)
-                print("thisDataString: \(thisDataString)")
-                self.dataString += thisDataString
+                print("error in reading: \(error)")
             } else {
-                print("Data is nil")
+                if let thisData = data {
+                    let thisDataString = String(decoding: thisData, as: UTF8.self)
+                    self.dataString += thisDataString
+                    print("read \(self.dataString)")
+                } else {
+                    print("data is nil")
+                }
             }
             
             self.readData()
@@ -510,22 +511,22 @@ class Networking {
     func write() {
         if (Float.random(in: 0 ..< 1) > packetLossChance) {
             let contentToSendUDP = writeString.data(using: String.Encoding.utf8)
-            print("Wrote \(self.writeString)")
-            writeString = ""
             
             if let connObj = self.connection {
                 /*connObj.send(content: contentToSendUDP, completion: NWConnection.SendCompletion.contentProcessed(({ (NWError) in
                     if (NWError == nil) {
-                        print("Wrote \(content)")
+                        print("wrote \(content)")
                     } else {
                         print("ERROR! Error when data (Type: Data) sending. NWError: \n \(NWError!)")
                     }
                 })))*/
                 connObj.send(content: contentToSendUDP, completion: .contentProcessed( { error in
                     if let error = error {
-                        print("Error in sending: \(error)")
+                        print("error in sending: \(error)")
                         return
                     } else {
+                        print("wrote \(self.writeString)")
+                        self.writeString = ""
                     }
                 }))
             } else {

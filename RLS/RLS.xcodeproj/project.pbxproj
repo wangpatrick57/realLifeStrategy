@@ -75,8 +75,8 @@
 		418C138020F1B9C900AE16C5 /* GameIDTF.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameIDTF.swift; sourceTree = "<group>"; };
 		418C138220F1BA0E00AE16C5 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		418C138620F1BA7D00AE16C5 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
-		41AEAFFF2112AEDF00DF6AE5 /* BorderEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BorderEditorView.swift; path = RLS/BorderEditorView.swift; sourceTree = SOURCE_ROOT; };
-		41AEB0012112B3B800DF6AE5 /* HostOrJoinViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HostOrJoinViewController.swift; path = RLS/HostOrJoinViewController.swift; sourceTree = SOURCE_ROOT; };
+		41AEAFFF2112AEDF00DF6AE5 /* BorderEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BorderEditorView.swift; path = RLS/ViewControllers/BorderEditorView.swift; sourceTree = SOURCE_ROOT; };
+		41AEB0012112B3B800DF6AE5 /* HostOrJoinViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HostOrJoinViewController.swift; path = RLS/ViewControllers/HostOrJoinViewController.swift; sourceTree = SOURCE_ROOT; };
 		41B3E04D20F59C8B00E7D232 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4CD8C69DED8F8FB32199A875 /* Pods_RLSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RLSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D172FC4228353B400DBEB59 /* PlayerDistanceUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerDistanceUtil.swift; sourceTree = "<group>"; };
@@ -159,29 +159,10 @@
 				C47377A8229C45D2000AD728 /* RLS.entitlements */,
 				418C135520F1B89B00AE16C5 /* LaunchScreen.storyboard */,
 				C42BDA15231CC8430081F1C5 /* Main.storyboard */,
-				418C134C20F1B89A00AE16C5 /* AppDelegate.swift */,
-				C4B06AA522A58C7F00421613 /* Networking.swift */,
-				C42BDA18231CC9F40081F1C5 /* MapViewDelegate.swift */,
-				418C134E20F1B89A00AE16C5 /* StartView.swift */,
-				41AEB0012112B3B800DF6AE5 /* HostOrJoinViewController.swift */,
-				C49142DD234BB77A0071EF5E /* CustomizeGameView.swift */,
-				41AEAFFF2112AEDF00DF6AE5 /* BorderEditorView.swift */,
-				C4312A88234EA52200BD090A /* RespawnPointEditorView.swift */,
-				C416009223491DD70047280F /* SpecMath.swift */,
-				418C138020F1B9C900AE16C5 /* GameIDTF.swift */,
-				418C137E20F1B9A800AE16C5 /* NicknameTFView.swift */,
-				417F570C2112BB3000CE6E4A /* PlayerListView.swift */,
-				418C138220F1BA0E00AE16C5 /* MapViewController.swift */,
-				C4160096234A45370047280F /* BorderPoint.swift */,
-				C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */,
-				418C138620F1BA7D00AE16C5 /* Player.swift */,
-				C4EEC858227E9A910088CB32 /* Ward.swift */,
-				C4C2B3032288C3E600A7D844 /* Ping.swift */,
-				7D172FC4228353B400DBEB59 /* PlayerDistanceUtil.swift */,
-				41867B73228B8D0300B504EE /* ControlPoint.swift */,
-				413897AF230A515C00BFB0EC /* ManageControlPointView.swift */,
-				EB19B1AF22985D1900764485 /* ColorCircleOverlay.swift */,
-				C4A8BE5122FA933900FA2A92 /* BorderOverlay.swift */,
+				C48C1C872395DA3D00166EE5 /* General */,
+				C48C1C862395DA2500166EE5 /* Objects */,
+				C48C1C852395D9EB00166EE5 /* Delegates */,
+				C48C1C842395D9DC00166EE5 /* ViewControllers */,
 			);
 			path = RLS;
 			sourceTree = "<group>";
@@ -218,6 +199,57 @@
 				EA1E1B67838E847E6AAD68CE /* Pods_RLSUITests.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C48C1C842395D9DC00166EE5 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				418C134E20F1B89A00AE16C5 /* StartView.swift */,
+				41AEB0012112B3B800DF6AE5 /* HostOrJoinViewController.swift */,
+				C49142DD234BB77A0071EF5E /* CustomizeGameView.swift */,
+				41AEAFFF2112AEDF00DF6AE5 /* BorderEditorView.swift */,
+				C4312A88234EA52200BD090A /* RespawnPointEditorView.swift */,
+				418C138020F1B9C900AE16C5 /* GameIDTF.swift */,
+				418C137E20F1B9A800AE16C5 /* NicknameTFView.swift */,
+				417F570C2112BB3000CE6E4A /* PlayerListView.swift */,
+				418C138220F1BA0E00AE16C5 /* MapViewController.swift */,
+				413897AF230A515C00BFB0EC /* ManageControlPointView.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		C48C1C852395D9EB00166EE5 /* Delegates */ = {
+			isa = PBXGroup;
+			children = (
+				418C134C20F1B89A00AE16C5 /* AppDelegate.swift */,
+				C42BDA18231CC9F40081F1C5 /* MapViewDelegate.swift */,
+			);
+			path = Delegates;
+			sourceTree = "<group>";
+		};
+		C48C1C862395DA2500166EE5 /* Objects */ = {
+			isa = PBXGroup;
+			children = (
+				C4160096234A45370047280F /* BorderPoint.swift */,
+				C45D3C8E228F44A6002589E3 /* RespawnPoint.swift */,
+				418C138620F1BA7D00AE16C5 /* Player.swift */,
+				C4EEC858227E9A910088CB32 /* Ward.swift */,
+				C4C2B3032288C3E600A7D844 /* Ping.swift */,
+				7D172FC4228353B400DBEB59 /* PlayerDistanceUtil.swift */,
+				41867B73228B8D0300B504EE /* ControlPoint.swift */,
+				EB19B1AF22985D1900764485 /* ColorCircleOverlay.swift */,
+				C4A8BE5122FA933900FA2A92 /* BorderOverlay.swift */,
+			);
+			path = Objects;
+			sourceTree = "<group>";
+		};
+		C48C1C872395DA3D00166EE5 /* General */ = {
+			isa = PBXGroup;
+			children = (
+				C4B06AA522A58C7F00421613 /* Networking.swift */,
+				C416009223491DD70047280F /* SpecMath.swift */,
+			);
+			path = General;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
