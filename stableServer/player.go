@@ -17,7 +17,7 @@ type Player struct {
     SendWardTo map[string]bool
     SendTeamTo map[string]bool
     SendDeadTo map[string]bool
-    SendConnectedTo map[string]bool
+    SendDCTo map[string]bool
     Mutex sync.Mutex //lock this for actions regarding any of these variables
 }
 
@@ -25,16 +25,24 @@ func (player *Player) constructor(players map[string]*Player) {
     //can't use mutexLock() function because I need to unlock before doing makeSendTrue
     player.Mutex.Lock()
     player.Connected = true
+    player.Dead = false //this is redundant cuz dead is false by default but it shows that it's supposed to have a default value
     player.SendWardTo = make(map[string]bool)
     player.SendTeamTo = make(map[string]bool)
     player.SendDeadTo = make(map[string]bool)
-    player.SendConnectedTo = make(map[string]bool)
+    player.SendDCTo = make(map[string]bool)
     player.Mutex.Unlock()
 
     player.makeSendTrue("ward", players)
     player.makeSendTrue("team", players)
     player.makeSendTrue("dead", players)
-    player.makeSendTrue("conn", players)
+
+    myName := player.Name
+
+    for _, p := range players {
+        p.setSendTo("ward", myName, true)
+        p.setSendTo("team", myName, true)
+        p.setSendTo("dead", myName, true)
+    }
 }
 
 func (player *Player) getName() string {
@@ -149,8 +157,8 @@ func (player *Player) getSendTo(sendMapString string, name string) (bool, bool) 
         sendMap = player.SendTeamTo
     } else if (sendMapString == "dead") {
         sendMap = player.SendDeadTo
-    } else if (sendMapString == "conn") {
-        sendMap = player.SendConnectedTo
+    } else if (sendMapString == "dc") {
+        sendMap = player.SendDCTo
     } else {
         fmt.Printf("%s is not a valid sendMap\n", sendMapString)
         return false, false
@@ -169,8 +177,8 @@ func (player *Player) setSendTo(sendMapString string, name string, sendTo bool) 
         sendMap = player.SendTeamTo
     } else if (sendMapString == "dead") {
         sendMap = player.SendDeadTo
-    } else if (sendMapString == "conn") {
-        sendMap = player.SendConnectedTo
+    } else if (sendMapString == "dc") {
+        sendMap = player.SendDCTo
     } else {
         fmt.Printf("%s is not a valid sendMap\n", sendMapString)
     }
@@ -188,8 +196,8 @@ func (player *Player) makeSendTrue(sendMapString string, players map[string]*Pla
         sendMap = player.SendTeamTo
     } else if (sendMapString == "dead") {
         sendMap = player.SendDeadTo
-    } else if (sendMapString == "conn") {
-        sendMap = player.SendConnectedTo
+    } else if (sendMapString == "dc") {
+        sendMap = player.SendDCTo
     } else {
         fmt.Printf("%s is not a valid sendMap\n", sendMapString)
         return
@@ -205,8 +213,8 @@ func (player *Player) makeSendTrue(sendMapString string, players map[string]*Pla
 func (player *Player) initialPlayerString() string {
     player.mutexLock()
     //conn has to be before everything and team has to be before ward
-    ret := fmt.Sprintf("conn:%s:%t:loc:%s:%f:%f:team:%s:%s:dead:%s:%t:", player.Name, player.Connected,
-        player.Name, player.Lat, player.Long, player.Name, player.Team, player.Name, player.Dead)
+    ret := fmt.Sprintf("loc:%s:%f:%f:team:%s:%s:dead:%s:%t:", player.Name, player.Lat, player.Long,
+        player.Name, player.Team, player.Name, player.Dead)
 
     if (player.WardLat != 0 || player.WardLong != 0) {
         ret += fmt.Sprintf("ward:%s:%f:%f:", player.Name, player.WardLat, player.WardLong)

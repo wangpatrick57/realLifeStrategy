@@ -1,0 +1,39 @@
+{
+ "Games": {
+  "Home": {
+   "GameID": "Home",
+   "Players": {},
+   "RespawnPoints": [
+    {
+     "Lat": 38.3241,
+     "Long": -121.98119,
+     "Mutex": {}
+    }
+   ],
+   "Boords": [
+    {
+     "Lat": 10,
+     "Long": 10,
+     "Mutex": {}
+    },
+    {
+     "Lat": -10,
+     "Long": 10,
+     "Mutex": {}
+    },
+    {
+     "Lat": -10,
+     "Long": -10,
+     "Mutex": {}
+    },
+    {
+     "Lat": 10,
+     "Long": -10,
+     "Mutex": {}
+    }
+   ],
+   "Mutex": {}
+  }
+ },
+ "Mutex": {}
+}

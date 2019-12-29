@@ -68,8 +68,6 @@ class Networking {
     let math: SpecMath = SpecMath()
     var timeSinceLastMessage = 0
     var writeString = ""
-    let readQueue = DispatchQueue(label: "readQueue", qos: .background)
-    let networkingStepQueue = DispatchQueue(label: "networkingStepQueue", qos: .background)
     
     let posInc: [Int: Int] = [
         BEAT: 1,
@@ -101,29 +99,29 @@ class Networking {
             print("This is stateUpdateHandler:")
             switch (newState) {
             case .ready:
-                print("State: Ready\n")
+                print("State: Ready")
+            case .waiting:
+                print("State: Waiting")
             case .setup:
-                print("State: Setup\n")
+                print("State: Setup")
             case .cancelled:
-                print("State: Cancelled\n")
+                print("State: Cancelled")
             case .preparing:
-                print("State: Preparing\n")
+                print("State: Preparing")
             default:
-                print("ERROR! State not defined!\n")
+                print("ERROR! State not defined!")
             }
         }
         
-        connection?.start(queue: .global())
+        setupReceive()
+        connection?.start(queue: .main)
+        
         sendUUID = true
     }
     
     func startNetworkingSteps() {
-        readQueue.async {
-            self.readData()
-        }
-        
         //networking step
-        _ = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(networkingStep), userInfo: nil, repeats: true)
+        _ = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.networkingStep), userInfo: nil, repeats: true)
     }
     
     @objc func networkingStep() {
@@ -485,22 +483,23 @@ class Networking {
         writeString = ""
     }
     
-    func readData() {
+    func setupReceive() {
+        print("read called")
+        
         connection?.receive(minimumIncompleteLength: 1, maximumLength: 65536) { (data, contentContext, isComplete, error) in
-            if let error = error {
-                print("error in reading: \(error)")
-            } else {
-                if let thisData = data {
-                    let thisDataString = String(decoding: thisData, as: UTF8.self)
-                    self.dataString += thisDataString
-                    print("read \(self.dataString)")
-                } else {
-                    print("data is nil")
-                }
+            if let thisData = data {
+                let thisDataString = String(decoding: thisData, as: UTF8.self)
+                self.dataString += thisDataString
             }
             
-            self.readData()
-            return
+            if isComplete {
+                self.connection?.cancel()
+                self.setupNetworkComms()
+            } else if let error = error {
+                print("error in reading: \(error)")
+            } else {
+                self.setupReceive()
+            }
         }
     }
     
@@ -509,17 +508,12 @@ class Networking {
     }
     
     func write() {
+        print("write called")
+        
         if (Float.random(in: 0 ..< 1) > packetLossChance) {
             let contentToSendUDP = writeString.data(using: String.Encoding.utf8)
             
             if let connObj = self.connection {
-                /*connObj.send(content: contentToSendUDP, completion: NWConnection.SendCompletion.contentProcessed(({ (NWError) in
-                    if (NWError == nil) {
-                        print("wrote \(content)")
-                    } else {
-                        print("ERROR! Error when data (Type: Data) sending. NWError: \n \(NWError!)")
-                    }
-                })))*/
                 connObj.send(content: contentToSendUDP, completion: .contentProcessed( { error in
                     if let error = error {
                         print("error in sending: \(error)")
