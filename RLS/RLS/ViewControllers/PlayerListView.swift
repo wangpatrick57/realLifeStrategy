@@ -50,7 +50,7 @@ class PlayerListView : UIViewController{
         if (team != "") {
             myPlayer = Player(name: nickname)
             myPlayer.setTeam(team: team)
-            networking.setSendTeam(st: true)
+            networking.setSendOneTimer(key: TEAM, value: true)
             self.performSegue(withIdentifier: "ShowMap", sender: self)
         }
     }

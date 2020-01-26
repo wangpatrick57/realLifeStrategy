@@ -63,8 +63,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         inGame = true
         networking.clearSendRecBP()
         networking.clearSendRecRP()
-        networking.setSendBPCt(sbc: true)
-        networking.setSendRPCt(src: true)
+        networking.setSendOneTimer(key: BP_CT, value: true)
+        networking.setSendOneTimer(key: RP_CT, value: true)
         
         //check if spectator
         if (myPlayer.getName() == ".SPECTATOR") {
@@ -147,7 +147,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         if (true/*!debug*/) {
             //tell server
             myPlayer.setConnected(connected: false)
-            networking.setSendDC(sd: true)
+            networking.setSendOneTimer(key: DC, value: true)
         }
         
         //stopping/setting to nil all the globalvars
@@ -169,7 +169,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             }
             
             myPlayer.addWardAt(coordinate: coordinate)
-            networking.setSendWard(sw: true)
+            networking.setSendOneTimer(key: WARD, value: true)
         }
     }
     
@@ -181,7 +181,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
         }
         
         map.removeAnnotation(myPlayer)
-        networking.setSendDead(sd: true)
+        networking.setSendOneTimer(key: DEAD, value: true)
     }
     
     //ping with long press
@@ -251,7 +251,7 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, UIGestureR
             if (inRespawnArea()) {
                 if (currTime > respawnEnterTime + respawnTime) {
                     myPlayer.setDead(dead: false)
-                    networking.setSendDead(sd: true)
+                    networking.setSendOneTimer(key: DEAD, value: true)
                     map.removeAnnotation(myPlayer)
                 }
                 

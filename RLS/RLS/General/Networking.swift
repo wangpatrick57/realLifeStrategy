@@ -43,106 +43,79 @@ let TEAM_CK = 29
 let DEAD_CK = 30
 let DC_CK = 31
 
+let posInc: [Int: Int] = [
+    BEAT: 1,
+    BP: 4,
+    RP: 4,
+    CHECK_ID: 2,
+    CHECK_NAME: 2,
+    BK_CK: 2,
+    LOC: 4,
+    TEAM: 3,
+    DEAD: 3,
+    WARD: 4,
+    DC: 2,
+    BP_CT: 2,
+    RP_CT: 2,
+    UUID_CK: 2,
+    BP_CK: 4,
+    RP_CK: 4,
+    WARD_CK: 3,
+    TEAM_CK: 2,
+    DEAD_CK: 2,
+    DC_CK: 1,
+]
+
+let MAX_READ_LENGTH = 1024
+
 class Networking {
     var username = ""
-    var maxReadLength = 1024
     var idExists: Bool? = nil
     var nameExists: Bool? = nil
-    var dataString = ""
-    var controlPoint: ControlPoint? = nil
-    let hostUDP: NWEndpoint.Host = "73.189.41.182"
-    var portUDP: NWEndpoint.Port = 8889
-    var connection: NWConnection? = nil
-    var sendBorderPoints: [Bool] = []
-    var sendRespawnPoints: [Bool] = []
+    var udpSocket: UDPSocket!
+    let host: String = "73.189.41.182"
+    var port: UInt16 = 8889
+    var sendBP: [Bool] = []
+    var sendRP: [Bool] = []
     var sendRecBP: [Bool] = []
     var sendRecRP: [Bool] = []
-    var sendBK = false
-    var sendBPCt = false
-    var sendRPCt = false
-    var sendUUID = false
-    var sendWard = false
-    var sendTeam = false
-    var sendDead = false
-    var sendDC = false
+    
+    var sendOneTimer: [Int: Bool] = [
+        BK: false,
+        BP_CT: false,
+        RP_CT: false,
+        UUID: false,
+        WARD: false,
+        TEAM: false,
+        DEAD: false,
+        DC: false,
+    ]
+    
     let math: SpecMath = SpecMath()
     var timeSinceLastMessage = 0
     var writeString = ""
     
-    let posInc: [Int: Int] = [
-        BEAT: 1,
-        BP: 4,
-        RP: 4,
-        CHECK_ID: 2,
-        CHECK_NAME: 2,
-        BK_CK: 2,
-        LOC: 4,
-        TEAM: 3,
-        DEAD: 3,
-        WARD: 4,
-        DC: 2,
-        BP_CT: 2,
-        RP_CT: 2,
-        UUID_CK: 2,
-        BP_CK: 4,
-        RP_CK: 4,
-        WARD_CK: 3,
-        TEAM_CK: 2,
-        DEAD_CK: 2,
-        DC_CK: 1,
-    ]
-    
     func setupNetworkComms() {
-        connection = NWConnection(host: hostUDP, port: portUDP, using: .udp)
+        udpSocket = UDPSocket(host: host, port: port)
+        udpSocket.setupConnection()
         
-        connection?.stateUpdateHandler = { (newState) in
-            print("This is stateUpdateHandler:")
-            switch (newState) {
-            case .ready:
-                print("State: Ready")
-            case .waiting:
-                print("State: Waiting")
-            case .setup:
-                print("State: Setup")
-            case .cancelled:
-                print("State: Cancelled")
-            case .preparing:
-                print("State: Preparing")
-            default:
-                print("ERROR! State not defined!")
-            }
-        }
+        sendOneTimer[UUID] = true
         
-        setupReceive()
-        connection?.start(queue: .main)
-        
-        sendUUID = true
-    }
-    
-    func startNetworkingSteps() {
-        //networking step
-        _ = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.networkingStep), userInfo: nil, repeats: true)
+        _ = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(networkingStep), userInfo: nil, repeats: true)
     }
     
     @objc func networkingStep() {
-        networkingForegroundStep()
-        networkingBackgroundStep()
-    }
-    
-    func networkingForegroundStep() {
-        networking.processData()
-    }
-    
-    func networkingBackgroundStep() {
-        networking.sendHeartbeat()
-        networking.reconnectIfNecessary()
-        networking.broadcastOneTimers()
-        networking.write()
+        DispatchQueue.global(qos: .utility).async {
+            networking.processData()
+            networking.sendHeartbeat()
+            networking.reconnectIfNecessary()
+            networking.broadcastOneTimers()
+            networking.flush()
+        }
     }
     
     func processData() {
-        let stringArray = dataString.components(separatedBy: ":")
-        dataString = ""
+        let stringArray = udpSocket.popDataString().components(separatedBy: ":")
         
         if (stringArray.count > 1) {
             timeSinceLastMessage = 0
@@ -176,9 +149,9 @@ class Networking {
             case BK_CK:
                 if let bk = Bool(stringArray[posInArray + 1]) {
                     if bk == inBackground {
-                        sendBK = false
+                        sendOneTimer[BK] = false
                     } else {
-                        sendBK = true
+                        sendOneTimer[BK] = true
                     }
                 } else {
                     print("bk_ck gave a non boolean value")
@@ -188,7 +161,10 @@ class Networking {
                 let thisTeam = stringArray[posInArray + 2]
                 
                 if let mvc = mapViewController {
-                    mvc.updatePlayerTeam(name: thisName, team: thisTeam)
+                    DispatchQueue.main.async {
+                        mvc.updatePlayerTeam(name: thisName, team: thisTeam)
+                    }
+                    
                     sendTeamCheck(name: thisName, team: thisTeam)
                 } else {
                     print("team packet: mvc doesn't exist")
@@ -205,7 +181,10 @@ class Networking {
                     let thisName = stringArray[posInArray + 1]
                     
                     if let mvc = mapViewController {
-                        mvc.updatePlayerDead(name: thisName, dead: thisDead)
+                        DispatchQueue.main.async {
+                            mvc.updatePlayerDead(name: thisName, dead: thisDead)
+                        }
+                        
                         sendDeadCheck(name: thisName, dead: thisDead)
                     } else {
                         print("team packet: mvc doesn't exist")
@@ -218,7 +197,9 @@ class Networking {
                             let thisName = stringArray[posInArray + 1]
                             
                             if let mvc = mapViewController {
-                                mvc.updatePlayerWardLoc(name: thisName, lat: thisLat, long: thisLong)
+                                DispatchQueue.main.async {
+                                    mvc.updatePlayerWardLoc(name: thisName, lat: thisLat, long: thisLong)
+                                }
                                 sendWardCheck(name: thisName, coord: CLLocationCoordinate2D(latitude: thisLat, longitude: thisLong))
                             } else {
                                 print("team packet: mvc doesn't exist")
@@ -228,8 +209,12 @@ class Networking {
                 }
             case DC:
                 let thisName = stringArray[posInArray + 1]
+                
                 if let mvc = mapViewController {
-                    mvc.playerDC(name: thisName)
+                    DispatchQueue.main.async {
+                        mvc.playerDC(name: thisName)
+                    }
+                    
                     sendDCCheck(name: thisName)
                 } else {
                     print("team packet: mvc doesn't exist")
@@ -238,13 +223,19 @@ class Networking {
                 if let index = Int(stringArray[posInArray + 1]) {
                     if let thisLat = Double(stringArray[posInArray + 2]) {
                         if let thisLong = Double(stringArray[posInArray + 3]) {
-                            mapViewController?.addBorderPoint(index: index, coordinate: CLLocationCoordinate2D(latitude: thisLat, longitude: thisLong))
-                            
-                            while (sendRecBP.count <= index) {
-                                sendRecBP.append(true)
+                            if let mvc = mapViewController {
+                                DispatchQueue.main.async {
+                                    mvc.addBorderPoint(index: index, coordinate: CLLocationCoordinate2D(latitude: thisLat, longitude: thisLong))
+                                }
+                                
+                                while (sendRecBP.count <= index) {
+                                    sendRecBP.append(true)
+                                }
+                                
+                                sendRecBP[index] = false
+                            } else {
+                                print("BP: mvc doesn't exist")
                             }
-                            
-                            sendRecBP[index] = false
                         } else {
                             print("bp long wrong")
                         }
@@ -282,7 +273,7 @@ class Networking {
                         sendRecBP.append(true)
                     }
                     
-                    sendBPCt = false
+                    sendOneTimer[BP_CT] = false
                 } else {
                     print("count for bpCt error")
                 }
@@ -294,7 +285,7 @@ class Networking {
                         sendRecRP.append(true)
                     }
                     
-                    sendRPCt = false
+                    sendOneTimer[RP_CT] = false
                 } else {
                     print("count for bpCt error")
                 }
@@ -302,9 +293,9 @@ class Networking {
                 let recUUID = stringArray[posInArray + 1]
                 
                 if (recUUID == uuid) {
-                    sendUUID = false
+                    sendOneTimer[UUID] = false
                 } else {
-                    sendUUID = true
+                    sendOneTimer[UUID] = true
                 }
             case BP_CK:
                 if let index = Int(stringArray[posInArray + 1]) {
@@ -313,9 +304,9 @@ class Networking {
                             let coord = createdBorderPoints[index].getCoordinate()
                             
                             if (thisLat == coord.latitude && thisLong == coord.longitude) {
-                                sendBorderPoints[index] = false
+                                sendBP[index] = false
                             } else {
-                                sendBorderPoints[index] = true
+                                sendBP[index] = true
                             }
                         } else {
                             print("bpCk lat bad")
@@ -334,9 +325,9 @@ class Networking {
                                 let coord = createdRespawnPoints[index].getCoordinate()
                                 
                                 if (thisLat == coord.latitude && thisLong == coord.longitude) {
-                                    sendRespawnPoints[index] = false
+                                    sendRP[index] = false
                                 } else {
-                                    sendRespawnPoints[index] = true
+                                    sendRP[index] = true
                                 }
                             } else {
                                 print("index for rpCk oob")
@@ -357,9 +348,9 @@ class Networking {
                             let coord = myWard.getCoordinate()
                             
                             if (thisLat == coord.latitude && thisLong == coord.longitude) {
-                                sendWard = false
+                                sendOneTimer[WARD] = false
                             } else {
-                                sendWard = true
+                                sendOneTimer[WARD] = true
                             }
                         }
                     } else {
@@ -372,25 +363,25 @@ class Networking {
                 let thisTeam = stringArray[posInArray + 1]
                 
                 if (thisTeam == myPlayer.getTeam()) {
-                    sendTeam = false
+                    sendOneTimer[TEAM] = false
                 } else {
-                    sendTeam = true
+                    sendOneTimer[TEAM] = true
                 }
                 
-                print("sendTeam = \(sendTeam)")
+                print("sendTeam = \(sendOneTimer[TEAM]!)")
             case DEAD_CK:
                 if let thisDead = Bool(stringArray[posInArray + 1]) {
                     if (thisDead == myPlayer.getDead()) {
-                        sendDead = false
+                        sendOneTimer[DEAD] = false
                     } else {
-                        sendDead = true
+                        sendOneTimer[DEAD] = true
                     }
                 } else {
                     print("deadCk dead wrong")
                 }
             case DC_CK:
                 print("dc ck received.ddxssxszsz xzxx z1q   awqs43e 54234")
-                sendDC = false
+                sendOneTimer[DC] = false
             default:
                 _ = 1
             }
@@ -419,31 +410,31 @@ class Networking {
     }
     
     func broadcastOneTimers() {
-        for i in 0..<sendBorderPoints.count {
-            if (sendBorderPoints[i]) {
+        for i in 0..<sendBP.count {
+            if (sendBP[i]) {
                 sendBorderPoint(index: i)
             }
         }
         
-        for i in 0..<sendRespawnPoints.count {
-            if (sendRespawnPoints[i]) {
+        for i in 0..<sendRP.count {
+            if (sendRP[i]) {
                 sendRespawnPoint(index: i)
             }
         }
         
-        if (sendUUID) {
+        if (sendOneTimer[UUID]!) {
             sendUUIDFunc()
         }
         
-        if (sendBK) {
+        if (sendOneTimer[BK]!) {
             sendBKFunc(bk: inBackground)
         }
         
-        if (sendBPCt) {
+        if (sendOneTimer[BP_CT]!) {
             sendBorderPointCount()
         }
         
-        if (sendRPCt) {
+        if (sendOneTimer[RP_CT]!) {
             sendRespawnPointCount()
         }
         
@@ -459,73 +450,37 @@ class Networking {
             }
         }
         
-        if (sendWard) {
+        if (sendOneTimer[WARD]!) {
             if let myWard = myPlayer.getWard() {
                 sendWardLoc(coord: myWard.getCoordinate())
             }
         }
         
-        if (sendTeam) {
+        if (sendOneTimer[TEAM]!) {
             sendTeam(team: myPlayer.getTeam())
         }
         
-        if (sendDead) {
+        if (sendOneTimer[DEAD]!) {
             sendDead(dead: myPlayer.getDead())
         }
         
-        if (sendDC) {
+        if (sendOneTimer[DC]!) {
             sendDCFunc()
         }
     }
     
     func closeNetworkComms() {
-        connection?.cancel()
         writeString = ""
-    }
-    
-    func setupReceive() {
-        print("read called")
-        
-        connection?.receive(minimumIncompleteLength: 1, maximumLength: 65536) { (data, contentContext, isComplete, error) in
-            if let thisData = data {
-                let thisDataString = String(decoding: thisData, as: UTF8.self)
-                self.dataString += thisDataString
-            }
-            
-            if isComplete {
-                self.connection?.cancel()
-                self.setupNetworkComms()
-            } else if let error = error {
-                print("error in reading: \(error)")
-            } else {
-                self.setupReceive()
-            }
-        }
     }
     
     func addToWriteString(_ content: String) {
         writeString += content
     }
     
-    func write() {
-        print("write called")
-        
+    func flush() {
         if (Float.random(in: 0 ..< 1) > packetLossChance) {
-            let contentToSendUDP = writeString.data(using: String.Encoding.utf8)
-            
-            if let connObj = self.connection {
-                connObj.send(content: contentToSendUDP, completion: .contentProcessed( { error in
-                    if let error = error {
-                        print("error in sending: \(error)")
-                        return
-                    } else {
-                        print("wrote \(self.writeString)")
-                        self.writeString = ""
-                    }
-                }))
-            } else {
-                print("connObj is nil")
-            }
+            udpSocket.send(message: writeString)
+            writeString = ""
         } else {
             print("data lost")
         }
@@ -552,7 +507,7 @@ class Networking {
         
         while (true) {
             addToWriteString("\(checkIDCode):\(idToCheck):")
-            write()
+            flush()
             processData()
             
             if let exists = idExists {
@@ -575,7 +530,7 @@ class Networking {
         
         while (true) {
             addToWriteString("\(CHECK_NAME):\(nameToCheck):")
-            write()
+            flush()
             processData()
             
             if let exists = nameExists {
@@ -681,48 +636,15 @@ class Networking {
         addToWriteString("\(DC_CK):\(name):")
     }
     
-    func setSendBK(sb: Bool) {
-        sendBK = sb
+    func setSendOneTimer(key: Int, value: Bool) {
+        sendOneTimer[key] = value
     }
     
-    func setSendBP(sb: Bool, index: Int) {
-        while (sendBorderPoints.count <= index) {
-            sendBorderPoints.append(false)
-        }
-        
-        sendBorderPoints[index] = sb
+    func setSendBP(value: Bool, index: Int) {
+        sendBP[index] = value
     }
     
-    func setSendRP(sr: Bool, index: Int) {
-        while (sendRespawnPoints.count <= index) {
-            sendRespawnPoints.append(false)
-        }
-        
-        sendRespawnPoints[index] = sr
-    }
-    
-    func setSendBPCt(sbc: Bool) {
-        sendBPCt = sbc
-    }
-    
-    func setSendRPCt(src: Bool) {
-        sendRPCt = src
-    }
-    
-    func setSendWard(sw: Bool) {
-        sendWard = sw
-    }
-    
-    func setSendTeam(st: Bool) {
-        sendTeam = st
-        print("sendTeam set to \(st)")
-    }
-    
-    func setSendDead(sd: Bool) {
-        sendDead = sd
-    }
-    
-    func setSendDC(sd: Bool) {
-        sendDC = sd
+    func setSendRP(value: Bool, index: Int) {
+        sendRP[index] = value
     }
 }

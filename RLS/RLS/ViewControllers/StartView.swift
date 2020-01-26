@@ -46,7 +46,6 @@ class StartView: UIViewController {
         //setup client
         print("networking in start")
         networking.setupNetworkComms()
-        networking.startNetworkingSteps()
     }
     
     func printStuff(_ content: String) {

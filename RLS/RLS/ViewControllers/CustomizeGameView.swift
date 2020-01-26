@@ -26,11 +26,11 @@ class CustomizeGameView: UIViewController {
     
     @IBAction func donePressed(_ sender: Any) {
         for i in 0..<createdBorderPoints.count {
-            networking.setSendBP(sb: true, index: i)
+            networking.setSendBP(value: true, index: i)
         }
         
         for i in 0..<createdRespawnPoints.count {
-            networking.setSendRP(sr: true, index: i)
+            networking.setSendRP(value: true, index: i)
         }
         
         self.performSegue(withIdentifier: "ShowNickname", sender: nil)
